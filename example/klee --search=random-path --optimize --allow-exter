@@ -1,1 +1,0 @@
-klee --search=random-path --optimize --allow-external-sym-calls --max-instruction-time=10 --ignore-solver-failures --only-output-states-covering-new --libc=uclibc --posix-runtime ./app.bc --sym-args 0 3 10 A --sym-files 1 64 > output
