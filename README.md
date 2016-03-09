@@ -6,6 +6,10 @@ Kleefl
 
 ## Example of usage:
 
+### Get vagrant box
+
+    https://owncloud.sec.t-labs.tu-berlin.de/owncloud/public.php?service=files&t=2c28a437ebb75a33ee127dd4ea827726
+
 ### Setup project structrue
 
     mkdir project_xyz
