@@ -1,0 +1,2 @@
+#!/bin/sh
+cat out/*/fuzzer_stats | grep 'command_line\|crashes\|cycles_done'

@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+
+import sys
+import os
+from shutil import copy2, rmtree
+
+klee_def_conf = "run_klee.sh"
+afl_def_conf = "run_afl.sh"
+
+dir = os.path.dirname("")
+
+# created dir structure2
+dirs = ["fuzz", "fuzz/in", "klee"]
+conf_files = ["klee/run_klee.sh", "fuzz/run_afl.sh"]
+
+if(len(sys.argv) > 1):
+	print "clean "+os.getcwd()
+
+	for path in dirs:				# remove dirs
+		if "/" in path and os.path.exists(path):
+			print "rm "+path
+			rmtree(path)
+	for fp in conf_files:			# remove files (if empty)
+		if not os.path.isfile(fp):
+			print "no file "+fp
+			continue
+		#statinfo = os.stat(fp)
+		#if not statinfo.st_size:
+		print "rm "+fp
+		os.remove(fp)
+		#else:
+		#	print "not empty: "+fp
+
+	sys.exit()
+
+print "setup "+os.getcwd()
+for path in dirs:
+	if not os.path.exists(path):
+		print "create: "+path
+		os.makedirs(path)
+	else:
+		print "exists: "+path
+
+# create init files
+if not os.path.isfile(conf_files[0]):
+	copy2(os.path.dirname(sys.argv[0])+"/"+klee_def_conf, conf_files[0])
+	print "create: "+conf_files[0]
+else:
+	print "exists: "+conf_files[0]
+
+if not os.path.isfile(conf_files[1]):
+	copy2(os.path.dirname(sys.argv[0])+"/"+afl_def_conf, conf_files[1])
+	print "create: "+conf_files[1]
+else:
+	print "exists: "+conf_files[1]
+
+
+#copyfile("app", "fuzz/app")

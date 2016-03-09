@@ -1,0 +1,37 @@
+#!/bin/bash
+if [[ $# == 1 ]]; then
+	echo "targeting -> "$1
+else
+	echo "no target! run: $0 target_app"
+	exit
+fi;
+
+# search for file
+list=$(find -name "$1*") 
+
+app=$1
+
+for item in $list; do
+	#echo $item
+	if [[ $item == *"/klee-build/"*"$app.bc" ]]; then
+		echo "klee target: "$item
+		klee_target=$item
+	fi;
+	if [[ $item == *"/afl-build/"*"$app" ]]; then
+		echo "afl target: "$item
+		afl_target=$item
+	fi;
+done
+
+if [[ $klee_target == "" ]]; then
+	echo "klee target not found!"
+	exit
+fi
+if [[ $afl_target == "" ]]; then
+	echo "afl target not found!"
+	exit
+fi
+
+# copy binary to work dirs
+cp $klee_target klee/app.bc
+cp $afl_target fuzz/app

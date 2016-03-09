@@ -1,0 +1,513 @@
+#!/usr/bin/env python2
+
+import os
+import struct
+import sys
+import re
+from optparse import OptionParser
+#import subprocess
+from easyprocess import EasyProcess
+
+from shutil import move, copy, rmtree
+import md5
+
+def_path="klee/klee-last/"
+file_tmp_dir="tmp_input/"
+afl_dir="fuzz/"
+dict_dir="in/"
+afl_crash_dir="crashing"
+afl_config=afl_dir+"run_afl.sh"
+
+test_bin_timeout=1
+
+version_no=3
+class KTestError(Exception):
+	 pass
+
+class KTest:
+	@staticmethod
+	def fromfile(path):
+		if not os.path.exists(path):
+			print("ERROR: file %s not found" % (path))
+			sys.exit(1)
+			
+		f = open(path,'rb')
+		hdr = f.read(5)
+		if len(hdr)!=5 or (hdr!=b'KTEST' and hdr != b"BOUT\n"):
+			raise KTestError('unrecognized file')
+		version, = struct.unpack('>i', f.read(4))
+		if version > version_no:
+			raise KTestError('unrecognized version')
+		numArgs, = struct.unpack('>i', f.read(4))
+		args = []
+		for i in range(numArgs):
+			size, = struct.unpack('>i', f.read(4))
+			args.append(str(f.read(size).decode(encoding='ascii')))
+			
+		if version >= 2:
+			symArgvs, = struct.unpack('>i', f.read(4))
+			symArgvLen, = struct.unpack('>i', f.read(4))
+		else:
+			symArgvs = 0
+			symArgvLen = 0
+
+		numObjects, = struct.unpack('>i', f.read(4))
+		objects = []
+		for i in range(numObjects):
+			size, = struct.unpack('>i', f.read(4))
+			name = f.read(size)
+			size, = struct.unpack('>i', f.read(4))
+			bytes = f.read(size)
+			objects.append( (name,bytes) )
+
+		# Create an instance
+		b = KTest(version, args, symArgvs, symArgvLen, objects)
+		# Augment with extra filename field
+		b.filename = path
+		return b
+
+	def __init__(self, version, args, symArgvs, symArgvLen, objects):
+		self.version = version
+		self.symArgvs = symArgvs
+		self.symArgvLen = symArgvLen
+		self.args = args
+		self.objects = objects
+
+		# add a field that represents the name of the program used to
+		# generate this .ktest file:
+		program_full_path = self.args[0]
+		program_name = os.path.basename(program_full_path)
+		# sometimes program names end in .bc, so strip them
+		if program_name.endswith('.bc'):
+		 program_name = program_name[:-3]
+		self.programName = program_name
+
+
+class Command:
+	fuzzer_id = 1
+
+	def __init__(self, arg0):
+		self.binary = arg0
+		self.args = []
+		self.files = []
+		self.crashing = False
+		self.input_dir = dict_dir
+		self.input_file_size = 0
+		self.master = False
+		Command.fuzzer_id += 1
+		self.id = self.fuzzer_id
+		self.dontusefiles = 0
+
+	def __str__(self):
+		ret_val = self.binary+" "
+		for a in self.args:
+			ret_val += a+" "
+		for f in self.files:
+			ret_val += f+" "
+		return ret_val
+
+	def __repr__(self):
+		ret_val = self.binary+" "
+		for a in self.args:
+			ret_val += str(a)+" "
+		for f in self.files:
+			ret_val += str(f)+" "
+		return ret_val
+
+	def callable(self):
+		call = []
+		call.append(self.binary)
+		for a in self.args:
+			call.append(str(a))
+		for f in self.files:
+			call.append(file_tmp_dir+str(f))
+		return call
+
+	def afl_tmin_call(self):
+		call = self.binary+" "
+		for a in self.args:
+			call += str(a)+" "
+		call += "@@ "*self.input_file_size 
+		return call
+
+	def afl_call(self):
+		if(self.dontusefiles == 1):
+			return "!invalid call (not using file)"
+
+		if(self.crashing):
+			call = "afl-fuzz -C -i "+afl_crash_dir+" -o out "						
+		else:
+			call = "afl-fuzz -i in -o out "
+
+		#call += "-x dict/ "
+
+		if (self.master):
+			call += "-M fuzzer0 "
+		else:
+			call += "-S fuzzer"+str(self.id)+" "
+
+		call += self.binary+" "
+		for a in self.args:
+			call += str(a)+" "
+		call += "@@ "*self.input_file_size 
+
+		if (self.master):
+			call += "&"
+		else:
+			call += ">> /dev/null &"
+		#call += str(self.files)
+		return call
+
+	def afl_dict_call(self):
+		if(self.dontusefiles == 1):
+			return "!invalid call (not using file)"
+
+		call = "afl-fuzz -i in -o out -x in "
+		call += "-S fuzzer"+str(self.id)+" "
+		call += self.binary+" "
+		for a in self.args:
+			call += str(a)+" "
+		call += "@@ "*self.input_file_size 
+		call += ">> /dev/null &"
+		#call += str(self.files)
+		return call
+
+
+	def update_files(self, rep_file, new_file):
+		for index, used_file in enumerate(self.files):
+			if (used_file == rep_file):
+				#print "replace: "+used_file+" -> "+new_file
+				self.files[index] = new_file
+
+
+def testingBinary(cmd):
+	print "testing: "+str(cmd),
+	ret_value = 0
+
+	# save last access time of file
+	# TODO: iterate all files
+	time1 = os.stat(file_tmp_dir+cmd.files[0]).st_atime
+	try:
+		process = EasyProcess(cmd.callable()).call(timeout=test_bin_timeout)
+		pid = process.pid
+		# print "PID = "+str(pid)
+		ret_value = process.return_code
+	except:
+		#print cmd.callable()
+		print "ERROR on subprocess! (testing binary)"
+		print cmd.callable()
+
+	# compar last access time of file
+	time2 = os.stat(file_tmp_dir+cmd.files[0]).st_atime
+	if(time1 == time2):
+		cmd.dontusefiles = 1;
+		print " -> useless for afl! [ file not used by call ]"
+	else:
+		print ""
+	#print ret_value
+	return ret_value
+
+
+def minimize(cmd):
+	for fl in cmd.files:
+		cmd_str = "afl-tmin -i "+file_tmp_dir+fl+" -o "+file_tmp_dir+fl+" "+cmd.afl_tmin_call()
+		print cmd_str
+
+		try:
+			EasyProcess(cmd_str).call()
+		except:
+			print "ERROR on subprocess! (testing binary)"
+
+def remove_duplicates(dir):
+	unique = []
+	dub_count = 0
+	for filename in os.listdir(dir):
+		if os.path.isfile(dir+filename):
+			filehash = md5.md5(file(dir+filename).read()).hexdigest()
+		
+		if filehash not in unique: 
+			unique.append(filehash)
+		else: 
+			os.remove(dir+filename)
+			dub_count += 1
+
+	print "remove "+str(dub_count)+" dublicated files"
+
+def main(args):
+	op = OptionParser("usage: %prog files")
+	# op.add_option('','--write-ints', dest='writeInts', action='store_true',
+	#               default=False,
+	#               help='convert 4-byte sequences to integers')
+	opts,args = op.parse_args()
+	
+	ktest_filelist = args[1:]
+
+	# if not dir given, try default path: klee/klee-last/*.ktest
+	if not args:
+		for i in os.listdir(def_path):
+			if i.endswith(".ktest"): 
+				ktest_filelist.append(def_path+i)
+	
+
+	if len(ktest_filelist) < 1:
+		print "no .ktest files found"
+		sys.exit()
+	
+	cmd_list = []
+
+	if not os.path.exists(file_tmp_dir):
+		os.makedirs(file_tmp_dir)
+	else:
+		rmtree(file_tmp_dir)
+		os.makedirs(file_tmp_dir)
+
+	for file in ktest_filelist:
+		b = KTest.fromfile(file)
+		
+		binary = b.args[0]
+		if binary[-3:] == ".bc": binary = binary[:-3]	# remove .bc extension
+		cmd = Command(binary)							# save binary 
+
+		input_count = 0
+
+		for i,(name,data) in enumerate(b.objects):
+			# parsing data to afl-inputs
+			#print name
+
+			# filter version number and other garbage
+			if name in ["model_version", "stdin" ]:
+				continue				
+			if "-stat" in name:
+				continue
+
+			#filename = "fuzz/klee_inputs/"+file.split("/",1)[1][:-6]
+
+			if name in ["n_args"]:
+				argc = struct.unpack('i',data)[0]
+				#print str(argc) + " args call"
+				continue
+			if "arg" in name:
+				# remove \ff garbage
+				data = data.split("\xff")[0]
+				# handle strings like C char* (null termianted)
+				data = data.split("\x00")[0]
+
+				if(data == ""):
+					continue
+				if(data == "-"):
+					continue
+
+				cmd.args.append(data)	
+				continue
+
+			if "-data" in name:
+				#print "inputs file with data from: "+os.path.basename(file)
+				filename = os.path.basename(file)
+				if(filename[-6:] == ".ktest"):		# remove .ktest file extension
+					filename = filename[:-6]
+
+				data = data.split("\xff")[0]	# cut data at first 0xff byte
+
+				# search for \x00 garbage
+				first_non_zero = len(data)-1
+				for x in reversed(xrange(0,len(data))):
+					if(data[x] != "\x00"):
+						first_non_zero = x
+						break
+				# if(first_non_zero == len(data)-1):
+				# 	print "only zeros!"
+				# print first_non_zero
+				# print data[first_non_zero]
+				data = data[0:first_non_zero+1]
+
+				cmd.files.append(filename)
+				cmd.input_file_size += 1
+				#print "write to "+file_tmp_dir+filename
+				f = open(file_tmp_dir+filename,'w')
+				f.write(data)
+				f.close()
+				# os.system("xxd "+file_tmp_dir+filename)
+				# print ""
+
+				continue
+
+			# if you come here, we have an unhandled case
+			print "unhandled case detected for: "+name
+
+		#print cmd
+		cmd_list.append(cmd)
+
+	# ++++++++++++++ HANDLE CRASHES DISCOVERED BY KLEE ++++++++++++++++++++++
+
+	# grab binary from fuzzing directory
+	copy(afl_dir+"app", "app")
+
+	for cmd in cmd_list:
+		ret_val = testingBinary(cmd)
+		if(ret_val < 0): 
+			cmd.crashing = True
+			if not os.path.exists(afl_dir+afl_crash_dir):
+				os.makedirs(afl_dir+afl_crash_dir)
+
+		if(ret_val >= 0):
+			cmd.crashing = False
+
+	for cmd in cmd_list:
+		if( cmd.crashing ):
+			# save all crashing files to crashing dir
+			for fl in cmd.files:
+				# move (forcing overwrite)
+				cmd.input_dir = afl_crash_dir
+				move(os.path.join(file_tmp_dir, fl), os.path.join(afl_dir+afl_crash_dir, fl))
+
+
+	# ++++++++++++++ HANDLE NON-CRASHING INPUTS DISCOVERED BY KLEE ++++++++++++++++++++++
+
+	# sorting arg size
+	cmd_list_size = {}
+	for cmd in cmd_list:
+		argc = len(cmd.args)
+		if cmd_list_size.has_key(argc):
+			cmd_list_size[argc].append(cmd)
+		else:
+			cmd_list_size[argc] = [cmd]
+
+	# grouping equal calls
+	for args, cmd_list in cmd_list_size.iteritems():
+		#print "now grouping calls with "+str(args)+" args."
+		for i in range(len(cmd_list)):
+			#print i
+			# now compare element 1 with all others an merge equal
+			for j in reversed(range(i + 1, len(cmd_list))):
+				# keep crashing cmd
+				if(cmd_list[i].crashing or cmd_list[j].crashing):
+					continue
+				# compare and merge, non-crashing
+				if(cmd_list[i].args == cmd_list[j].args):			
+					#print "equal! ("+str(i)+" vs. "+str(j)+") = "+str(cmd_list[i].args)+" "+str(cmd_list[j].args)
+					cmd_list[i].files = cmd_list[i].files + cmd_list[j].files
+					cmd_list.pop(j)
+	cmd_list = cmd_list_size
+	#print cmd_list
+
+	remove_duplicates(file_tmp_dir)
+
+	# minimize inputs:
+	# for argc in cmd_list:
+	# 	for cmd in cmd_list[argc]:
+	# 		minimize(cmd)
+
+	# remove dublicate files
+	#remove_duplicates(file_tmp_dir)
+
+	# for fl in os.listdir(file_tmp_dir):
+	# 	print fl
+	# 	file_list = os.listdir(file_tmp_dir)
+	# 	print len(file_list)
+	# 	for j in reversed(range(i + 1, len(file_list))):
+	# 		if(filecmp.cmp(file_tmp_dir+fl,file_tmp_dir+file_list[j], shallow=False)):
+	# 			print "found dublicate"
+	# 			os.remove(file_tmp_dir+file_list[j])
+
+
+	# # merge dublicate input files
+	# file_replace_list = {}	
+	# file_list = os.listdir(file_tmp_dir)
+	# for i in range(len(file_list)):
+	# 	#print "processing: "+file_list[i]
+	# 	if (file_replace_list.has_key(file_list[i])):	
+	# 		#print "already merged"
+	# 		continue
+
+	# 	for j in reversed(range(i + 1, len(file_list))):
+
+	# 		#print filecmp.cmp(file_tmp_dir+file_list[i],file_tmp_dir+file_list[j], shallow=False)
+	# 		if (filecmp.cmp(file_tmp_dir+file_list[i],file_tmp_dir+file_list[j], shallow=False)):
+	# 			file_replace_list[file_list[j]] = file_list[i]
+	# 			#print file_list[j] + " -> "+file_list[i]
+	# 			#os.remove(file_tmp_dir+file_list[j])
+	# 			#print "mark to remove: "+file_list[j]
+
+	# # remove merged files 
+	# for key in file_replace_list:
+	#  	os.remove(file_tmp_dir+key)
+	# # update all cmds using removed files
+	# for argc in cmd_list:
+	# 	for cmd in cmd_list[argc]:
+	# 		for k in file_replace_list:
+	# 			cmd.update_files(k,file_replace_list[k])
+	
+	# move proper inputs into fuzzy in dir
+	if not os.path.exists(afl_dir+dict_dir):	# check if path exists
+		os.makedirs(afl_dir+dict_dir)
+	for input_file in os.listdir(file_tmp_dir):
+		#print file_tmp_dir+input_file+" "+afl_dir+dict_dir
+		copy(file_tmp_dir+input_file, afl_dir+dict_dir+input_file)
+
+	# minimize dict inputs with afl-tmin
+	# for in_file in os.listdir(afl_dir+dict_dir):
+	# 	#print "minimize input: "+in_file+"\r",
+	# 	cmd = "afl-tmin -i fuzz/dict/"+in_file+" -o fuzz/dict/"+in_file+" ./fuzz/app "
+	# 	os.system(cmd)
+	
+	# clean tmp input dir
+	#rmtree(file_tmp_dir)
+	os.remove("app")
+		
+	# finally setup the afl calls!
+	print "="*30+" run_afl.sh "+"="*30
+
+	# take one of the smalles ones as master.
+	f = open(afl_config, 'w')
+	f.write("#!/bin/sh\n")
+
+	# find a master and write to first position:
+	master = None
+
+	# add all the others
+	for argc in cmd_list:
+		# add non crashing to list
+		for cmd in cmd_list[argc]:
+			if (cmd.crashing):
+				continue
+			if (cmd.dontusefiles):
+				continue
+
+			if master is None:
+				master = cmd
+				cmd.master = 1
+
+			print cmd.afl_call()
+			f.write(cmd.afl_call()+"\n")
+		
+		# add crashing to list
+		for cmd in cmd_list[argc]:
+			if not (cmd.crashing):
+				continue
+			if (cmd.dontusefiles):
+				continue
+
+			print cmd.afl_call()
+			f.write(cmd.afl_call()+"\n")
+
+	# add one dict instance
+	print master.afl_dict_call()
+	f.write(master.afl_dict_call()+"\n")
+	#f.write("sleep 1200\nkillall afl-fuzz\n")
+	f.close()
+
+
+	# build up fuzz setup
+	# 	Run the first one ("master", -M) like this:
+	# $ ./afl-fuzz -i testcase_dir -o sync_dir -M fuzzer01 [...other stuff...]
+	# ...and then, start up secondary (-S) instances like this:
+	# $ ./afl-fuzz -i testcase_dir -o sync_dir -S fuzzer02 [...other stuff...]
+	# $ ./afl-fuzz -i testcase_dir -o sync_dir -S fuzzer03 [...other stuff...]
+
+
+
+
+
+
+if __name__=='__main__':
+	main(sys.argv)
