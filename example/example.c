@@ -47,7 +47,7 @@ int processing_data(char * filename) {
       continue;
     }
 
-    // BUG: DIV BY ZERO             
+    // BUG: DIV BY ZERO (could be also format string vuln?)             
     // line starts with "value"
     if(!strncmp(line,"value",5)){
       //printf("found mem load marker\n");

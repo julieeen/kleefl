@@ -3,8 +3,24 @@
 # options: make, make afl, make klee
 # clean options: clean, clean afl, clean klee
 
-AFL_DIR="afl-build"
-KLEE_DIR="klee-build"
+AFL_DIR="afl_build"
+KLEE_DIR="klee_build"
+COV_DIR="cov_build"
+
+
+function make_cov {
+	echo "make gcov"
+	mkdir $COV_DIR
+	cd $COV_DIR
+	CC=gcc CXX=g++ CFLAGS='-g -fprofile-arcs -ftest-coverage' LDFLAGS="-fprofile-arcs"  ../configure	
+	make
+	cd ..
+}
+function clean_cov {
+	echo "rm -r $COV_DIR"
+	rm -r $COV_DIR
+}
+
 
 # Build with afl-gcc (afl)
 function make_afl {
@@ -15,7 +31,6 @@ function make_afl {
 	make clean all
 	cd ..
 }
-
 function clean_afl {
 	echo "rm -r $AFL_DIR"
 	rm -r $AFL_DIR
@@ -45,7 +60,6 @@ function make_klee {
 	done
 	cd ..
 }
-
 function clean_klee {
 	echo "rm -r $KLEE_DIR"
 	rm -r $KLEE_DIR
@@ -54,6 +68,7 @@ function clean_klee {
 function clean_all {
 	clean_afl
 	clean_klee
+	clean_cov
  	make clean
  	exit
 }
@@ -80,12 +95,13 @@ fi;
 if [[ $# == 2 ]]; then	
 	if [[ $1 == "make" ]]; then
 		if [[ $2 == "afl" ]]; then
-			echo "make afl"
 			make_afl
 		fi;
 		if [[ $2 == "klee" ]]; then
-			echo "make klee"
 			make_klee
+		fi;
+		if [[ $2 == "cov" ]]; then
+			make_cov
 		fi;
 		exit
 	fi;
@@ -98,6 +114,10 @@ if [[ $# == 2 ]]; then
 		if [[ $2 == "klee" ]]; then
 			printf "clean klee: "
 			clean_klee
+		fi;
+		if [[ $2 == "cov" ]]; then
+			printf "clean cov: "
+			clean_cov
 		fi;
 		exit
 	fi;

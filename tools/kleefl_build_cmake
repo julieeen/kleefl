@@ -3,8 +3,8 @@
 # options: make, make afl, make klee
 # clean options: clean, clean afl, clean klee
 
-AFL_DIR="afl-build"
-KLEE_DIR="klee-build"
+AFL_DIR="afl_build"
+KLEE_DIR="klee_build"
 
 # Build with afl-gcc (afl)
 function make_afl {
