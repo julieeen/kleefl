@@ -1,0 +1,147 @@
+#!/usr/bin/env python2
+import os
+import sys
+import time
+from subprocess import PIPE, Popen
+from easyprocess import EasyProcess
+import datetime
+from tabulate import tabulate
+
+if len(sys.argv) != 3:
+	print "usage :	kleefl_crash_inspector path/to/binary fuzz_sync_dir/"
+	sys.exit(0)
+
+binary = sys.argv[1]
+if not (os.path.isfile(binary)):
+	print "ERROR: "+binary+" not found!"
+	sys.exit(-1)
+
+sync_dir = sys.argv[2]+"/"
+if os.path.isdir(sync_dir):
+	print "ANALYZE: "+sync_dir+ " seach for crashes ..."
+
+
+class Fuzzer:
+	def __init__(self, arg0, arg1, arg2):
+		self.id = arg0
+		self.crash_dir = arg1
+		self.crash_files = arg2
+		self.cmd = ""
+		self.start_time = ""
+
+	def calls(self):
+		calls = []
+		for item in self.crash_files:
+			cmd = "./"+self.cmd
+			cmd = cmd.replace("app", binary)
+			cmd = cmd.replace("@@", item[0])
+			calls.append(cmd)
+		return calls
+
+	def tabulate(self):
+		table = []
+		print "fuzzer: "+self.id+" @ "+str(self.start_time)
+		for item in self.crash_files:
+			time_diff = item[1] - self.start_time
+			table.append(item)
+			table[-1].append(time_diff)
+
+			#item.append("hello!")
+			#print item
+		print tabulate(table, headers=["crashing file","time","time_diff"])
+		print ""
+
+
+
+
+# store all fuzzer information
+fuzzer_coll = []
+
+# gather all files of one instance 
+for subdir in os.listdir(sync_dir):
+	if(os.path.isfile(sync_dir+subdir)):
+		continue
+		
+	crash_dir = sync_dir+subdir+"/crashes/"
+	crash_files = os.listdir(crash_dir)
+	files = []
+	for item in crash_files:
+		if(os.path.isfile(crash_dir+item)):
+			if(item == "README.txt"): continue		# skip readme files
+
+			# perhaps this is just the last modified time ... unclear
+			time_stamp = os.path.getctime(crash_dir+item)
+			creation_time = datetime.datetime.utcfromtimestamp(float(time_stamp))
+
+			pack = [crash_dir+item, creation_time]
+			files.append(pack) 						# collect crash files
+			print "+ crash "+item+" found @ "+subdir+" @ "+str(creation_time)
+
+	# grab fuzzer stats to get used cmd line
+	stat_file = sync_dir+subdir+"/fuzzer_stats"
+
+	# gather collected data in fuzzer datatype
+	fuzzer = Fuzzer(subdir, crash_dir, files)
+
+	if(os.path.isfile(stat_file)):
+		f = open(stat_file)
+		content = f.readlines()
+		# grap starttime
+		timestr = content[0]
+		time = float((timestr.split(": ")[1]).rstrip())
+		fuzzer.start_time = datetime.datetime.utcfromtimestamp(time)
+
+		# grab cmd line
+		cmd = content[-1]
+		cmd = cmd.split(" ./")[1]
+		fuzzer.cmd = cmd.rstrip()
+		print fuzzer.cmd + " (started @ "+str(fuzzer.start_time)+")"
+		fuzzer_coll.append(fuzzer)
+	else:
+		print "--> found 1 fuzzer instance without stats"
+		fuzzer.no_stats = 1
+
+print "SUMMARY: found "+str(len(fuzzer_coll))+" fuzzing instances in "+sync_dir
+
+# summarize crashes
+print "+"*120
+for fuzzer in fuzzer_coll:
+	fuzzer.tabulate()
+
+	# for crash in fuzzer.crash_files:
+		
+		#print crash[0], crash[1]
+
+
+
+
+
+
+
+
+# call each crash and get signature for comparision
+print "+"*120
+print "EXECUTE: run all crashes and classify them ..."
+
+
+# run each call with gov binary while tracking coverage
+for fuzzer in fuzzer_coll:
+	for call in fuzzer.calls():
+		print call
+
+		# how to analyze crashes!?
+
+		break
+	break
+
+		# call = "gdb -args " + call
+
+		# print "exec: "+call
+		# p = Popen(call.split(), stdin=PIPE)
+
+		# time.sleep(1)
+
+		# p.communicate("run \n")
+
+		# p.communicate("quit \n")
+		# p.communicate("y \n")

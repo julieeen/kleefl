@@ -1,0 +1,131 @@
+#!/usr/bin/env python2
+import os
+import sys
+import subprocess
+from easyprocess import EasyProcess
+
+if len(sys.argv) != 3:
+	print "build source :	kleefl_cov make source_dir/"
+	print "analyze cov  :	kleefl_cov source_dir/binary path_to_afl_sync_dir/ "
+	sys.exit(0)
+
+#print 'Argument List:', str(sys.argv)
+
+
+# ++++++++++++ build source with gcov feature ++++++++++++
+if(sys.argv[1] == "make"):
+	print "Build source with gcov feature ..."
+	if os.path.isdir(sys.argv[2]):
+		os.chdir(sys.argv[2])
+		cmd = "CC=gcc CXX=g++ CFLAGS='-g -fprofile-arcs -ftest-coverage' LDFLAGS='-fprofile-arcs' ./configure"
+		print ">> "+cmd
+		process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+		print process.communicate()[0]
+		cmd = "make"
+		print ">> "+cmd
+		process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+		print process.communicate()[0]
+	sys.exit(0)
+
+
+# ++++++++++++ running all queue files and analyze ++++++++++++++
+code_dir = sys.argv[1].split("/")[0]+"/"
+binary = sys.argv[1].split("/")[1]
+sync_dir = sys.argv[2]
+if(sync_dir[-1] != "/"):
+	sync_dir += "/"
+
+class Fuzzer:
+	def __init__(self, arg0, arg1, arg2):
+		self.id = arg0
+		self.queue_dir = arg1
+		self.queue = arg2
+		self.cmd = ""
+		self.no_stats = 0
+
+	def calls(self):
+		calls = []
+		for item in self.queue:
+			cmd = "./"+code_dir+self.cmd
+			cmd = cmd.replace("app", binary)
+			cmd = cmd.replace("@@", item)
+			calls.append(cmd)
+		return calls
+
+# clean up old coverage data
+print "remove : old covage tracking data (all .gcda files) in "+code_dir,
+count = 0
+for root, subdirs, files in os.walk(code_dir):
+    for x in files:
+        if x.endswith(".gcda"):
+        	count += 1
+        	os.remove(os.path.join(root, x))
+
+print "("+str(count)+" files)"
+
+print "analyze: "+sync_dir
+
+fuzzer_coll = []
+
+# gather all files of one instance 
+for subdir in os.listdir(sync_dir):
+	if(os.path.isfile(sync_dir+subdir)):
+		continue
+		
+	queue_dir = sync_dir+subdir+"/queue/"
+	crash_dir = sync_dir+subdir+"/crashes/"
+
+	files = []
+	for item in os.listdir(queue_dir):
+		if(os.path.isfile(queue_dir+item)):
+			files.append(queue_dir+item)
+	for item in os.listdir(crash_dir):
+		if(os.path.isfile(crash_dir+item)):
+			if(item == "README.txt"): continue		# skip readme files
+			files.append(crash_dir+item)
+
+	# grab fuzzer stats and get called cmd
+	stat_file = sync_dir+subdir+"/fuzzer_stats"
+
+	fuzzer = Fuzzer(subdir, queue_dir, files)
+
+	if(os.path.isfile(stat_file)):
+		f = open(stat_file)
+		content = f.readlines()
+   		cmd = content[-1]
+   		cmd = cmd.split(" ./")[1]
+   		fuzzer.cmd = cmd.rstrip()
+ 		fuzzer_coll.append(fuzzer)
+   	else:
+   		print "--> found 1 fuzzer instance without stats"
+   		fuzzer.no_stats = 1
+
+print "--> found "+str(len(fuzzer_coll))+" fuzzing instances in "+sync_dir
+
+# run each call with gov binary while tracking coverage
+for fuzzer in fuzzer_coll:
+	for call in fuzzer.calls():
+		print "exec: "+call
+		# execute call (collect cov data)
+		try:
+			process = EasyProcess(call).call(timeout=2)
+			#print process.return_code,
+		except:
+			print "ERROR on subprocess! (testing binary)"
+			print call
+
+# gather collected coverage data
+# zcov scan coverage.zcov source_dir/
+cmd = "zcov scan coverage.zcov "+code_dir
+process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
+print "zcov: "+process.communicate()[0]
+
+# print summary
+# cmd = "zcov summarize coverage.zcov"
+# process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
+# print "zcov: "
+# print process.communicate()[0]
+
+
+
+
