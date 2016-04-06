@@ -6,7 +6,7 @@ from easyprocess import EasyProcess
 
 if len(sys.argv) != 3:
 	print "build source :	kleefl_cov make source_dir/"
-	print "analyze cov  :	kleefl_cov source_dir/binary path_to_afl_sync_dir/ "
+	print "analyze cov  :	kleefl_cov cov_build/binary path_to_afl_sync_dir/ "
 	sys.exit(0)
 
 #print 'Argument List:', str(sys.argv)

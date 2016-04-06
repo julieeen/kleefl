@@ -6,9 +6,15 @@ from subprocess import PIPE, Popen
 from easyprocess import EasyProcess
 import datetime
 from tabulate import tabulate
+import copy
+import shutil
+import pickle
+import md5
+import json
+
 
 if len(sys.argv) != 3:
-	print "usage :	kleefl_crash_inspector path/to/binary fuzz_sync_dir/"
+	print "usage :	kleefl_crash_inspector collect path/to/binary fuzz_sync_dir/"
 	sys.exit(0)
 
 binary = sys.argv[1]
@@ -20,52 +26,73 @@ sync_dir = sys.argv[2]+"/"
 if os.path.isdir(sync_dir):
 	print "ANALYZE: "+sync_dir+ " seach for crashes ..."
 
+core_dump_dir = "core_dumps"
+gdb_sleep_time = 0.05 			# timeout for gdb cmd communication
+
+
+class Crash:
+	def __init__(self, arg0, arg1, arg2):
+		self.file = arg0
+		self.ctime = arg1
+		self.fuzzer = arg2
+		self.dump_file = "None"
+		self.hash = "None"
+		self.descr = "None"
+		self.classification = "None"
+
+	def call(self):
+		cmd = "./"+self.fuzzer.cmd
+		cmd = cmd.replace("app", binary)
+		cmd = cmd.replace("@@", self.file)
+		return cmd
+
+	def info(self):
+		row = []
+		time_diff = self.ctime - self.fuzzer.start_time
+		row.append(os.path.basename(self.file)[:10]+"...")
+		row.append(self.hash[:40]+"...")
+		row.append(self.classification)
+		row.append(self.descr)
+		row.append(time_diff)		
+		return row
 
 class Fuzzer:
-	def __init__(self, arg0, arg1, arg2):
+	def __init__(self, arg0):
 		self.id = arg0
-		self.crash_dir = arg1
-		self.crash_files = arg2
-		self.cmd = ""
-		self.start_time = ""
-
-	def calls(self):
-		calls = []
-		for item in self.crash_files:
-			cmd = "./"+self.cmd
-			cmd = cmd.replace("app", binary)
-			cmd = cmd.replace("@@", item[0])
-			calls.append(cmd)
-		return calls
+		self.crash_dir = None
+		self.crashes = None
+		self.cmd = None
+		self.start_time = None
 
 	def tabulate(self):
-		table = []
 		print "fuzzer: "+self.id+" @ "+str(self.start_time)
-		for item in self.crash_files:
-			time_diff = item[1] - self.start_time
-			table.append(item)
-			table[-1].append(time_diff)
+		table = []
+		for crash in self.crashes:
+			table.append( [crash.file, crash.ctime] )
 
-			#item.append("hello!")
-			#print item
-		print tabulate(table, headers=["crashing file","time","time_diff"])
+		print tabulate(table, headers=["crashing file","time"])
 		print ""
 
+	def crash_info(self):
+		table = []
+		for crash in self.crashes:
+			table.append(crash.info())
+		return tabulate(table, headers=["file", "hash", "class","descr", "dtime"])
 
-
-
-# store all fuzzer information
+# collect all fuzzers
 fuzzer_coll = []
 
-# gather all files of one instance 
+# collect information in fuzzer datatype
 for subdir in os.listdir(sync_dir):
 	if(os.path.isfile(sync_dir+subdir)):
 		continue
 		
+	fuzzer = Fuzzer(subdir)
+
 	crash_dir = sync_dir+subdir+"/crashes/"
-	crash_files = os.listdir(crash_dir)
+	fuzzer.crash_dir = crash_dir
 	files = []
-	for item in crash_files:
+	for item in os.listdir(crash_dir):
 		if(os.path.isfile(crash_dir+item)):
 			if(item == "README.txt"): continue		# skip readme files
 
@@ -73,23 +100,20 @@ for subdir in os.listdir(sync_dir):
 			time_stamp = os.path.getctime(crash_dir+item)
 			creation_time = datetime.datetime.utcfromtimestamp(float(time_stamp))
 
-			pack = [crash_dir+item, creation_time]
-			files.append(pack) 						# collect crash files
+			crash = Crash(crash_dir+item, creation_time, fuzzer)
+			files.append(crash) 					# collect crash files
 			print "+ crash "+item+" found @ "+subdir+" @ "+str(creation_time)
+	fuzzer.crashes = files
 
 	# grab fuzzer stats to get used cmd line
 	stat_file = sync_dir+subdir+"/fuzzer_stats"
-
-	# gather collected data in fuzzer datatype
-	fuzzer = Fuzzer(subdir, crash_dir, files)
-
 	if(os.path.isfile(stat_file)):
 		f = open(stat_file)
 		content = f.readlines()
 		# grap starttime
 		timestr = content[0]
-		time = float((timestr.split(": ")[1]).rstrip())
-		fuzzer.start_time = datetime.datetime.utcfromtimestamp(time)
+		time_value = float((timestr.split(": ")[1]).rstrip())
+		fuzzer.start_time = datetime.datetime.utcfromtimestamp(time_value)
 
 		# grab cmd line
 		cmd = content[-1]
@@ -104,44 +128,154 @@ for subdir in os.listdir(sync_dir):
 print "SUMMARY: found "+str(len(fuzzer_coll))+" fuzzing instances in "+sync_dir
 
 # summarize crashes
-print "+"*120
-for fuzzer in fuzzer_coll:
-	fuzzer.tabulate()
-
-	# for crash in fuzzer.crash_files:
-		
-		#print crash[0], crash[1]
-
-
-
-
-
-
+# print "+"*120
+# for fuzzer in fuzzer_coll:
+# 	fuzzer.tabulate()
 
 
 # call each crash and get signature for comparision
 print "+"*120
 print "EXECUTE: run all crashes and classify them ..."
 
+# set ulimit -c unlimited to get core dumps
+# TODO: check for ulimit -c = unlimited, else warn user ...
+# p = Popen("ulimit -c".split(), stdout=PIPE, shell=True)
+# p.wait()
 
 # run each call with gov binary while tracking coverage
+if not os.path.exists(core_dump_dir):
+	os.makedirs(core_dump_dir)
+else:
+	shutil.rmtree(core_dump_dir)
+	os.makedirs(core_dump_dir)
+
+core_cnt = 0
 for fuzzer in fuzzer_coll:
-	for call in fuzzer.calls():
-		print call
+	for crash in fuzzer.crashes:
+		print "*"*120
+		print crash.call()
+		proc = Popen(crash.call().split(), stdout=PIPE)
+		proc.wait()
+		#print proc.communicate()
 
-		# how to analyze crashes!?
+		#backup core dump in core dump dir
+		os.rename("core", core_dump_dir+"/core"+str(core_cnt))
+		crash.dump_file = core_dump_dir+"/core"+str(core_cnt)
+		core_cnt += 1
+	# 	break
+	# break
 
-		break
-	break
+for fuzzer in fuzzer_coll:
+	for crash in fuzzer.crashes: 
+		if(crash.dump_file == "None"):
+			continue
 
-		# call = "gdb -args " + call
+		call = "gdb "+binary+" "+crash.dump_file
+		print call+" ... \r",
 
-		# print "exec: "+call
-		# p = Popen(call.split(), stdin=PIPE)
+		proc = Popen(call.split(), stdin=PIPE, stdout=PIPE)
+		time.sleep(gdb_sleep_time)
+		proc.stdin.write("exploitable \n")
+		time.sleep(gdb_sleep_time)
+		proc.stdin.write("quit \n")
 
-		# time.sleep(1)
+		exploitable = []
+		for line in iter(proc.stdout.readline,''):
+			exploitable.append( line.rstrip() )
 
-		# p.communicate("run \n")
+		crash_description = "None"
+		crash_hash = "None"
+		crash_class = "None"
 
-		# p.communicate("quit \n")
-		# p.communicate("y \n")
+		for line in exploitable:
+			if "Hash: " in line:
+				crash_hash = line.split("Hash: ")[1]
+			if "Description: " in line:
+				crash_description = line.split("Description: ")[1]
+			if "Exploitability Classification: " in line:
+				crash_class = line.split("Exploitability Classification: ")[1]
+
+		crash.hash = crash_hash
+		crash.descr = crash_description
+		crash.classification = crash_class
+
+
+for fuzzer in fuzzer_coll:
+	print ""
+	print fuzzer.id+" exec: "+fuzzer.cmd
+	print fuzzer.crash_info()
+
+
+print "+"*120
+# now minimize the crashes
+# crash = signature -> [possible_cmd[], files[], class, decr, first_occur]
+
+# build collection
+unique_crashes = {}
+for fuzzer in fuzzer_coll:
+	for crash in fuzzer.crashes:
+		if not (unique_crashes.has_key(crash.hash)):
+			unique_crashes[crash.hash] = [[crash.fuzzer.cmd],[crash.file], crash.classification, crash.descr, crash.ctime, 1 ]
+		else:
+
+			if not (crash.fuzzer.cmd in unique_crashes[crash.hash][0]):
+				unique_crashes[crash.hash][0].append(crash.fuzzer.cmd)
+			unique_crashes[crash.hash][1].append(crash.file)
+
+			if(crash.ctime < unique_crashes[crash.hash][4]):
+				unique_crashes[crash.hash][4] = crash.ctime
+
+
+# save collection
+crash_min_dir = "crash_collection/"
+if not os.path.exists(crash_min_dir):
+	os.makedirs(crash_min_dir)
+else:
+	shutil.rmtree(crash_min_dir)
+
+# get min start time of fuzzers ...
+min_time = fuzzer_coll[0].start_time
+for fuzzer in fuzzer_coll[1:]:
+	if(min_time > fuzzer.start_time):
+		min_time = fuzzer.start_time
+
+for crash_sig, info in unique_crashes.iteritems():
+	print "Minimizing: "+crash_sig
+	#print info
+	count = 0
+
+	# create subdir for each crash signature
+	if not os.path.exists(crash_min_dir+crash_sig):
+		os.makedirs(crash_min_dir+crash_sig)
+
+	# save crash info
+	info_file = open(crash_min_dir+crash_sig+"/info.txt", 'wb')
+	info_file.write("%s\n" % str(info[0]))
+	info_file.write("%s\n" % str(info[2]))
+	info_file.write("%s\n" % str(info[3]))
+	abstime = info[4]
+	dtime = (abstime - min_time)
+	info_file.write("%s\n" % str(dtime))
+
+	# save crashing files in subdirs (no dublicates)
+	crash_num = 0
+	for crash_file in info[1]:
+		crash_num += 1
+		# check if md5(file) is already there ...
+		new_hash = md5.md5(file(crash_file).read()).hexdigest()
+		dub = 0
+		for filename in os.listdir(crash_min_dir+crash_sig):
+			filehash = md5.md5(file(crash_min_dir+crash_sig+"/"+filename).read()).hexdigest()
+			if(new_hash == filehash):
+				dub = 1
+				count += 1
+				break
+
+		if not dub:
+			shutil.copyfile(crash_file, crash_min_dir+crash_sig+"/crash"+str(crash_num))
+		
+	print "Adding files & reject "+str(count)+" dublicates ..."
+
+
+
+

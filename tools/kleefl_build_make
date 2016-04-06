@@ -10,15 +10,8 @@ COV_DIR="cov_build"
 
 function make_cov {
 	echo "make gcov"
-	mkdir $COV_DIR
-	cd $COV_DIR
-	CC=gcc CXX=g++ CFLAGS='-g -fprofile-arcs -ftest-coverage' LDFLAGS="-fprofile-arcs"  ../configure	
+	CC=gcc CXX=g++ CFLAGS='-g -fprofile-arcs -ftest-coverage' LDFLAGS="-fprofile-arcs"  ./configure	
 	make
-	cd ..
-}
-function clean_cov {
-	echo "rm -r $COV_DIR"
-	rm -r $COV_DIR
 }
 
 
@@ -28,7 +21,7 @@ function make_afl {
 	mkdir $AFL_DIR
 	cd $AFL_DIR
 	CC=afl-clang CXX=afl-clang++ ../configure
-	make clean all
+	make
 	cd ..
 }
 function clean_afl {

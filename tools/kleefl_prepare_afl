@@ -91,6 +91,7 @@ class Command:
 		self.args = []
 		self.files = []
 		self.crashing = False
+		self.hanging = False
 		self.input_dir = dict_dir
 		self.input_file_size = 0
 		self.master = False
@@ -184,27 +185,38 @@ def testingBinary(cmd):
 	print "testing: "+str(cmd),
 	ret_value = 0
 
-	# save last access time of file
-	# TODO: iterate all files
+	# save last access time of file 
+	# TODO: iterate all files used by a call
 	time1 = os.stat(file_tmp_dir+cmd.files[0]).st_atime
+	
 	try:
 		process = EasyProcess(cmd.callable()).call(timeout=test_bin_timeout)
 		pid = process.pid
-		# print "PID = "+str(pid)
+		#print str(process)
 		ret_value = process.return_code
 	except:
-		#print cmd.callable()
 		print "ERROR on subprocess! (testing binary)"
 		print cmd.callable()
 
-	# compar last access time of file
+	# check if call really used file, reject if not 
 	time2 = os.stat(file_tmp_dir+cmd.files[0]).st_atime
 	if(time1 == time2):
 		cmd.dontusefiles = 1;
-		print " -> useless for afl! [ file not used by call ]"
+		print " -> [ file not used by call ] -> ignore call"
 	else:
 		print ""
-	#print ret_value
+
+	# analyze easyproc api: process.__dict__
+	if( process.timeout_happened ):
+		print "... timeout ! (test_bin_timeout="+str(test_bin_timeout)+")"
+		return 0
+
+	if(ret_value < 0): 
+		cmd.crashing = True
+		print "... crashing ! "+str(ret_value)
+		if not os.path.exists(afl_dir+afl_crash_dir):
+			os.makedirs(afl_dir+afl_crash_dir)
+
 	return ret_value
 
 
@@ -212,7 +224,6 @@ def minimize(cmd):
 	for fl in cmd.files:
 		cmd_str = "afl-tmin -i "+file_tmp_dir+fl+" -o "+file_tmp_dir+fl+" "+cmd.afl_tmin_call()
 		print cmd_str
-
 		try:
 			EasyProcess(cmd_str).call()
 		except:
@@ -297,6 +308,10 @@ def main(args):
 				if(data == "-"):
 					continue
 
+				# support crappy file arg name of klee
+				if(data in ["A","B","C","D","E","F"]):
+					continue
+
 				cmd.args.append(data)	
 				continue
 
@@ -306,18 +321,16 @@ def main(args):
 				if(filename[-6:] == ".ktest"):		# remove .ktest file extension
 					filename = filename[:-6]
 
+				# klee will just fill up with 0xff until given file size
 				data = data.split("\xff")[0]	# cut data at first 0xff byte
 
-				# search for \x00 garbage
+				# search reverse until first non 0x00 byte
 				first_non_zero = len(data)-1
 				for x in reversed(xrange(0,len(data))):
 					if(data[x] != "\x00"):
 						first_non_zero = x
 						break
-				# if(first_non_zero == len(data)-1):
-				# 	print "only zeros!"
-				# print first_non_zero
-				# print data[first_non_zero]
+				# remove non-relevant 0x00 data appending file
 				data = data[0:first_non_zero+1]
 
 				cmd.files.append(filename)
@@ -337,20 +350,13 @@ def main(args):
 		#print cmd
 		cmd_list.append(cmd)
 
-	# ++++++++++++++ HANDLE CRASHES DISCOVERED BY KLEE ++++++++++++++++++++++
+	# ++++++++++++++ HANDLE CRASHES ALREADY DISCOVERED BY KLEE ++++++++++++++++++++++
 
 	# grab binary from fuzzing directory
 	copy(afl_dir+"app", "app")
 
 	for cmd in cmd_list:
-		ret_val = testingBinary(cmd)
-		if(ret_val < 0): 
-			cmd.crashing = True
-			if not os.path.exists(afl_dir+afl_crash_dir):
-				os.makedirs(afl_dir+afl_crash_dir)
-
-		if(ret_val >= 0):
-			cmd.crashing = False
+		testingBinary(cmd)
 
 	for cmd in cmd_list:
 		if( cmd.crashing ):
@@ -390,67 +396,18 @@ def main(args):
 	cmd_list = cmd_list_size
 	#print cmd_list
 
+	# delete duplicated files in tmp dir
 	remove_duplicates(file_tmp_dir)
 
-	# minimize inputs:
-	# for argc in cmd_list:
-	# 	for cmd in cmd_list[argc]:
-	# 		minimize(cmd)
 
-	# remove dublicate files
-	#remove_duplicates(file_tmp_dir)
-
-	# for fl in os.listdir(file_tmp_dir):
-	# 	print fl
-	# 	file_list = os.listdir(file_tmp_dir)
-	# 	print len(file_list)
-	# 	for j in reversed(range(i + 1, len(file_list))):
-	# 		if(filecmp.cmp(file_tmp_dir+fl,file_tmp_dir+file_list[j], shallow=False)):
-	# 			print "found dublicate"
-	# 			os.remove(file_tmp_dir+file_list[j])
-
-
-	# # merge dublicate input files
-	# file_replace_list = {}	
-	# file_list = os.listdir(file_tmp_dir)
-	# for i in range(len(file_list)):
-	# 	#print "processing: "+file_list[i]
-	# 	if (file_replace_list.has_key(file_list[i])):	
-	# 		#print "already merged"
-	# 		continue
-
-	# 	for j in reversed(range(i + 1, len(file_list))):
-
-	# 		#print filecmp.cmp(file_tmp_dir+file_list[i],file_tmp_dir+file_list[j], shallow=False)
-	# 		if (filecmp.cmp(file_tmp_dir+file_list[i],file_tmp_dir+file_list[j], shallow=False)):
-	# 			file_replace_list[file_list[j]] = file_list[i]
-	# 			#print file_list[j] + " -> "+file_list[i]
-	# 			#os.remove(file_tmp_dir+file_list[j])
-	# 			#print "mark to remove: "+file_list[j]
-
-	# # remove merged files 
-	# for key in file_replace_list:
-	#  	os.remove(file_tmp_dir+key)
-	# # update all cmds using removed files
-	# for argc in cmd_list:
-	# 	for cmd in cmd_list[argc]:
-	# 		for k in file_replace_list:
-	# 			cmd.update_files(k,file_replace_list[k])
-	
 	# move proper inputs into fuzzy in dir
-	if not os.path.exists(afl_dir+dict_dir):	# check if path exists
+	if not os.path.exists(afl_dir+dict_dir):
 		os.makedirs(afl_dir+dict_dir)
 	for input_file in os.listdir(file_tmp_dir):
 		#print file_tmp_dir+input_file+" "+afl_dir+dict_dir
 		copy(file_tmp_dir+input_file, afl_dir+dict_dir+input_file)
 
-	# minimize dict inputs with afl-tmin
-	# for in_file in os.listdir(afl_dir+dict_dir):
-	# 	#print "minimize input: "+in_file+"\r",
-	# 	cmd = "afl-tmin -i fuzz/dict/"+in_file+" -o fuzz/dict/"+in_file+" ./fuzz/app "
-	# 	os.system(cmd)
-	
-	# clean tmp input dir
+	#clean tmp input dir
 	#rmtree(file_tmp_dir)
 	os.remove("app")
 		
@@ -491,21 +448,10 @@ def main(args):
 			f.write(cmd.afl_call()+"\n")
 
 	# add one dict instance
-	print master.afl_dict_call()
-	f.write(master.afl_dict_call()+"\n")
+	# print master.afl_dict_call()
+	# f.write(master.afl_dict_call()+"\n")
 	#f.write("sleep 1200\nkillall afl-fuzz\n")
 	f.close()
-
-
-	# build up fuzz setup
-	# 	Run the first one ("master", -M) like this:
-	# $ ./afl-fuzz -i testcase_dir -o sync_dir -M fuzzer01 [...other stuff...]
-	# ...and then, start up secondary (-S) instances like this:
-	# $ ./afl-fuzz -i testcase_dir -o sync_dir -S fuzzer02 [...other stuff...]
-	# $ ./afl-fuzz -i testcase_dir -o sync_dir -S fuzzer03 [...other stuff...]
-
-
-
 
 
 

@@ -13,11 +13,11 @@ app=$1
 
 for item in $list; do
 	#echo $item
-	if [[ $item == *"/klee-build/"*"$app.bc" ]]; then
+	if [[ $item == *"/klee_build/"*"$app.bc" ]]; then
 		echo "klee target: "$item
 		klee_target=$item
 	fi;
-	if [[ $item == *"/afl-build/"*"$app" ]]; then
+	if [[ $item == *"/afl_build/"*"$app" ]]; then
 		echo "afl target: "$item
 		afl_target=$item
 	fi;

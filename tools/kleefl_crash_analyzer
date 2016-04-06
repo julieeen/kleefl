@@ -1,0 +1,77 @@
+#!/usr/bin/env python2
+import os
+import sys
+import pickle
+
+if len(sys.argv) != 2:
+	print "usage :	kleefl_crash_inspector crash_collection_file.pkl"
+	sys.exit(0)
+
+binary = sys.argv[1]
+if not (os.path.isfile(binary)):
+	print "ERROR: "+binary+" not found!"
+	sys.exit(-1)
+
+sync_dir = sys.argv[2]+"/"
+if os.path.isdir(sync_dir):
+	print "ANALYZE: "+sync_dir+ " seach for crashes ..."
+
+core_dump_dir = "core_dumps"
+
+class Crash:
+	def __init__(self, arg0, arg1, arg2):
+		self.file = arg0
+		self.ctime = arg1
+		self.fuzzer = arg2
+		self.dump_file = "None"
+		self.hash = "None"
+		self.descr = "None"
+		self.classification = "None"
+
+	def call(self):
+		cmd = "./"+self.fuzzer.cmd
+		cmd = cmd.replace("app", binary)
+		cmd = cmd.replace("@@", self.file)
+		return cmd
+
+	def info(self):
+		row = []
+		time_diff = self.ctime - self.fuzzer.start_time
+		row.append(os.path.basename(self.file)[:10]+"...")
+		row.append(self.hash[:40]+"...")
+		row.append(self.classification)
+		row.append(self.descr)
+		row.append(time_diff)		
+		return row
+
+class Fuzzer:
+	def __init__(self, arg0):
+		self.id = arg0
+		self.crash_dir = None
+		self.crashes = None
+		self.cmd = None
+		self.start_time = None
+
+	def tabulate(self):
+		print "fuzzer: "+self.id+" @ "+str(self.start_time)
+		table = []
+		for crash in self.crashes:
+			table.append( [crash.file, crash.ctime] )
+
+		print tabulate(table, headers=["crashing file","time"])
+		print ""
+
+	def crash_info(self):
+		table = []
+		for crash in self.crashes:
+			table.append(crash.info())
+		return tabulate(table, headers=["file", "hash", "class","descr", "dtime"])
+
+# load crash collection:
+fuzzer_coll = open(r'crash_collection.pkl', 'rb')
+pickle.pickle.load(coll_file)
+coll_file.close()
+
+print fuzzer_coll
+
+
