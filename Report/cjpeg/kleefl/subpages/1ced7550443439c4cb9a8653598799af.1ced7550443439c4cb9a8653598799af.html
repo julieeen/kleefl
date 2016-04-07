@@ -1,0 +1,161 @@
+<html><head>
+<style>
+table { width:100%; text-align: center;}
+table, th, td { border: 1px solid black; border-collapse: collapse;}
+th, td { padding: 5px; text-align: center;}
+table#t01 tr:nth-child(even) { background-color: #eee;}
+table#t01 tr:nth-child(odd) { background-color:#fff;}
+table#t01 th { background-color: white; color: black; }
+</style>
+</head><body><h3>Report for 1ced7550443439c4cb9a8653598799af.1ced7550443439c4cb9a8653598799af</h3><table border="0" id="t01" style="width:80%;"><th>Description</th><th>Data</th><tr><td> CMD </td><td style="text-align:left">app -dc i @@</br>app -v @@</br>app -B @@</br>app -dc fa @@</br>app -d @@</br>app -D -v @@</br>app -gr @@</br>app -optimis @@</br>app -gre @@</br>app -p @@</br></td></tr><tr><td> Found after </td><td style="text-align:left">0:08:54.054624</td></td></tr><tr><td> Description </td><td style="text-align:left">Possible stack corruption</td></td></tr><tr><td> Signal </td><td style="text-align:left">Program terminated with signal SIGSEGV, Segmentation fault.</td></td></tr><tr><td> Classification </td><td style="text-align:left">EXPLOITABLE</td></td></tr><tr><td> Occurence </td><td style="text-align:left">2016-04-07 17:39:49.054624</td></td></tr><tr><td> Files </td><td style="text-align:left">fuzz/out/fuzzer71/crashes/id:000009,sig:11,src:000052+000249,op:splice,rep:8</br><textarea rows="9" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 310a 3150 3623 0a31 3838 3138 3831  P21.1P6#.1881881
+0000010: 3623 0a31 5002 0000 0000 0031 3a0a 3150  6#.1P......1:.1P
+0000020: 3601 4017 0023 0a31 5036 230a 0080 3158  6.@..#.1P6#...1X
+0000030: 0a0a 3138 3831 3179 fa00 00fa 5036 230a  ..18811y....P6#.
+0000040: e336 0200 3150 3623 3150 0f00 0200 003a  .6..1P6#1P.....:
+0000050: 1700 230a 0000 3623 09ff ebc1 3601 0017  ..#...6#....6...
+0000060: 0023 0080 5038 230a 3138 3831 e3e3 e3e3  .#..P8#.1881....
+0000070: e3e3 e3e3 e3e3 e3e3 e3e3 e3e3 e3e3 e3e3  ................
+0000080: e3e3 e33a 1e31 6136 230a 230a 313a       ...:.1a6#.#.1:
+</textarea></br>fuzz/out/fuzzer71/crashes/id:000012,sig:11,src:000072+000260,op:splice,rep:2</br><textarea rows="3" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3100 3231 0031 0032 3131 3132 3100  P21.21.1.211121.
+0000010: 3231 0031 0a32 3115 313a 3131 3a31 313a  21.1.21.1:11:11:
+0000020: 3131 3a31 3a31 313a 31                   11:1:11:1
+</textarea></br>fuzz/out/fuzzer8/crashes/id:000004,sig:11,src:000047+000106,op:splice,rep:2</br><textarea rows="3" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3100 3131 0032 3535 3500 3235 3535  P21.11.2555.2555
+0000010: 3535 0000 3231 0031 3100 3235 3535 0035  55..21.11.2555.5
+0000020: 35                                       5
+</textarea></br>fuzz/out/fuzzer8/crashes/id:000003,sig:11,src:000047+000106,op:splice,rep:2</br><textarea rows="2" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3100 2031 0032 3535 3500 3235 3532  P21. 1.2555.2552
+0000010: 3535 3531 0031 00                        5551.1.
+</textarea></br>fuzz/out/fuzzer9/crashes/id:000004,sig:11,src:000049+000197,op:splice,rep:4</br><textarea rows="4" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 320f 3150 3623 0a31 3232 3232 3232  P22.1P6#.1222222
+0000010: 3232 3232 3232 3232 3232 3232 3232 3232  2222222222222222
+0000020: 320f 3150 3623 0a31 3232 3232 3232 3232  2.1P6#.122222222
+0000030: 3232 320f 3131 3a                        222.11:
+</textarea></br>fuzz/out/fuzzer9/crashes/id:000003,sig:11,src:000049+000197,op:splice,rep:4</br><textarea rows="3" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3232 1932 32f4 3232 4723 3623 0f31  P222.22.22G#6#.1
+0000010: 5036 230a 3138 3138 3831 3a0a 3150 3623  P6#.181881:.1P6#
+0000020: 0a31 383e                                .18>
+</textarea></br>fuzz/out/fuzzer102/crashes/id:000008,sig:11,src:000104+000142,op:splice,rep:2</br><textarea rows="2" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3100 3231 f430 3335 0e33 3530 8035  P21.21.035.350.5
+0000010: a333 3530 3330 333e 3033 3a1d            .350303>03:.
+</textarea></br>fuzz/out/fuzzer102/crashes/id:000009,sig:11,src:000104+000201,op:splice,rep:8</br><textarea rows="6" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3140 3231 f431 361d 3835 3a0a 3638  P21@21.16.85:.68
+0000010: 3835 3a0a 3138 230a 3150 360a 3138 3831  85:.18#.1P6.1881
+0000020: 3a0a 311c 3831 3a0a 3150 3623 0a31 3838  :.1.81:.1P6#.188
+0000030: 3831 3823 0a31 2320 0031 5036 230a 3138  818#.1# .1P6#.18
+0000040: 3831 3a0a 311c 3831 3a0a 3150 3623 0a31  81:.1.81:.1P6#.1
+0000050: 3838 313a                                881:
+</textarea></br>fuzz/out/fuzzer102/crashes/id:000007,sig:11,src:000103+000210,op:splice,rep:8</br><textarea rows="5" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3500 3134 5032 0032 3115 313a 3131  P25.14P2.21.1:11
+0000010: 8031 3132 3100 3231 0031 2232 3115 313a  .1121.21.1"21.1:
+0000020: 3139 3132 3131 2131 2232 3515 313a 3139  191211!1"25.1:19
+0000030: 3132 3100 3231 0031 0032 3115 313a 3131  121.21.1.21.1:11
+0000040: 3a31 313a 3131 4031 3a31 313a 31         :11:11@1:11:1
+</textarea></br>fuzz/out/fuzzer102/crashes/id:000010,sig:11,src:000105+000142,op:splice,rep:4</br><textarea rows="2" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3133 4a30 332a 3335 0e33 3530 8035  P213J03*35.350.5
+0000010: 307f 3530 3330 3335 3010 2a1d            0.5030350.*.
+</textarea></br>fuzz/out/fuzzer102/crashes/id:000006,sig:11,src:000103+000291,op:splice,rep:2</br><textarea rows="5" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3523 0a31 3950 3623 0a31 3831 3838  P25#.19P6#.18188
+0000010: 31e6 230a 3150 3831 3623 0a31 230a 3150  1.#.1P816#.1#.1P
+0000020: 3623 0a31 3838 3150 3623 0a31 3838 31e6  6#.1881P6#.1881.
+0000030: 230a 3150 3616 0a7f 3838 313a 0231 5036  #.1P6...881:.1P6
+0000040: 230a 230a 0100 0000 3a                   #.#.....:
+</textarea></br>fuzz/out/fuzzer36/crashes/id:000005,sig:11,src:000047+000191,op:splice,rep:4</br><textarea rows="6" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3100 3235 0031 3150 3531 0034 3535  P21.25.11P51.455
+0000010: 3500 3143 3500 3131 5035 b739 3939 3939  5.1C5.11P5.99999
+0000020: 39b7 b7b7 b7b7 b7b7 b7b7 b7b7 b7b7 b7b7  9...............
+0000030: b7b7 b7b7 b7b7 b7b7 b7b7 b7b7 b0b7 3101  ..............1.
+0000040: b235 5135 001a 3235 0032 3535 3535 3500  .5Q5..25.255555.
+0000050: 311a 320a 0000 7f35                      1.2....5
+</textarea></br>fuzz/out/fuzzer36/crashes/id:000007,sig:11,src:000047+000371,op:splice,rep:2</br><textarea rows="3" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3232 323c 23d7 230f 3e23 0a31 3838  P2222<#.#.>#.188
+0000010: 313a 0a31 5036 230a 3138 3538 3531 3538  1:.1P6#.18585158
+0000020: 3531 3a                                  51:
+</textarea></br>fuzz/out/fuzzer36/crashes/id:000004,sig:11,src:000047+000191,op:splice,rep:8</br><textarea rows="5" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3100 3235 0031 3150 3531 8034 3535  P21.25.11P51.455
+0000010: 3531 3150 35b7 b7b7 b7b7 b7b7 b7b7 b7b7  511P5...........
+0000020: b7b7 b7b7 b794 b7b5 b7b7 b7b7 b7b7 b7b7  ................
+0000030: c9b7 b731 01b2 3551 3500 0002 6400 3235  ...1..5Q5...d.25
+0000040: 0031 1a32 0000 007f 35                   .1.2....5
+</textarea></br>fuzz/out/fuzzer36/crashes/id:000006,sig:11,src:000047+000117,op:splice,rep:4</br><textarea rows="2" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3231 0031 311f 3100 3500 3131 1f31  P221.11.1.5.11.1
+0000010: 0032 3232 3535 3235 3510 3235 35         .22255255.255
+</textarea></br>fuzz/out/fuzzer133/crashes/id:000004,sig:11,src:000047+000287,op:splice,rep:16</br><textarea rows="10" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3123 2a31 0035 4723 0a33 3531 5031  P21#*1.5G#.351P1
+0000010: 3450 3531 2331 3123 0923 3826 2809 3338  4P51#11#.#8&(.38
+0000020: 313d 2933 3826 2209 3335 3150 3531 230c  1=)38&".351P51#.
+0000030: 380d 3338 0d22 0933 3831 0000 0100 2306  8.38.".381....#.
+0000040: 3338 4023 0923 3826 2209 3338 3123 2933  38@#.#8&".381#)3
+0000050: 7f31 2622 0d33 3831 3d29 3338 2622 0933  .1&".381=)38&".3
+0000060: 3531 5035 3123 0a33 380d 3826 3131 3131  51P51#.38.8&1111
+0000070: 3131 3109 3338 0422 0933 2604 0033 3831  111.38.".3&..381
+0000080: 3a50 3531 2364 1354 3123 0933 3826 2209  :P51#d.T1#.38&".
+0000090: 7338 313a 3b40 0929 3aff 3a              s81:;@.):.:
+</textarea></br>fuzz/out/fuzzer133/crashes/id:000007,sig:11,src:000047+000120,op:splice,rep:2</br><textarea rows="2" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3600 3100 3735 3100 31ca 3235 3132  P26.1.751.1.2512
+0000010: 3535                                     55
+</textarea></br>fuzz/out/fuzzer133/crashes/id:000003,sig:11,src:000047+000287,op:splice,rep:16</br><textarea rows="14" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3123 2a31 0035 4723 0a33 3531 5031  P21#*1.5G#.351P1
+0000010: 3050 3531 2306 0038 4035 ffff 8000 3031  0P51#..8@5....01
+0000020: 2309 3338 2622 7b7b 7b7b 7b7b 7b7b 7b7b  #.38&"{{{{{{{{{{
+0000030: 7b7b 7b22 0933 3801 2329 3338 2622 0933  {{{".38.#)38&".3
+0000040: 3531 5035 3123 0a33 3131 3131 3131 3131  51P51#.311111111
+0000050: 2309 3338 2622 0933 7f31 2331 314b 3131  #.38&".3.1#11K11
+0000060: 3131 3131 05ff ff05 3131 3131 3131 3138  1111....11111118
+0000070: 0d22 0933 3831 3a50 3531 2306 3338 4023  .".381:P51#.38@#
+0000080: 0923 3826 22b3 3338 3123 2933 7f31 2321  .#8&".381#)3.1#!
+0000090: 3338 2622 0933 2604 0033 3338 2622 0933  38&".3&..338&".3
+00000a0: 3123 0080 3831 3a50 35ff ff80 0838 3123  1#..81:P5....81#
+00000b0: 0933 3826 2209 337f 3123 3131 3131 3131  .38&".3.1#111111
+00000c0: 3131 3105 ffff 0531 3131 3131 3131 0909  111....1111111..
+00000d0: 4009 0080 ff1e                           @.....
+</textarea></br>fuzz/out/fuzzer133/crashes/id:000005,sig:11,src:000047+000120,op:splice,rep:2</br><textarea rows="2" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3100 3500 3735 3100 31ca 3235 3532  P21.5.751.1.2552
+0000010: 3735                                     75
+</textarea></br>fuzz/out/fuzzer77/crashes/id:000003,sig:11,src:000047+000134,op:splice,rep:2</br><textarea rows="2" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3100 3131 1f31 0035 3100 3131 1f31  P21.11.1.51.11.1
+0000010: 0032 3535 3235 3510 3e35 31              .255255.>51
+</textarea></br>fuzz/out/fuzzer77/crashes/id:000005,sig:11,src:000047+000188,op:splice,rep:4</br><textarea rows="4" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3100 230a 3150 3623 0a31 3838 3131  P21.#.1P6#.18811
+0000010: 380a 313a 3623 3623 0a31 5036 230a 3138  8.1:6#6#.1P6#.18
+0000020: 3831 3a0a 3110 3623 0a31 380a 3110 1323  81:.1.6#.18.1..#
+0000030: 0a31 3838 313a                           .1881:
+</textarea></br>fuzz/out/fuzzer77/crashes/id:000004,sig:11,src:000047+000134,op:splice,rep:4</br><textarea rows="3" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3131 0031 331f 3100 3531 0031 311f  P211.13.1.51.11.
+0000010: 311d 3235 3532 3535 0031 3329 3100 3531  1.255255.13)1.51
+0000020: 0031 311f 311d 3235 3532 3535 1032 3535  .11.1.255255.255
+</textarea></br>fuzz/out/fuzzer123/crashes/id:000004,sig:11,src:000047+000197,op:splice,rep:8</br><textarea rows="3" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3232 1032 3232 3210 3232 3244 3032  P222.2222.222D02
+0000010: 3536 3232 354f 5035 3123 0a18 3831 0000  56225OP51#..81..
+0000020: 0000 315d                                ..1]
+</textarea></br>fuzz/out/fuzzer123/crashes/id:000005,sig:11,src:000047+000121,op:splice,rep:2</br><textarea rows="2" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3100 3531 1f31 0035 3100 3131 1f31  P21.51.1.51.11.1
+0000010: 0032 3535 3235 35fe 3235 35              .255255.255
+</textarea></br>fuzz/out/fuzzer138/crashes/id:000003,sig:11,src:000023+000189,op:splice,rep:8</br><textarea rows="4" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3232 3232 3623 0a31 2232 3232 3d32  P222226#.1"222=2
+0000010: 3232 3232 3232 3232 3232 3623 0a31 2232  22222222226#.1"2
+0000020: 323d 3222 3232 3232 3232 3232 3236 230a  2=2"2222222226#.
+0000030: 3132 3e31 3a                             12>1:
+</textarea></br>fuzz/out/fuzzer138/crashes/id:000006,sig:11,src:000047+000178,op:splice,rep:2</br><textarea rows="1" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3100 3531 0033 0f36 3333 3333 3335  P21.51.3.6333335
+</textarea></br>fuzz/out/fuzzer138/crashes/id:000005,sig:11,src:000047+000240,op:splice,rep:4</br><textarea rows="4" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3138 1f31 2336 230a 3150 3623 0a31  P218.1#6#.1P6#.1
+0000010: 3231 3838 3831 3a0a 3131 2336 230a 3150  218881:.11#6#.1P
+0000020: 3623 0a31 3231 3838 3831 3a0a 5015 230a  6#.1218881:.P.#.
+0000030: 3438 3831 3a                             4881:
+</textarea></br>fuzz/out/fuzzer138/crashes/id:000004,sig:11,src:000047+000240,op:splice,rep:8</br><textarea rows="4" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3138 3831 2336 3831 2336 030a 3350  P21881#681#6..3P
+0000010: 3621 0a31 3838 3438 3831 0332 3138 3831  6!.1884881.21881
+0000020: 2336 030a 3350 3621 0a31 3838 3438 3831  #6..3P6!.1884881
+0000030: 2b                                       +
+</textarea></br>fuzz/out/fuzzer138/crashes/id:000007,sig:11,src:000047+000178,op:splice,rep:2</br><textarea rows="2" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3100 3531 0033 3250 3333 3350 3231  P21.51.32P333P21
+0000010: 0035 3100 3332 3333 3333 3333 3533 3335  .51.323333335335
+</textarea></br>fuzz/out/fuzzer42/crashes/id:000005,sig:11,src:000047+000249,op:splice,rep:2</br><textarea rows="7" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3100 3131 0032 3539 35e1 3031 5031  P21.11.2595.01P1
+0000010: 0031 3100 3235 3935 3531 f55f 6060 7c60  .11.259551._``|`
+0000020: 6060 6056 6060 6060 6060 6060 6060 6060  ```V````````````
+0000030: 6035 3100 3235 3535 1631 3150 3531 0060  `51.2555.11P51.`
+0000040: 6060 601a 3200 3235 2835 0031 3150 3531  ```.2.25(5.11P51
+0000050: 0100 1935 1b00 3235 3535 f131 3150 3535  ...5..2555.11P55
+0000060: 0031 1a32 3500 3235 35                   .1.25.255
+</textarea></br>fuzz/out/fuzzer42/crashes/id:000003,sig:11,src:000047+000156,op:splice,rep:4</br><textarea rows="3" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3432 3400 3100 3534 0031 0034 0031  P2424.1.54.1.4.1
+0000010: 0035 3100 3532 3235 3234 0031 0035 3400  .51.522524.1.54.
+0000020: 3100 3532 3235 35                        1.52255
+</textarea></br>fuzz/out/fuzzer42/crashes/id:000004,sig:11,src:000047+000286,op:splice,rep:4</br><textarea rows="6" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3100 230a 3150 3623 0a31 3831 3838  P21.#.1P6#.18188
+0000010: 313a 3123 3623 0a31 5036 230a 3138 3831  1:1#6#.1P6#.1881
+0000020: 3a0a 3110 3623 0a31 3c0a 1000 3638 313a  :.1.6#.1<...681:
+0000030: 3623 3623 0a31 5036 230a 3138 3831 3a0a  6#6#.1P6#.1881:.
+0000040: 3110 3623 0a31 3c0a 1000 3623 0a31 3838  1.6#.1<...6#.188
+0000050: 313a                                     1:
+</textarea></br>fuzz/out/fuzzer42/crashes/id:000006,sig:11,src:000047+000291,op:splice,rep:4</br><textarea rows="18" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5032 3123 22ea 310a 31ea 310a 3138 3831  P21#".1.1.1.1881
+0000010: 3638 3831 3679 0a31 5002 5027 0a00 0000  68816y.1P.P'....
+0000020: 0a00 0001 3a31 3623 0a31 38ff ffff ff23  ....:16#.18....#
+0000030: 3a50 0200 0a00 001e 3138 36a3 3138 3831  :P......186.1881
+0000040: 3679 0a38 380a 230a 3831 3623 0a31 5002  6y.88.#.816#.1P.
+0000050: 0000 3150 0250 3623 0a31 2138 313a 0a31  ..1P.P6#.1!81:.1
+0000060: 0000 31ba 0a31 5040 0004 0000 270a 3150  ..1..1P@....'.1P
+0000070: 3637 0a31 5036 013a 313a 1e31 6140 1000  67.1P6.:1:.1a@..
+0000080: 3838 0017 0027 0a31 504a 0a00 000a 0000  88...'.1PJ......
+0000090: 313a 0f31 500a 3150 3601 3ab1 3a1e 3161  1:.1P.1P6.:.:.1a
+00000a0: 36a3 3138 3800 1700 0008 0050 360a 0000  6.188......P6...
+00000b0: 013a 313a 1e31 6136 a331 382a 0017 0038  .:1:.1a6.18*...8
+00000c0: 313a 1e31 6136 a331 3838 3136 790a 3838  1:.1a6.18816y.88
+00000d0: 0a23 0a3a 3a3a 3a3a 3a3a 3a3a 3a3a 3a32  .#.::::::::::::2
+00000e0: 3a3a 3a41 3a3a 313a 5002 000a 0000 1e31  :::A::1:P......1
+00000f0: 8d8d 8d8d 8d8d 8d8d 8d8d 8d8d 8d8d 8d8d  ................
+0000100: 8d8d 8d8d 8d8d 8d8d 3838 3136 230a 0a23  ........8816#..#
+0000110: 0a31 3a                                  .1:
+</textarea></br></td></tr><tr><td> GDB exploitable: </td><td style="text-align:left">Core was generated by `./fuzz/app -dc i fuzz/out/fuzzer71/crashes/id:000009,sig:11,src:000052+000249,o'.</br>Program terminated with signal SIGSEGV, Segmentation fault.</br>#0  0x0000000000405105 in get_text_gray_row (cinfo=0x7ffcc0cbae68, sinfo=<optimized out>) at ../rdppm.c:152</br>152	    *ptr++ = rescale[read_pbm_integer(cinfo, infile)];</br>(gdb) Description: Possible stack corruption</br>Short description: PossibleStackCorruption (7/22)</br>Hash: 1ced7550443439c4cb9a8653598799af.1ced7550443439c4cb9a8653598799af</br>Exploitability Classification: EXPLOITABLE</br>Explanation: GDB generated an error while unwinding the stack and/or the stack contained return addresses that were not mapped in the inferior's process address space and/or the stack pointer is pointing to a location outside the default stack region. These conditions likely indicate stack corruption, which is generally considered exploitable.</br>Other tags: SourceAv (19/22), AccessViolation (21/22)</br>(gdb)</br></td></tr></table></body></html>

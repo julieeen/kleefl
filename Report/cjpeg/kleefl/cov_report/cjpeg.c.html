@@ -22,7 +22,7 @@
   </tr>
   <tr>
     <td bgcolor=#ACACFF> <b>Generated:</b> </td>
-    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;12:37 </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;19:56 </td>
     <td width="30"></td>
     <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
     <td bgcolor=#F0F0FF align=right> <b>68.2%<b> </td>
@@ -47,7 +47,7 @@
     <td bgcolor=#F0F0FF> 1 </td>
     <td width="30"></td>
     <td bgcolor=#ACACFF> <b>Runs</b> </td>
-    <td bgcolor=#F0F0FF align=right> 13685 </td>
+    <td bgcolor=#F0F0FF align=right> 6378 </td>
   </tr>
 </table>
 </center>
@@ -134,46 +134,46 @@
 <span class="lineNum">      77 </span>                : 
 <span class="lineNum">      78 </span>                : 
 <span class="lineNum">      79 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(cjpeg_source_ptr)
-<span class="lineNum">      80 </span><span class="lineCov">           13685: <B><FONT COLOR="#0000FF">select_file_type</FONT></B> (j_compress_ptr cinfo, FILE * infile)</span>
+<span class="lineNum">      80 </span><span class="lineCov">            6378: <B><FONT COLOR="#0000FF">select_file_type</FONT></B> (j_compress_ptr cinfo, FILE * infile)</span>
 <span class="lineNum">      81 </span>                : {
 <span class="lineNum">      82 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> c;
 <span class="lineNum">      83 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             318: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           13367: branch 1 taken</span>
-</span><span class="lineNum">      84 </span><span class="lineCov">           13685:   <B><FONT COLOR="#A020F0">if</FONT></B> (is_targa) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             217: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            6161: branch 1 taken</span>
+</span><span class="lineNum">      84 </span><span class="lineCov">            6378:   <B><FONT COLOR="#A020F0">if</FONT></B> (is_targa) {</span>
 <span class="lineNum">      85 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">TARGA_SUPPORTED</FONT>
-<span class="lineNum">      86 </span><span class="lineCov">             318:     <B><FONT COLOR="#A020F0">return</FONT></B> jinit_read_targa(cinfo);</span>
+<span class="lineNum">      86 </span><span class="lineCov">             217:     <B><FONT COLOR="#A020F0">return</FONT></B> jinit_read_targa(cinfo);</span>
 <span class="lineNum">      87 </span>                : #<B><FONT COLOR="#5F9EA0">else</FONT></B>
 <span class="lineNum">      88 </span>                :     ERREXIT(cinfo, JERR_TGA_NOTCOMP);
 <span class="lineNum">      89 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
 <span class="lineNum">      90 </span>                :   }
 <span class="lineNum">      91 </span>                : 
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           13367: branch 2 taken</span>
-</span><span class="lineNum">      92 </span><span class="lineCov">           13367:   <B><FONT COLOR="#A020F0">if</FONT></B> ((c = getc(infile)) == EOF)</span>
+<span class="lineNum">         </span><span class="branchTaken">            6161: branch 2 taken</span>
+</span><span class="lineNum">      92 </span><span class="lineCov">            6161:   <B><FONT COLOR="#A020F0">if</FONT></B> ((c = getc(infile)) == EOF)</span>
 <span class="lineNum">      93 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_INPUT_EMPTY);</span>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           13367: branch 2 taken</span>
-</span><span class="lineNum">      94 </span><span class="lineCov">           13367:   <B><FONT COLOR="#A020F0">if</FONT></B> (ungetc(c, infile) == EOF)</span>
+<span class="lineNum">         </span><span class="branchTaken">            6161: branch 2 taken</span>
+</span><span class="lineNum">      94 </span><span class="lineCov">            6161:   <B><FONT COLOR="#A020F0">if</FONT></B> (ungetc(c, infile) == EOF)</span>
 <span class="lineNum">      95 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_UNGETC_FAILED);</span>
 <span class="lineNum">      96 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             189: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">              43: branch 1 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            8437: branch 2 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            4612: branch 3 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">              86: branch 4 taken</span>
-</span><span class="lineNum">      97 </span><span class="lineCov">           13367:   <B><FONT COLOR="#A020F0">switch</FONT></B> (c) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">              75: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">              15: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3936: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2105: branch 3 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">              30: branch 4 taken</span>
+</span><span class="lineNum">      97 </span><span class="lineCov">            6161:   <B><FONT COLOR="#A020F0">switch</FONT></B> (c) {</span>
 <span class="lineNum">      98 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">BMP_SUPPORTED</FONT>
 <span class="lineNum">      99 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#BC8F8F">'B'</FONT></B>:
-<span class="lineNum">     100 </span><span class="lineCov">             189:     <B><FONT COLOR="#A020F0">return</FONT></B> jinit_read_bmp(cinfo);</span>
+<span class="lineNum">     100 </span><span class="lineCov">              75:     <B><FONT COLOR="#A020F0">return</FONT></B> jinit_read_bmp(cinfo);</span>
 <span class="lineNum">     101 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
 <span class="lineNum">     102 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">GIF_SUPPORTED</FONT>
 <span class="lineNum">     103 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#BC8F8F">'G'</FONT></B>:
-<span class="lineNum">     104 </span><span class="lineCov">              43:     <B><FONT COLOR="#A020F0">return</FONT></B> jinit_read_gif(cinfo);</span>
+<span class="lineNum">     104 </span><span class="lineCov">              15:     <B><FONT COLOR="#A020F0">return</FONT></B> jinit_read_gif(cinfo);</span>
 <span class="lineNum">     105 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
 <span class="lineNum">     106 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">PPM_SUPPORTED</FONT>
 <span class="lineNum">     107 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#BC8F8F">'P'</FONT></B>:
-<span class="lineNum">     108 </span><span class="lineCov">            8437:     <B><FONT COLOR="#A020F0">return</FONT></B> jinit_read_ppm(cinfo);</span>
+<span class="lineNum">     108 </span><span class="lineCov">            3936:     <B><FONT COLOR="#A020F0">return</FONT></B> jinit_read_ppm(cinfo);</span>
 <span class="lineNum">     109 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
 <span class="lineNum">     110 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">RLE_SUPPORTED</FONT>
 <span class="lineNum">     111 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#BC8F8F">'R'</FONT></B>:
@@ -181,10 +181,10 @@
 <span class="lineNum">     113 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
 <span class="lineNum">     114 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">TARGA_SUPPORTED</FONT>
 <span class="lineNum">     115 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">0x00</FONT></B>:
-<span class="lineNum">     116 </span><span class="lineCov">            4612:     <B><FONT COLOR="#A020F0">return</FONT></B> jinit_read_targa(cinfo);</span>
+<span class="lineNum">     116 </span><span class="lineCov">            2105:     <B><FONT COLOR="#A020F0">return</FONT></B> jinit_read_targa(cinfo);</span>
 <span class="lineNum">     117 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
 <span class="lineNum">     118 </span>                :   <B><FONT COLOR="#5F9EA0">default</FONT></B>:
-<span class="lineNum">     119 </span><span class="lineCov">              86:     ERREXIT(cinfo, JERR_UNKNOWN_FORMAT);</span>
+<span class="lineNum">     119 </span><span class="lineCov">              30:     ERREXIT(cinfo, JERR_UNKNOWN_FORMAT);</span>
 <span class="lineNum">     120 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
 <span class="lineNum">     121 </span>                :   }
 <span class="lineNum">     122 </span>                : 
@@ -206,65 +206,65 @@
 <span class="lineNum">     138 </span>                : 
 <span class="lineNum">     139 </span>                : 
 <span class="lineNum">     140 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     141 </span><span class="lineCov">              96: <B><FONT COLOR="#0000FF">usage</FONT></B> (<B><FONT COLOR="#228B22">void</FONT></B>)</span>
+<span class="lineNum">     141 </span><span class="lineCov">              30: <B><FONT COLOR="#0000FF">usage</FONT></B> (<B><FONT COLOR="#228B22">void</FONT></B>)</span>
 <span class="lineNum">     142 </span>                : <I><FONT COLOR="#B22222">/* complain about bad command line */</FONT></I>
 <span class="lineNum">     143 </span>                : {
-<span class="lineNum">     144 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;usage: %s [switches] &quot;</FONT></B>, progname);</span>
+<span class="lineNum">     144 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;usage: %s [switches] &quot;</FONT></B>, progname);</span>
 <span class="lineNum">     145 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">TWO_FILE_COMMANDLINE</FONT>
 <span class="lineNum">     146 </span>                :   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;inputfile outputfile\n&quot;</FONT></B>);
 <span class="lineNum">     147 </span>                : #<B><FONT COLOR="#5F9EA0">else</FONT></B>
-<span class="lineNum">     148 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;[inputfile]\n&quot;</FONT></B>);</span>
+<span class="lineNum">     148 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;[inputfile]\n&quot;</FONT></B>);</span>
 <span class="lineNum">     149 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
 <span class="lineNum">     150 </span>                : 
-<span class="lineNum">     151 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;Switches (names may be abbreviated):\n&quot;</FONT></B>);</span>
-<span class="lineNum">     152 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -quality N     Compression quality (0..100; 5-95 is useful range)\n&quot;</FONT></B>);</span>
-<span class="lineNum">     153 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -grayscale     Create monochrome JPEG file\n&quot;</FONT></B>);</span>
+<span class="lineNum">     151 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;Switches (names may be abbreviated):\n&quot;</FONT></B>);</span>
+<span class="lineNum">     152 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -quality N     Compression quality (0..100; 5-95 is useful range)\n&quot;</FONT></B>);</span>
+<span class="lineNum">     153 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -grayscale     Create monochrome JPEG file\n&quot;</FONT></B>);</span>
 <span class="lineNum">     154 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">ENTROPY_OPT_SUPPORTED</FONT>
-<span class="lineNum">     155 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -optimize      Optimize Huffman table (smaller file, but slow compression)\n&quot;</FONT></B>);</span>
+<span class="lineNum">     155 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -optimize      Optimize Huffman table (smaller file, but slow compression)\n&quot;</FONT></B>);</span>
 <span class="lineNum">     156 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
 <span class="lineNum">     157 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">C_PROGRESSIVE_SUPPORTED</FONT>
-<span class="lineNum">     158 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -progressive   Create progressive JPEG file\n&quot;</FONT></B>);</span>
+<span class="lineNum">     158 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -progressive   Create progressive JPEG file\n&quot;</FONT></B>);</span>
 <span class="lineNum">     159 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
 <span class="lineNum">     160 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">TARGA_SUPPORTED</FONT>
-<span class="lineNum">     161 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -targa         Input file is Targa format (usually not needed)\n&quot;</FONT></B>);</span>
+<span class="lineNum">     161 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -targa         Input file is Targa format (usually not needed)\n&quot;</FONT></B>);</span>
 <span class="lineNum">     162 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
-<span class="lineNum">     163 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;Switches for advanced users:\n&quot;</FONT></B>);</span>
+<span class="lineNum">     163 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;Switches for advanced users:\n&quot;</FONT></B>);</span>
 <span class="lineNum">     164 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">DCT_ISLOW_SUPPORTED</FONT>
-<span class="lineNum">     165 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -dct int       Use integer DCT method%s\n&quot;</FONT></B>,</span>
+<span class="lineNum">     165 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -dct int       Use integer DCT method%s\n&quot;</FONT></B>,</span>
 <span class="lineNum">     166 </span>                : 	  (JDCT_DEFAULT == JDCT_ISLOW ? <B><FONT COLOR="#BC8F8F">&quot; (default)&quot;</FONT></B> : <B><FONT COLOR="#BC8F8F">&quot;&quot;</FONT></B>));
 <span class="lineNum">     167 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
 <span class="lineNum">     168 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">DCT_IFAST_SUPPORTED</FONT>
-<span class="lineNum">     169 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -dct fast      Use fast integer DCT (less accurate)%s\n&quot;</FONT></B>,</span>
+<span class="lineNum">     169 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -dct fast      Use fast integer DCT (less accurate)%s\n&quot;</FONT></B>,</span>
 <span class="lineNum">     170 </span>                : 	  (JDCT_DEFAULT == JDCT_IFAST ? <B><FONT COLOR="#BC8F8F">&quot; (default)&quot;</FONT></B> : <B><FONT COLOR="#BC8F8F">&quot;&quot;</FONT></B>));
 <span class="lineNum">     171 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
 <span class="lineNum">     172 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">DCT_FLOAT_SUPPORTED</FONT>
-<span class="lineNum">     173 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -dct float     Use floating-point DCT method%s\n&quot;</FONT></B>,</span>
+<span class="lineNum">     173 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -dct float     Use floating-point DCT method%s\n&quot;</FONT></B>,</span>
 <span class="lineNum">     174 </span>                : 	  (JDCT_DEFAULT == JDCT_FLOAT ? <B><FONT COLOR="#BC8F8F">&quot; (default)&quot;</FONT></B> : <B><FONT COLOR="#BC8F8F">&quot;&quot;</FONT></B>));
 <span class="lineNum">     175 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
-<span class="lineNum">     176 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -restart N     Set restart interval in rows, or in blocks with B\n&quot;</FONT></B>);</span>
+<span class="lineNum">     176 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -restart N     Set restart interval in rows, or in blocks with B\n&quot;</FONT></B>);</span>
 <span class="lineNum">     177 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">INPUT_SMOOTHING_SUPPORTED</FONT>
-<span class="lineNum">     178 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -smooth N      Smooth dithered input (N=1..100 is strength)\n&quot;</FONT></B>);</span>
+<span class="lineNum">     178 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -smooth N      Smooth dithered input (N=1..100 is strength)\n&quot;</FONT></B>);</span>
 <span class="lineNum">     179 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
-<span class="lineNum">     180 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -maxmemory N   Maximum memory to use (in kbytes)\n&quot;</FONT></B>);</span>
-<span class="lineNum">     181 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -outfile name  Specify name for output file\n&quot;</FONT></B>);</span>
-<span class="lineNum">     182 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -verbose  or  -debug   Emit debug output\n&quot;</FONT></B>);</span>
-<span class="lineNum">     183 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;Switches for wizards:\n&quot;</FONT></B>);</span>
+<span class="lineNum">     180 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -maxmemory N   Maximum memory to use (in kbytes)\n&quot;</FONT></B>);</span>
+<span class="lineNum">     181 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -outfile name  Specify name for output file\n&quot;</FONT></B>);</span>
+<span class="lineNum">     182 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -verbose  or  -debug   Emit debug output\n&quot;</FONT></B>);</span>
+<span class="lineNum">     183 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;Switches for wizards:\n&quot;</FONT></B>);</span>
 <span class="lineNum">     184 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">C_ARITH_CODING_SUPPORTED</FONT>
 <span class="lineNum">     185 </span>                :   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -arithmetic    Use arithmetic coding\n&quot;</FONT></B>);
 <span class="lineNum">     186 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
-<span class="lineNum">     187 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -baseline      Force baseline quantization tables\n&quot;</FONT></B>);</span>
-<span class="lineNum">     188 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -qtables file  Use quantization tables given in file\n&quot;</FONT></B>);</span>
-<span class="lineNum">     189 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -qslots N[,...]    Set component quantization tables\n&quot;</FONT></B>);</span>
-<span class="lineNum">     190 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -sample HxV[,...]  Set component sampling factors\n&quot;</FONT></B>);</span>
+<span class="lineNum">     187 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -baseline      Force baseline quantization tables\n&quot;</FONT></B>);</span>
+<span class="lineNum">     188 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -qtables file  Use quantization tables given in file\n&quot;</FONT></B>);</span>
+<span class="lineNum">     189 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -qslots N[,...]    Set component quantization tables\n&quot;</FONT></B>);</span>
+<span class="lineNum">     190 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -sample HxV[,...]  Set component sampling factors\n&quot;</FONT></B>);</span>
 <span class="lineNum">     191 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">C_MULTISCAN_FILES_SUPPORTED</FONT>
-<span class="lineNum">     192 </span><span class="lineCov">              96:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -scans file    Create multi-scan JPEG per script file\n&quot;</FONT></B>);</span>
+<span class="lineNum">     192 </span><span class="lineCov">              30:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  -scans file    Create multi-scan JPEG per script file\n&quot;</FONT></B>);</span>
 <span class="lineNum">     193 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
-<span class="lineNum">     194 </span><span class="lineCov">              96:   exit(EXIT_FAILURE);</span>
+<span class="lineNum">     194 </span><span class="lineCov">              30:   exit(EXIT_FAILURE);</span>
 <span class="lineNum">     195 </span>                : }
 <span class="lineNum">     196 </span>                : 
 <span class="lineNum">     197 </span>                : 
 <span class="lineNum">     198 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">int</FONT></B>)
-<span class="lineNum">     199 </span><span class="lineCov">           23081: <B><FONT COLOR="#0000FF">parse_switches</FONT></B> (j_compress_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> argc, <B><FONT COLOR="#228B22">char</FONT></B> **argv,</span>
+<span class="lineNum">     199 </span><span class="lineCov">           11067: <B><FONT COLOR="#0000FF">parse_switches</FONT></B> (j_compress_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> argc, <B><FONT COLOR="#228B22">char</FONT></B> **argv,</span>
 <span class="lineNum">     200 </span>                : 		<B><FONT COLOR="#228B22">int</FONT></B> last_file_arg_seen, boolean for_real)
 <span class="lineNum">     201 </span>                : <I><FONT COLOR="#B22222">/* Parse optional switches.
 <span class="lineNum">     202 </span>                :  * Returns argv[] index of first file-name argument (== argc if none).
@@ -281,46 +281,46 @@
 <span class="lineNum">     213 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> q_scale_factor;		<I><FONT COLOR="#B22222">/* scaling percentage for -qtables */</FONT></I>
 <span class="lineNum">     214 </span>                :   boolean force_baseline;
 <span class="lineNum">     215 </span>                :   boolean simple_progressive;
-<span class="lineNum">     216 </span><span class="lineCov">           23081:   <B><FONT COLOR="#228B22">char</FONT></B> * qtablefile = NULL;	<I><FONT COLOR="#B22222">/* saves -qtables filename if any */</FONT></I></span>
-<span class="lineNum">     217 </span><span class="lineCov">           23081:   <B><FONT COLOR="#228B22">char</FONT></B> * qslotsarg = NULL;	<I><FONT COLOR="#B22222">/* saves -qslots parm if any */</FONT></I></span>
-<span class="lineNum">     218 </span><span class="lineCov">           23081:   <B><FONT COLOR="#228B22">char</FONT></B> * samplearg = NULL;	<I><FONT COLOR="#B22222">/* saves -sample parm if any */</FONT></I></span>
-<span class="lineNum">     219 </span><span class="lineCov">           23081:   <B><FONT COLOR="#228B22">char</FONT></B> * scansarg = NULL;	<I><FONT COLOR="#B22222">/* saves -scans parm if any */</FONT></I></span>
+<span class="lineNum">     216 </span><span class="lineCov">           11067:   <B><FONT COLOR="#228B22">char</FONT></B> * qtablefile = NULL;	<I><FONT COLOR="#B22222">/* saves -qtables filename if any */</FONT></I></span>
+<span class="lineNum">     217 </span><span class="lineCov">           11067:   <B><FONT COLOR="#228B22">char</FONT></B> * qslotsarg = NULL;	<I><FONT COLOR="#B22222">/* saves -qslots parm if any */</FONT></I></span>
+<span class="lineNum">     218 </span><span class="lineCov">           11067:   <B><FONT COLOR="#228B22">char</FONT></B> * samplearg = NULL;	<I><FONT COLOR="#B22222">/* saves -sample parm if any */</FONT></I></span>
+<span class="lineNum">     219 </span><span class="lineCov">           11067:   <B><FONT COLOR="#228B22">char</FONT></B> * scansarg = NULL;	<I><FONT COLOR="#B22222">/* saves -scans parm if any */</FONT></I></span>
 <span class="lineNum">     220 </span>                : 
 <span class="lineNum">     221 </span>                :   <I><FONT COLOR="#B22222">/* Set up default JPEG parameters. */</FONT></I>
 <span class="lineNum">     222 </span>                :   <I><FONT COLOR="#B22222">/* Note that default -quality level need not, and does not,
 <span class="lineNum">     223 </span>                :    * match the default scaling for an explicit -qtables argument.
 <span class="lineNum">     224 </span>                :    */</FONT></I>
-<span class="lineNum">     225 </span><span class="lineCov">           23081:   quality = 75;			<I><FONT COLOR="#B22222">/* default -quality value */</FONT></I></span>
-<span class="lineNum">     226 </span><span class="lineCov">           23081:   q_scale_factor = 100;		<I><FONT COLOR="#B22222">/* default to no scaling for -qtables */</FONT></I></span>
-<span class="lineNum">     227 </span><span class="lineCov">           23081:   force_baseline = FALSE;	<I><FONT COLOR="#B22222">/* by default, allow 16-bit quantizers */</FONT></I></span>
-<span class="lineNum">     228 </span><span class="lineCov">           23081:   simple_progressive = FALSE;</span>
-<span class="lineNum">     229 </span><span class="lineCov">           23081:   is_targa = FALSE;</span>
-<span class="lineNum">     230 </span><span class="lineCov">           23081:   outfilename = NULL;</span>
-<span class="lineNum">     231 </span><span class="lineCov">           23081:   cinfo-&gt;err-&gt;trace_level = 0;</span>
+<span class="lineNum">     225 </span><span class="lineCov">           11067:   quality = 75;			<I><FONT COLOR="#B22222">/* default -quality value */</FONT></I></span>
+<span class="lineNum">     226 </span><span class="lineCov">           11067:   q_scale_factor = 100;		<I><FONT COLOR="#B22222">/* default to no scaling for -qtables */</FONT></I></span>
+<span class="lineNum">     227 </span><span class="lineCov">           11067:   force_baseline = FALSE;	<I><FONT COLOR="#B22222">/* by default, allow 16-bit quantizers */</FONT></I></span>
+<span class="lineNum">     228 </span><span class="lineCov">           11067:   simple_progressive = FALSE;</span>
+<span class="lineNum">     229 </span><span class="lineCov">           11067:   is_targa = FALSE;</span>
+<span class="lineNum">     230 </span><span class="lineCov">           11067:   outfilename = NULL;</span>
+<span class="lineNum">     231 </span><span class="lineCov">           11067:   cinfo-&gt;err-&gt;trace_level = 0;</span>
 <span class="lineNum">     232 </span>                : 
 <span class="lineNum">     233 </span>                :   <I><FONT COLOR="#B22222">/* Scan command line options, adjust parameters */</FONT></I>
 <span class="lineNum">     234 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           45292: branch 0 taken</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           22188: branch 0 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-</span><span class="lineNum">     235 </span><span class="lineCov">           45292:   <B><FONT COLOR="#A020F0">for</FONT></B> (argn = 1; argn &lt; argc; argn++) {</span>
-<span class="lineNum">     236 </span><span class="lineCov">           45292:     arg = argv[argn];</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           23081: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           22211: branch 1 taken</span>
-</span><span class="lineNum">     237 </span><span class="lineCov">           45292:     <B><FONT COLOR="#A020F0">if</FONT></B> (*arg != <B><FONT COLOR="#BC8F8F">'-'</FONT></B>) {</span>
+</span><span class="lineNum">     235 </span><span class="lineCov">           22188:   <B><FONT COLOR="#A020F0">for</FONT></B> (argn = 1; argn &lt; argc; argn++) {</span>
+<span class="lineNum">     236 </span><span class="lineCov">           22188:     arg = argv[argn];</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           11067: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           11121: branch 1 taken</span>
+</span><span class="lineNum">     237 </span><span class="lineCov">           22188:     <B><FONT COLOR="#A020F0">if</FONT></B> (*arg != <B><FONT COLOR="#BC8F8F">'-'</FONT></B>) {</span>
 <span class="lineNum">     238 </span>                :       <I><FONT COLOR="#B22222">/* Not a switch, must be a file name argument */</FONT></I>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           23081: branch 1 taken</span>
-</span><span class="lineNum">     239 </span><span class="lineCov">           23081:       <B><FONT COLOR="#A020F0">if</FONT></B> (argn &lt;= last_file_arg_seen) {</span>
+<span class="lineNum">         </span><span class="branchTaken">           11067: branch 1 taken</span>
+</span><span class="lineNum">     239 </span><span class="lineCov">           11067:       <B><FONT COLOR="#A020F0">if</FONT></B> (argn &lt;= last_file_arg_seen) {</span>
 <span class="lineNum">     240 </span><span class="lineNoCov">               0: 	outfilename = NULL;	<I><FONT COLOR="#B22222">/* -outfile applies to just one input file */</FONT></I></span>
 <span class="lineNum">     241 </span><span class="lineNoCov">               0: 	<B><FONT COLOR="#A020F0">continue</FONT></B>;		<I><FONT COLOR="#B22222">/* ignore this name if previously processed */</FONT></I></span>
 <span class="lineNum">     242 </span>                :       }
-<span class="lineNum">     243 </span><span class="lineCov">           23081:       <B><FONT COLOR="#A020F0">break</FONT></B>;			<I><FONT COLOR="#B22222">/* else done parsing switches */</FONT></I></span>
+<span class="lineNum">     243 </span><span class="lineCov">           11067:       <B><FONT COLOR="#A020F0">break</FONT></B>;			<I><FONT COLOR="#B22222">/* else done parsing switches */</FONT></I></span>
 <span class="lineNum">     244 </span>                :     }
-<span class="lineNum">     245 </span><span class="lineCov">           22211:     arg++;			<I><FONT COLOR="#B22222">/* advance past switch marker character */</FONT></I></span>
+<span class="lineNum">     245 </span><span class="lineCov">           11121:     arg++;			<I><FONT COLOR="#B22222">/* advance past switch marker character */</FONT></I></span>
 <span class="lineNum">     246 </span>                : 
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           22211: branch 2 taken</span>
-</span><span class="lineNum">     247 </span><span class="lineCov">           22211:     <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;arithmetic&quot;</FONT></B>, 1)) {</span>
+<span class="lineNum">         </span><span class="branchTaken">           11121: branch 2 taken</span>
+</span><span class="lineNum">     247 </span><span class="lineCov">           11121:     <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;arithmetic&quot;</FONT></B>, 1)) {</span>
 <span class="lineNum">     248 </span>                :       <I><FONT COLOR="#B22222">/* Use arithmetic coding. */</FONT></I>
 <span class="lineNum">     249 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">C_ARITH_CODING_SUPPORTED</FONT>
 <span class="lineNum">     250 </span>                :       cinfo-&gt;arith_code = TRUE;
@@ -330,64 +330,64 @@
 <span class="lineNum">     254 </span><span class="lineNoCov">               0:       exit(EXIT_FAILURE);</span>
 <span class="lineNum">     255 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
 <span class="lineNum">     256 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            4197: branch 1 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           18014: branch 2 taken</span>
-</span><span class="lineNum">     257 </span><span class="lineCov">           22211:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;baseline&quot;</FONT></B>, 1)) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1514: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9607: branch 2 taken</span>
+</span><span class="lineNum">     257 </span><span class="lineCov">           11121:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;baseline&quot;</FONT></B>, 1)) {</span>
 <span class="lineNum">     258 </span>                :       <I><FONT COLOR="#B22222">/* Force baseline-compatible output (8-bit quantizer values). */</FONT></I>
-<span class="lineNum">     259 </span><span class="lineCov">            4197:       force_baseline = TRUE;</span>
+<span class="lineNum">     259 </span><span class="lineCov">            1514:       force_baseline = TRUE;</span>
 <span class="lineNum">     260 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            5393: branch 1 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           12621: branch 2 taken</span>
-</span><span class="lineNum">     261 </span><span class="lineCov">           18014:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;dct&quot;</FONT></B>, 2)) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            2331: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            7276: branch 2 taken</span>
+</span><span class="lineNum">     261 </span><span class="lineCov">            9607:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;dct&quot;</FONT></B>, 2)) {</span>
 <span class="lineNum">     262 </span>                :       <I><FONT COLOR="#B22222">/* Select DCT algorithm. */</FONT></I>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            5393: branch 1 taken</span>
-</span><span class="lineNum">     263 </span><span class="lineCov">            5393:       <B><FONT COLOR="#A020F0">if</FONT></B> (++argn &gt;= argc)	<I><FONT COLOR="#B22222">/* advance to next argument */</FONT></I></span>
+<span class="lineNum">         </span><span class="branchTaken">            2331: branch 1 taken</span>
+</span><span class="lineNum">     263 </span><span class="lineCov">            2331:       <B><FONT COLOR="#A020F0">if</FONT></B> (++argn &gt;= argc)	<I><FONT COLOR="#B22222">/* advance to next argument */</FONT></I></span>
 <span class="lineNum">     264 </span><span class="lineNoCov">               0: 	usage();</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1262: branch 1 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            4131: branch 2 taken</span>
-</span><span class="lineNum">     265 </span><span class="lineCov">            5393:       <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(argv[argn], <B><FONT COLOR="#BC8F8F">&quot;int&quot;</FONT></B>, 1)) {</span>
-<span class="lineNum">     266 </span><span class="lineCov">            1262: 	cinfo-&gt;dct_method = JDCT_ISLOW;</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            2094: branch 1 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            2037: branch 2 taken</span>
-</span><span class="lineNum">     267 </span><span class="lineCov">            4131:       } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(argv[argn], <B><FONT COLOR="#BC8F8F">&quot;fast&quot;</FONT></B>, 2)) {</span>
-<span class="lineNum">     268 </span><span class="lineCov">            2094: 	cinfo-&gt;dct_method = JDCT_IFAST;</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            2037: branch 1 taken</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             780: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1551: branch 2 taken</span>
+</span><span class="lineNum">     265 </span><span class="lineCov">            2331:       <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(argv[argn], <B><FONT COLOR="#BC8F8F">&quot;int&quot;</FONT></B>, 1)) {</span>
+<span class="lineNum">     266 </span><span class="lineCov">             780: 	cinfo-&gt;dct_method = JDCT_ISLOW;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             758: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             793: branch 2 taken</span>
+</span><span class="lineNum">     267 </span><span class="lineCov">            1551:       } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(argv[argn], <B><FONT COLOR="#BC8F8F">&quot;fast&quot;</FONT></B>, 2)) {</span>
+<span class="lineNum">     268 </span><span class="lineCov">             758: 	cinfo-&gt;dct_method = JDCT_IFAST;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             793: branch 1 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
-</span><span class="lineNum">     269 </span><span class="lineCov">            2037:       } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(argv[argn], <B><FONT COLOR="#BC8F8F">&quot;float&quot;</FONT></B>, 2)) {</span>
-<span class="lineNum">     270 </span><span class="lineCov">            2037: 	cinfo-&gt;dct_method = JDCT_FLOAT;</span>
+</span><span class="lineNum">     269 </span><span class="lineCov">             793:       } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(argv[argn], <B><FONT COLOR="#BC8F8F">&quot;float&quot;</FONT></B>, 2)) {</span>
+<span class="lineNum">     270 </span><span class="lineCov">             793: 	cinfo-&gt;dct_method = JDCT_FLOAT;</span>
 <span class="lineNum">     271 </span>                :       } <B><FONT COLOR="#A020F0">else</FONT></B>
 <span class="lineNum">     272 </span><span class="lineNoCov">               0: 	usage();</span>
 <span class="lineNum">     273 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           10845: branch 1 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            1776: branch 2 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            3159: branch 4 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            7686: branch 5 taken</span>
-</span><span class="lineNum">     274 </span><span class="lineCov">           17556:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;debug&quot;</FONT></B>, 1) || keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;verbose&quot;</FONT></B>, 1)) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            5730: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1546: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1576: branch 4 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4154: branch 5 taken</span>
+</span><span class="lineNum">     274 </span><span class="lineCov">           10398:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;debug&quot;</FONT></B>, 1) || keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;verbose&quot;</FONT></B>, 1)) {</span>
 <span class="lineNum">     275 </span>                :       <I><FONT COLOR="#B22222">/* Enable debug printouts. */</FONT></I>
 <span class="lineNum">     276 </span>                :       <I><FONT COLOR="#B22222">/* On first -d, print version identification */</FONT></I>
 <span class="lineNum">     277 </span>                :       <B><FONT COLOR="#228B22">static</FONT></B> boolean printed_version = FALSE;
 <span class="lineNum">     278 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            2418: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            2517: branch 1 taken</span>
-</span><span class="lineNum">     279 </span><span class="lineCov">            4935:       <B><FONT COLOR="#A020F0">if</FONT></B> (! printed_version) {</span>
-<span class="lineNum">     280 </span><span class="lineCov">            2418: 	fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;Independent JPEG Group's CJPEG, version %s\n%s\n&quot;</FONT></B>,</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1313: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1809: branch 1 taken</span>
+</span><span class="lineNum">     279 </span><span class="lineCov">            3122:       <B><FONT COLOR="#A020F0">if</FONT></B> (! printed_version) {</span>
+<span class="lineNum">     280 </span><span class="lineCov">            1313: 	fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;Independent JPEG Group's CJPEG, version %s\n%s\n&quot;</FONT></B>,</span>
 <span class="lineNum">     281 </span>                : 		JVERSION, JCOPYRIGHT);
-<span class="lineNum">     282 </span><span class="lineCov">            2418: 	printed_version = TRUE;</span>
+<span class="lineNum">     282 </span><span class="lineCov">            1313: 	printed_version = TRUE;</span>
 <span class="lineNum">     283 </span>                :       }
-<span class="lineNum">     284 </span><span class="lineCov">            4935:       cinfo-&gt;err-&gt;trace_level++;</span>
+<span class="lineNum">     284 </span><span class="lineCov">            3122:       cinfo-&gt;err-&gt;trace_level++;</span>
 <span class="lineNum">     285 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            5589: branch 1 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            2097: branch 2 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">             723: branch 4 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            4866: branch 5 taken</span>
-</span><span class="lineNum">     286 </span><span class="lineCov">            7686:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;grayscale&quot;</FONT></B>, 2) || keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;greyscale&quot;</FONT></B>,2)) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            3522: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             632: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             576: branch 4 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2946: branch 5 taken</span>
+</span><span class="lineNum">     286 </span><span class="lineCov">            4154:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;grayscale&quot;</FONT></B>, 2) || keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;greyscale&quot;</FONT></B>,2)) {</span>
 <span class="lineNum">     287 </span>                :       <I><FONT COLOR="#B22222">/* Force a monochrome JPEG file to be generated. */</FONT></I>
-<span class="lineNum">     288 </span><span class="lineCov">            2820:       jpeg_set_colorspace(cinfo, JCS_GRAYSCALE);</span>
+<span class="lineNum">     288 </span><span class="lineCov">            1208:       jpeg_set_colorspace(cinfo, JCS_GRAYSCALE);</span>
 <span class="lineNum">     289 </span>                : 
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            4866: branch 2 taken</span>
-</span><span class="lineNum">     290 </span><span class="lineCov">            4866:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;maxmemory&quot;</FONT></B>, 3)) {</span>
+<span class="lineNum">         </span><span class="branchTaken">            2946: branch 2 taken</span>
+</span><span class="lineNum">     290 </span><span class="lineCov">            2946:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;maxmemory&quot;</FONT></B>, 3)) {</span>
 <span class="lineNum">     291 </span>                :       <I><FONT COLOR="#B22222">/* Maximum memory in Kb (or Mb with 'm'). */</FONT></I>
 <span class="lineNum">     292 </span>                :       <B><FONT COLOR="#228B22">long</FONT></B> lval;
 <span class="lineNum">     293 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#228B22">char</FONT></B> ch = <B><FONT COLOR="#BC8F8F">'x'</FONT></B>;</span>
@@ -408,14 +408,14 @@
 <span class="lineNum">     300 </span><span class="lineNoCov">               0: 	lval *= 1000L;</span>
 <span class="lineNum">     301 </span><span class="lineNoCov">               0:       cinfo-&gt;mem-&gt;max_memory_to_use = lval * 1000L;</span>
 <span class="lineNum">     302 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            3879: branch 1 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">             987: branch 2 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">             786: branch 4 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            3093: branch 5 taken</span>
-</span><span class="lineNum">     303 </span><span class="lineCov">            4866:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;optimize&quot;</FONT></B>, 1) || keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;optimise&quot;</FONT></B>, 1)) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            2108: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             838: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             932: branch 4 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1176: branch 5 taken</span>
+</span><span class="lineNum">     303 </span><span class="lineCov">            2946:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;optimize&quot;</FONT></B>, 1) || keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;optimise&quot;</FONT></B>, 1)) {</span>
 <span class="lineNum">     304 </span>                :       <I><FONT COLOR="#B22222">/* Enable entropy parm optimization. */</FONT></I>
 <span class="lineNum">     305 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">ENTROPY_OPT_SUPPORTED</FONT>
-<span class="lineNum">     306 </span><span class="lineCov">            1773:       cinfo-&gt;optimize_coding = TRUE;</span>
+<span class="lineNum">     306 </span><span class="lineCov">            1770:       cinfo-&gt;optimize_coding = TRUE;</span>
 <span class="lineNum">     307 </span>                : #<B><FONT COLOR="#5F9EA0">else</FONT></B>
 <span class="lineNum">     308 </span>                :       fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;%s: sorry, entropy optimization was not compiled\n&quot;</FONT></B>,
 <span class="lineNum">     309 </span>                : 	      progname);
@@ -423,8 +423,8 @@
 <span class="lineNum">     311 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
 <span class="lineNum">     312 </span>                : 
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            3093: branch 2 taken</span>
-</span><span class="lineNum">     313 </span><span class="lineCov">            3093:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;outfile&quot;</FONT></B>, 4)) {</span>
+<span class="lineNum">         </span><span class="branchTaken">            1176: branch 2 taken</span>
+</span><span class="lineNum">     313 </span><span class="lineCov">            1176:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;outfile&quot;</FONT></B>, 4)) {</span>
 <span class="lineNum">     314 </span>                :       <I><FONT COLOR="#B22222">/* Set output file name. */</FONT></I>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
@@ -432,12 +432,12 @@
 <span class="lineNum">     316 </span><span class="lineNoCov">               0: 	usage();</span>
 <span class="lineNum">     317 </span><span class="lineNoCov">               0:       outfilename = argv[argn];	<I><FONT COLOR="#B22222">/* save it away for later use */</FONT></I></span>
 <span class="lineNum">     318 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            2208: branch 1 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">             885: branch 2 taken</span>
-</span><span class="lineNum">     319 </span><span class="lineCov">            3093:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;progressive&quot;</FONT></B>, 1)) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             657: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             519: branch 2 taken</span>
+</span><span class="lineNum">     319 </span><span class="lineCov">            1176:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;progressive&quot;</FONT></B>, 1)) {</span>
 <span class="lineNum">     320 </span>                :       <I><FONT COLOR="#B22222">/* Select simple progressive mode. */</FONT></I>
 <span class="lineNum">     321 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">C_PROGRESSIVE_SUPPORTED</FONT>
-<span class="lineNum">     322 </span><span class="lineCov">            2208:       simple_progressive = TRUE;</span>
+<span class="lineNum">     322 </span><span class="lineCov">             657:       simple_progressive = TRUE;</span>
 <span class="lineNum">     323 </span>                :       <I><FONT COLOR="#B22222">/* We must postpone execution until num_components is known. */</FONT></I>
 <span class="lineNum">     324 </span>                : #<B><FONT COLOR="#5F9EA0">else</FONT></B>
 <span class="lineNum">     325 </span>                :       fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;%s: sorry, progressive output was not compiled\n&quot;</FONT></B>,
@@ -446,8 +446,8 @@
 <span class="lineNum">     328 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
 <span class="lineNum">     329 </span>                : 
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">             885: branch 2 taken</span>
-</span><span class="lineNum">     330 </span><span class="lineCov">             885:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;quality&quot;</FONT></B>, 1)) {</span>
+<span class="lineNum">         </span><span class="branchTaken">             519: branch 2 taken</span>
+</span><span class="lineNum">     330 </span><span class="lineCov">             519:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;quality&quot;</FONT></B>, 1)) {</span>
 <span class="lineNum">     331 </span>                :       <I><FONT COLOR="#B22222">/* Quality factor (quantization table scaling factor). */</FONT></I>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
@@ -461,8 +461,8 @@
 <span class="lineNum">     337 </span><span class="lineNoCov">               0:       q_scale_factor = jpeg_quality_scaling(quality);</span>
 <span class="lineNum">     338 </span>                : 
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">             885: branch 2 taken</span>
-</span><span class="lineNum">     339 </span><span class="lineCov">             885:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;qslots&quot;</FONT></B>, 2)) {</span>
+<span class="lineNum">         </span><span class="branchTaken">             519: branch 2 taken</span>
+</span><span class="lineNum">     339 </span><span class="lineCov">             519:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;qslots&quot;</FONT></B>, 2)) {</span>
 <span class="lineNum">     340 </span>                :       <I><FONT COLOR="#B22222">/* Quantization table slot numbers. */</FONT></I>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
@@ -474,20 +474,20 @@
 <span class="lineNum">     346 </span>                :        * default quant table numbers.
 <span class="lineNum">     347 </span>                :        */</FONT></I>
 <span class="lineNum">     348 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             498: branch 1 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">             387: branch 2 taken</span>
-</span><span class="lineNum">     349 </span><span class="lineCov">             885:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;qtables&quot;</FONT></B>, 2)) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             169: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             350: branch 2 taken</span>
+</span><span class="lineNum">     349 </span><span class="lineCov">             519:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;qtables&quot;</FONT></B>, 2)) {</span>
 <span class="lineNum">     350 </span>                :       <I><FONT COLOR="#B22222">/* Quantization tables fetched from file. */</FONT></I>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">             498: branch 1 taken</span>
-</span><span class="lineNum">     351 </span><span class="lineCov">             498:       <B><FONT COLOR="#A020F0">if</FONT></B> (++argn &gt;= argc)	<I><FONT COLOR="#B22222">/* advance to next argument */</FONT></I></span>
+<span class="lineNum">         </span><span class="branchTaken">             169: branch 1 taken</span>
+</span><span class="lineNum">     351 </span><span class="lineCov">             169:       <B><FONT COLOR="#A020F0">if</FONT></B> (++argn &gt;= argc)	<I><FONT COLOR="#B22222">/* advance to next argument */</FONT></I></span>
 <span class="lineNum">     352 </span><span class="lineNoCov">               0: 	usage();</span>
-<span class="lineNum">     353 </span><span class="lineCov">             498:       qtablefile = argv[argn];</span>
+<span class="lineNum">     353 </span><span class="lineCov">             169:       qtablefile = argv[argn];</span>
 <span class="lineNum">     354 </span>                :       <I><FONT COLOR="#B22222">/* We postpone actually reading the file in case -quality comes later. */</FONT></I>
 <span class="lineNum">     355 </span>                : 
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">             387: branch 2 taken</span>
-</span><span class="lineNum">     356 </span><span class="lineCov">             387:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;restart&quot;</FONT></B>, 1)) {</span>
+<span class="lineNum">         </span><span class="branchTaken">             350: branch 2 taken</span>
+</span><span class="lineNum">     356 </span><span class="lineCov">             350:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;restart&quot;</FONT></B>, 1)) {</span>
 <span class="lineNum">     357 </span>                :       <I><FONT COLOR="#B22222">/* Restart interval in MCU rows (or in MCUs with 'b'). */</FONT></I>
 <span class="lineNum">     358 </span>                :       <B><FONT COLOR="#228B22">long</FONT></B> lval;
 <span class="lineNum">     359 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#228B22">char</FONT></B> ch = <B><FONT COLOR="#BC8F8F">'x'</FONT></B>;</span>
@@ -519,8 +519,8 @@
 <span class="lineNum">     373 </span>                :       }
 <span class="lineNum">     374 </span>                : 
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">             387: branch 2 taken</span>
-</span><span class="lineNum">     375 </span><span class="lineCov">             387:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;sample&quot;</FONT></B>, 2)) {</span>
+<span class="lineNum">         </span><span class="branchTaken">             350: branch 2 taken</span>
+</span><span class="lineNum">     375 </span><span class="lineCov">             350:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;sample&quot;</FONT></B>, 2)) {</span>
 <span class="lineNum">     376 </span>                :       <I><FONT COLOR="#B22222">/* Set sampling factors. */</FONT></I>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
@@ -533,8 +533,8 @@
 <span class="lineNum">     383 </span>                :        */</FONT></I>
 <span class="lineNum">     384 </span>                : 
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">             387: branch 2 taken</span>
-</span><span class="lineNum">     385 </span><span class="lineCov">             387:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;scans&quot;</FONT></B>, 2)) {</span>
+<span class="lineNum">         </span><span class="branchTaken">             350: branch 2 taken</span>
+</span><span class="lineNum">     385 </span><span class="lineCov">             350:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;scans&quot;</FONT></B>, 2)) {</span>
 <span class="lineNum">     386 </span>                :       <I><FONT COLOR="#B22222">/* Set scan script. */</FONT></I>
 <span class="lineNum">     387 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">C_MULTISCAN_FILES_SUPPORTED</FONT>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
@@ -550,8 +550,8 @@
 <span class="lineNum">     396 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
 <span class="lineNum">     397 </span>                : 
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">             387: branch 2 taken</span>
-</span><span class="lineNum">     398 </span><span class="lineCov">             387:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;smooth&quot;</FONT></B>, 2)) {</span>
+<span class="lineNum">         </span><span class="branchTaken">             350: branch 2 taken</span>
+</span><span class="lineNum">     398 </span><span class="lineCov">             350:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;smooth&quot;</FONT></B>, 2)) {</span>
 <span class="lineNum">     399 </span>                :       <I><FONT COLOR="#B22222">/* Set input smoothing factor. */</FONT></I>
 <span class="lineNum">     400 </span>                :       <B><FONT COLOR="#228B22">int</FONT></B> val;
 <span class="lineNum">     401 </span>                : 
@@ -571,11 +571,11 @@
 <span class="lineNum">     407 </span><span class="lineNoCov">               0: 	usage();</span>
 <span class="lineNum">     408 </span><span class="lineNoCov">               0:       cinfo-&gt;smoothing_factor = val;</span>
 <span class="lineNum">     409 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             387: branch 1 taken</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             350: branch 1 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
-</span><span class="lineNum">     410 </span><span class="lineCov">             387:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;targa&quot;</FONT></B>, 1)) {</span>
+</span><span class="lineNum">     410 </span><span class="lineCov">             350:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (keymatch(arg, <B><FONT COLOR="#BC8F8F">&quot;targa&quot;</FONT></B>, 1)) {</span>
 <span class="lineNum">     411 </span>                :       <I><FONT COLOR="#B22222">/* Input file is Targa format. */</FONT></I>
-<span class="lineNum">     412 </span><span class="lineCov">             387:       is_targa = TRUE;</span>
+<span class="lineNum">     412 </span><span class="lineCov">             350:       is_targa = TRUE;</span>
 <span class="lineNum">     413 </span>                : 
 <span class="lineNum">     414 </span>                :     } <B><FONT COLOR="#A020F0">else</FONT></B> {
 <span class="lineNum">     415 </span><span class="lineNoCov">               0:       usage();			<I><FONT COLOR="#B22222">/* bogus switch */</FONT></I></span>
@@ -584,50 +584,50 @@
 <span class="lineNum">     418 </span>                : 
 <span class="lineNum">     419 </span>                :   <I><FONT COLOR="#B22222">/* Post-switch-scanning cleanup */</FONT></I>
 <span class="lineNum">     420 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            9396: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           13685: branch 1 taken</span>
-</span><span class="lineNum">     421 </span><span class="lineCov">           23081:   <B><FONT COLOR="#A020F0">if</FONT></B> (for_real) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            4689: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            6378: branch 1 taken</span>
+</span><span class="lineNum">     421 </span><span class="lineCov">           11067:   <B><FONT COLOR="#A020F0">if</FONT></B> (for_real) {</span>
 <span class="lineNum">     422 </span>                : 
 <span class="lineNum">     423 </span>                :     <I><FONT COLOR="#B22222">/* Set quantization tables for selected quality. */</FONT></I>
 <span class="lineNum">     424 </span>                :     <I><FONT COLOR="#B22222">/* Some or all may be overridden if -qtables is present. */</FONT></I>
-<span class="lineNum">     425 </span><span class="lineCov">            9396:     jpeg_set_quality(cinfo, quality, force_baseline);</span>
+<span class="lineNum">     425 </span><span class="lineCov">            4689:     jpeg_set_quality(cinfo, quality, force_baseline);</span>
 <span class="lineNum">     426 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">              96: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            9300: branch 1 taken</span>
-</span><span class="lineNum">     427 </span><span class="lineCov">            9396:     <B><FONT COLOR="#A020F0">if</FONT></B> (qtablefile != NULL)	<I><FONT COLOR="#B22222">/* process -qtables if it was present */</FONT></I></span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">              96: branch 1 taken</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">              30: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4659: branch 1 taken</span>
+</span><span class="lineNum">     427 </span><span class="lineCov">            4689:     <B><FONT COLOR="#A020F0">if</FONT></B> (qtablefile != NULL)	<I><FONT COLOR="#B22222">/* process -qtables if it was present */</FONT></I></span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">              30: branch 1 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
-</span><span class="lineNum">     428 </span><span class="lineCov">              96:       <B><FONT COLOR="#A020F0">if</FONT></B> (! read_quant_tables(cinfo, qtablefile,</span>
+</span><span class="lineNum">     428 </span><span class="lineCov">              30:       <B><FONT COLOR="#A020F0">if</FONT></B> (! read_quant_tables(cinfo, qtablefile,</span>
 <span class="lineNum">     429 </span>                : 			      q_scale_factor, force_baseline))
-<span class="lineNum">     430 </span><span class="lineCov">              96: 	usage();</span>
+<span class="lineNum">     430 </span><span class="lineCov">              30: 	usage();</span>
 <span class="lineNum">     431 </span>                : 
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            9300: branch 1 taken</span>
-</span><span class="lineNum">     432 </span><span class="lineCov">            9300:     <B><FONT COLOR="#A020F0">if</FONT></B> (qslotsarg != NULL)	<I><FONT COLOR="#B22222">/* process -qslots if it was present */</FONT></I></span>
+<span class="lineNum">         </span><span class="branchTaken">            4659: branch 1 taken</span>
+</span><span class="lineNum">     432 </span><span class="lineCov">            4659:     <B><FONT COLOR="#A020F0">if</FONT></B> (qslotsarg != NULL)	<I><FONT COLOR="#B22222">/* process -qslots if it was present */</FONT></I></span>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
 </span><span class="lineNum">     433 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#A020F0">if</FONT></B> (! set_quant_slots(cinfo, qslotsarg))</span>
 <span class="lineNum">     434 </span><span class="lineNoCov">               0: 	usage();</span>
 <span class="lineNum">     435 </span>                : 
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            9300: branch 1 taken</span>
-</span><span class="lineNum">     436 </span><span class="lineCov">            9300:     <B><FONT COLOR="#A020F0">if</FONT></B> (samplearg != NULL)	<I><FONT COLOR="#B22222">/* process -sample if it was present */</FONT></I></span>
+<span class="lineNum">         </span><span class="branchTaken">            4659: branch 1 taken</span>
+</span><span class="lineNum">     436 </span><span class="lineCov">            4659:     <B><FONT COLOR="#A020F0">if</FONT></B> (samplearg != NULL)	<I><FONT COLOR="#B22222">/* process -sample if it was present */</FONT></I></span>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
 </span><span class="lineNum">     437 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#A020F0">if</FONT></B> (! set_sample_factors(cinfo, samplearg))</span>
 <span class="lineNum">     438 </span><span class="lineNoCov">               0: 	usage();</span>
 <span class="lineNum">     439 </span>                : 
 <span class="lineNum">     440 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">C_PROGRESSIVE_SUPPORTED</FONT>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             957: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            8343: branch 1 taken</span>
-</span><span class="lineNum">     441 </span><span class="lineCov">            9300:     <B><FONT COLOR="#A020F0">if</FONT></B> (simple_progressive)	<I><FONT COLOR="#B22222">/* process -progressive; -scans can override */</FONT></I></span>
-<span class="lineNum">     442 </span><span class="lineCov">             957:       jpeg_simple_progression(cinfo);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             275: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4384: branch 1 taken</span>
+</span><span class="lineNum">     441 </span><span class="lineCov">            4659:     <B><FONT COLOR="#A020F0">if</FONT></B> (simple_progressive)	<I><FONT COLOR="#B22222">/* process -progressive; -scans can override */</FONT></I></span>
+<span class="lineNum">     442 </span><span class="lineCov">             275:       jpeg_simple_progression(cinfo);</span>
 <span class="lineNum">     443 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
 <span class="lineNum">     444 </span>                : 
 <span class="lineNum">     445 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">C_MULTISCAN_FILES_SUPPORTED</FONT>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            9300: branch 1 taken</span>
-</span><span class="lineNum">     446 </span><span class="lineCov">            9300:     <B><FONT COLOR="#A020F0">if</FONT></B> (scansarg != NULL)	<I><FONT COLOR="#B22222">/* process -scans if it was present */</FONT></I></span>
+<span class="lineNum">         </span><span class="branchTaken">            4659: branch 1 taken</span>
+</span><span class="lineNum">     446 </span><span class="lineCov">            4659:     <B><FONT COLOR="#A020F0">if</FONT></B> (scansarg != NULL)	<I><FONT COLOR="#B22222">/* process -scans if it was present */</FONT></I></span>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
 </span><span class="lineNum">     447 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#A020F0">if</FONT></B> (! read_scan_script(cinfo, scansarg))</span>
@@ -635,7 +635,7 @@
 <span class="lineNum">     449 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
 <span class="lineNum">     450 </span>                :   }
 <span class="lineNum">     451 </span>                : 
-<span class="lineNum">     452 </span><span class="lineCov">           22985:   <B><FONT COLOR="#A020F0">return</FONT></B> argn;			<I><FONT COLOR="#B22222">/* return index of next arg (file name) */</FONT></I></span>
+<span class="lineNum">     452 </span><span class="lineCov">           11037:   <B><FONT COLOR="#A020F0">return</FONT></B> argn;			<I><FONT COLOR="#B22222">/* return index of next arg (file name) */</FONT></I></span>
 <span class="lineNum">     453 </span>                : }
 <span class="lineNum">     454 </span>                : 
 <span class="lineNum">     455 </span>                : 
@@ -644,7 +644,7 @@
 <span class="lineNum">     458 </span>                :  */</FONT></I>
 <span class="lineNum">     459 </span>                : 
 <span class="lineNum">     460 </span>                : <B><FONT COLOR="#228B22">int</FONT></B>
-<span class="lineNum">     461 </span><span class="lineCov">           13685: <B><FONT COLOR="#0000FF">main</FONT></B> (<B><FONT COLOR="#228B22">int</FONT></B> argc, <B><FONT COLOR="#228B22">char</FONT></B> **argv)</span>
+<span class="lineNum">     461 </span><span class="lineCov">            6378: <B><FONT COLOR="#0000FF">main</FONT></B> (<B><FONT COLOR="#228B22">int</FONT></B> argc, <B><FONT COLOR="#228B22">char</FONT></B> **argv)</span>
 <span class="lineNum">     462 </span>                : {
 <span class="lineNum">     463 </span>                :   <B><FONT COLOR="#228B22">struct</FONT></B> jpeg_compress_struct cinfo;
 <span class="lineNum">     464 </span>                :   <B><FONT COLOR="#228B22">struct</FONT></B> jpeg_error_mgr jerr;
@@ -662,21 +662,21 @@
 <span class="lineNum">     476 </span>                :   argc = ccommand(&amp;argv);
 <span class="lineNum">     477 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
 <span class="lineNum">     478 </span>                : 
-<span class="lineNum">     479 </span><span class="lineCov">           13685:   progname = argv[0];</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           13685: branch 0 taken</span>
+<span class="lineNum">     479 </span><span class="lineCov">            6378:   progname = argv[0];</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            6378: branch 0 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           13685: branch 3 taken</span>
-</span><span class="lineNum">     480 </span><span class="lineCov">           13685:   <B><FONT COLOR="#A020F0">if</FONT></B> (progname == NULL || progname[0] == 0)</span>
+<span class="lineNum">         </span><span class="branchTaken">            6378: branch 3 taken</span>
+</span><span class="lineNum">     480 </span><span class="lineCov">            6378:   <B><FONT COLOR="#A020F0">if</FONT></B> (progname == NULL || progname[0] == 0)</span>
 <span class="lineNum">     481 </span><span class="lineNoCov">               0:     progname = <B><FONT COLOR="#BC8F8F">&quot;cjpeg&quot;</FONT></B>;		<I><FONT COLOR="#B22222">/* in case C library doesn't provide it */</FONT></I></span>
 <span class="lineNum">     482 </span>                : 
 <span class="lineNum">     483 </span>                :   <I><FONT COLOR="#B22222">/* Initialize the JPEG compression object with default error handling. */</FONT></I>
-<span class="lineNum">     484 </span><span class="lineCov">           13685:   cinfo.err = jpeg_std_error(&amp;jerr);</span>
-<span class="lineNum">     485 </span><span class="lineCov">           13685:   jpeg_create_compress(&amp;cinfo);</span>
+<span class="lineNum">     484 </span><span class="lineCov">            6378:   cinfo.err = jpeg_std_error(&amp;jerr);</span>
+<span class="lineNum">     485 </span><span class="lineCov">            6378:   jpeg_create_compress(&amp;cinfo);</span>
 <span class="lineNum">     486 </span>                :   <I><FONT COLOR="#B22222">/* Add some application-specific error messages (from cderror.h) */</FONT></I>
-<span class="lineNum">     487 </span><span class="lineCov">           13685:   jerr.addon_message_table = cdjpeg_message_table;</span>
-<span class="lineNum">     488 </span><span class="lineCov">           13685:   jerr.first_addon_message = JMSG_FIRSTADDONCODE;</span>
-<span class="lineNum">     489 </span><span class="lineCov">           13685:   jerr.last_addon_message = JMSG_LASTADDONCODE;</span>
+<span class="lineNum">     487 </span><span class="lineCov">            6378:   jerr.addon_message_table = cdjpeg_message_table;</span>
+<span class="lineNum">     488 </span><span class="lineCov">            6378:   jerr.first_addon_message = JMSG_FIRSTADDONCODE;</span>
+<span class="lineNum">     489 </span><span class="lineCov">            6378:   jerr.last_addon_message = JMSG_LASTADDONCODE;</span>
 <span class="lineNum">     490 </span>                : 
 <span class="lineNum">     491 </span>                :   <I><FONT COLOR="#B22222">/* Now safe to enable signal catcher. */</FONT></I>
 <span class="lineNum">     492 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">NEED_SIGNAL_CATCHER</FONT>
@@ -689,8 +689,8 @@
 <span class="lineNum">     499 </span>                :    * but we need to provide some value for jpeg_set_defaults() to work.
 <span class="lineNum">     500 </span>                :    */</FONT></I>
 <span class="lineNum">     501 </span>                : 
-<span class="lineNum">     502 </span><span class="lineCov">           13685:   cinfo.in_color_space = JCS_RGB; <I><FONT COLOR="#B22222">/* arbitrary guess */</FONT></I></span>
-<span class="lineNum">     503 </span><span class="lineCov">           13685:   jpeg_set_defaults(&amp;cinfo);</span>
+<span class="lineNum">     502 </span><span class="lineCov">            6378:   cinfo.in_color_space = JCS_RGB; <I><FONT COLOR="#B22222">/* arbitrary guess */</FONT></I></span>
+<span class="lineNum">     503 </span><span class="lineCov">            6378:   jpeg_set_defaults(&amp;cinfo);</span>
 <span class="lineNum">     504 </span>                : 
 <span class="lineNum">     505 </span>                :   <I><FONT COLOR="#B22222">/* Scan command line to find file names.
 <span class="lineNum">     506 </span>                :    * It is convenient to use just one switch-parsing routine, but the switch
@@ -698,7 +698,7 @@
 <span class="lineNum">     508 </span>                :    * the input file.
 <span class="lineNum">     509 </span>                :    */</FONT></I>
 <span class="lineNum">     510 </span>                : 
-<span class="lineNum">     511 </span><span class="lineCov">           13685:   file_index = parse_switches(&amp;cinfo, argc, argv, 0, FALSE);</span>
+<span class="lineNum">     511 </span><span class="lineCov">            6378:   file_index = parse_switches(&amp;cinfo, argc, argv, 0, FALSE);</span>
 <span class="lineNum">     512 </span>                : 
 <span class="lineNum">     513 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">TWO_FILE_COMMANDLINE</FONT>
 <span class="lineNum">     514 </span>                :   <I><FONT COLOR="#B22222">/* Must have either -outfile switch or explicit output file name */</FONT></I>
@@ -719,20 +719,20 @@
 <span class="lineNum">     529 </span>                : #<B><FONT COLOR="#5F9EA0">else</FONT></B>
 <span class="lineNum">     530 </span>                :   <I><FONT COLOR="#B22222">/* Unix style: expect zero or one file name */</FONT></I>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           13685: branch 1 taken</span>
-</span><span class="lineNum">     531 </span><span class="lineCov">           13685:   <B><FONT COLOR="#A020F0">if</FONT></B> (file_index &lt; argc-1) {</span>
+<span class="lineNum">         </span><span class="branchTaken">            6378: branch 1 taken</span>
+</span><span class="lineNum">     531 </span><span class="lineCov">            6378:   <B><FONT COLOR="#A020F0">if</FONT></B> (file_index &lt; argc-1) {</span>
 <span class="lineNum">     532 </span><span class="lineNoCov">               0:     fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;%s: only one input file\n&quot;</FONT></B>, progname);</span>
 <span class="lineNum">     533 </span><span class="lineNoCov">               0:     usage();</span>
 <span class="lineNum">     534 </span>                :   }
 <span class="lineNum">     535 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B> <I><FONT COLOR="#B22222">/* TWO_FILE_COMMANDLINE */</FONT></I>
 <span class="lineNum">     536 </span>                : 
 <span class="lineNum">     537 </span>                :   <I><FONT COLOR="#B22222">/* Open the input file. */</FONT></I>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           13685: branch 0 taken</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            6378: branch 0 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-</span><span class="lineNum">     538 </span><span class="lineCov">           13685:   <B><FONT COLOR="#A020F0">if</FONT></B> (file_index &lt; argc) {</span>
+</span><span class="lineNum">     538 </span><span class="lineCov">            6378:   <B><FONT COLOR="#A020F0">if</FONT></B> (file_index &lt; argc) {</span>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           13685: branch 2 taken</span>
-</span><span class="lineNum">     539 </span><span class="lineCov">           13685:     <B><FONT COLOR="#A020F0">if</FONT></B> ((input_file = fopen(argv[file_index], READ_BINARY)) == NULL) {</span>
+<span class="lineNum">         </span><span class="branchTaken">            6378: branch 2 taken</span>
+</span><span class="lineNum">     539 </span><span class="lineCov">            6378:     <B><FONT COLOR="#A020F0">if</FONT></B> ((input_file = fopen(argv[file_index], READ_BINARY)) == NULL) {</span>
 <span class="lineNum">     540 </span><span class="lineNoCov">               0:       fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;%s: can't open %s\n&quot;</FONT></B>, progname, argv[file_index]);</span>
 <span class="lineNum">     541 </span><span class="lineNoCov">               0:       exit(EXIT_FAILURE);</span>
 <span class="lineNum">     542 </span>                :     }
@@ -743,8 +743,8 @@
 <span class="lineNum">     547 </span>                : 
 <span class="lineNum">     548 </span>                :   <I><FONT COLOR="#B22222">/* Open the output file. */</FONT></I>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           13685: branch 1 taken</span>
-</span><span class="lineNum">     549 </span><span class="lineCov">           13685:   <B><FONT COLOR="#A020F0">if</FONT></B> (outfilename != NULL) {</span>
+<span class="lineNum">         </span><span class="branchTaken">            6378: branch 1 taken</span>
+</span><span class="lineNum">     549 </span><span class="lineCov">            6378:   <B><FONT COLOR="#A020F0">if</FONT></B> (outfilename != NULL) {</span>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
 </span><span class="lineNum">     550 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> ((output_file = fopen(outfilename, WRITE_BINARY)) == NULL) {</span>
@@ -753,7 +753,7 @@
 <span class="lineNum">     553 </span>                :     }
 <span class="lineNum">     554 </span>                :   } <B><FONT COLOR="#A020F0">else</FONT></B> {
 <span class="lineNum">     555 </span>                :     <I><FONT COLOR="#B22222">/* default output file is stdout */</FONT></I>
-<span class="lineNum">     556 </span><span class="lineCov">           13685:     output_file = write_stdout();</span>
+<span class="lineNum">     556 </span><span class="lineCov">            6378:     output_file = write_stdout();</span>
 <span class="lineNum">     557 </span>                :   }
 <span class="lineNum">     558 </span>                : 
 <span class="lineNum">     559 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">PROGRESS_REPORT</FONT>
@@ -761,45 +761,45 @@
 <span class="lineNum">     561 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
 <span class="lineNum">     562 </span>                : 
 <span class="lineNum">     563 </span>                :   <I><FONT COLOR="#B22222">/* Figure out the input file format, and set up to read it. */</FONT></I>
-<span class="lineNum">     564 </span><span class="lineCov">           13685:   src_mgr = select_file_type(&amp;cinfo, input_file);</span>
-<span class="lineNum">     565 </span><span class="lineCov">           13556:   src_mgr-&gt;input_file = input_file;</span>
+<span class="lineNum">     564 </span><span class="lineCov">            6378:   src_mgr = select_file_type(&amp;cinfo, input_file);</span>
+<span class="lineNum">     565 </span><span class="lineCov">            6333:   src_mgr-&gt;input_file = input_file;</span>
 <span class="lineNum">     566 </span>                : 
 <span class="lineNum">     567 </span>                :   <I><FONT COLOR="#B22222">/* Read the input file header to obtain file size &amp; colorspace. */</FONT></I>
-<span class="lineNum">     568 </span><span class="lineCov">           13556:   (*src_mgr-&gt;start_input) (&amp;cinfo, src_mgr);</span>
+<span class="lineNum">     568 </span><span class="lineCov">            6333:   (*src_mgr-&gt;start_input) (&amp;cinfo, src_mgr);</span>
 <span class="lineNum">     569 </span>                : 
 <span class="lineNum">     570 </span>                :   <I><FONT COLOR="#B22222">/* Now that we know input colorspace, fix colorspace-dependent defaults */</FONT></I>
-<span class="lineNum">     571 </span><span class="lineCov">            9396:   jpeg_default_colorspace(&amp;cinfo);</span>
+<span class="lineNum">     571 </span><span class="lineCov">            4689:   jpeg_default_colorspace(&amp;cinfo);</span>
 <span class="lineNum">     572 </span>                : 
 <span class="lineNum">     573 </span>                :   <I><FONT COLOR="#B22222">/* Adjust default compression parameters by re-parsing the options */</FONT></I>
-<span class="lineNum">     574 </span><span class="lineCov">            9396:   file_index = parse_switches(&amp;cinfo, argc, argv, 0, TRUE);</span>
+<span class="lineNum">     574 </span><span class="lineCov">            4689:   file_index = parse_switches(&amp;cinfo, argc, argv, 0, TRUE);</span>
 <span class="lineNum">     575 </span>                : 
 <span class="lineNum">     576 </span>                :   <I><FONT COLOR="#B22222">/* Specify data destination for compression */</FONT></I>
-<span class="lineNum">     577 </span><span class="lineCov">            9300:   jpeg_stdio_dest(&amp;cinfo, output_file);</span>
+<span class="lineNum">     577 </span><span class="lineCov">            4659:   jpeg_stdio_dest(&amp;cinfo, output_file);</span>
 <span class="lineNum">     578 </span>                : 
 <span class="lineNum">     579 </span>                :   <I><FONT COLOR="#B22222">/* Start compressor */</FONT></I>
-<span class="lineNum">     580 </span><span class="lineCov">            9300:   jpeg_start_compress(&amp;cinfo, TRUE);</span>
+<span class="lineNum">     580 </span><span class="lineCov">            4659:   jpeg_start_compress(&amp;cinfo, TRUE);</span>
 <span class="lineNum">     581 </span>                : 
 <span class="lineNum">     582 </span>                :   <I><FONT COLOR="#B22222">/* Process data */</FONT></I>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          435919: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            4018: branch 1 taken</span>
-</span><span class="lineNum">     583 </span><span class="lineCov">          449002:   <B><FONT COLOR="#A020F0">while</FONT></B> (cinfo.next_scanline &lt; cinfo.image_height) {</span>
-<span class="lineNum">     584 </span><span class="lineCov">          435919:     num_scanlines = (*src_mgr-&gt;get_pixel_rows) (&amp;cinfo, src_mgr);</span>
-<span class="lineNum">     585 </span><span class="lineCov">          430872:     (<B><FONT COLOR="#228B22">void</FONT></B>) jpeg_write_scanlines(&amp;cinfo, src_mgr-&gt;buffer, num_scanlines);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          251346: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1611: branch 1 taken</span>
+</span><span class="lineNum">     583 </span><span class="lineCov">          257501:   <B><FONT COLOR="#A020F0">while</FONT></B> (cinfo.next_scanline &lt; cinfo.image_height) {</span>
+<span class="lineNum">     584 </span><span class="lineCov">          251346:     num_scanlines = (*src_mgr-&gt;get_pixel_rows) (&amp;cinfo, src_mgr);</span>
+<span class="lineNum">     585 </span><span class="lineCov">          248413:     (<B><FONT COLOR="#228B22">void</FONT></B>) jpeg_write_scanlines(&amp;cinfo, src_mgr-&gt;buffer, num_scanlines);</span>
 <span class="lineNum">     586 </span>                :   }
 <span class="lineNum">     587 </span>                : 
 <span class="lineNum">     588 </span>                :   <I><FONT COLOR="#B22222">/* Finish compression and release memory */</FONT></I>
-<span class="lineNum">     589 </span><span class="lineCov">            4018:   (*src_mgr-&gt;finish_input) (&amp;cinfo, src_mgr);</span>
-<span class="lineNum">     590 </span><span class="lineCov">            4018:   jpeg_finish_compress(&amp;cinfo);</span>
-<span class="lineNum">     591 </span><span class="lineCov">            4018:   jpeg_destroy_compress(&amp;cinfo);</span>
+<span class="lineNum">     589 </span><span class="lineCov">            1611:   (*src_mgr-&gt;finish_input) (&amp;cinfo, src_mgr);</span>
+<span class="lineNum">     590 </span><span class="lineCov">            1611:   jpeg_finish_compress(&amp;cinfo);</span>
+<span class="lineNum">     591 </span><span class="lineCov">            1611:   jpeg_destroy_compress(&amp;cinfo);</span>
 <span class="lineNum">     592 </span>                : 
 <span class="lineNum">     593 </span>                :   <I><FONT COLOR="#B22222">/* Close files, if we opened them */</FONT></I>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            4018: branch 0 taken</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1611: branch 0 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-</span><span class="lineNum">     594 </span><span class="lineCov">            4018:   <B><FONT COLOR="#A020F0">if</FONT></B> (input_file != stdin)</span>
-<span class="lineNum">     595 </span><span class="lineCov">            4018:     fclose(input_file);</span>
+</span><span class="lineNum">     594 </span><span class="lineCov">            1611:   <B><FONT COLOR="#A020F0">if</FONT></B> (input_file != stdin)</span>
+<span class="lineNum">     595 </span><span class="lineCov">            1611:     fclose(input_file);</span>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            4018: branch 1 taken</span>
-</span><span class="lineNum">     596 </span><span class="lineCov">            4018:   <B><FONT COLOR="#A020F0">if</FONT></B> (output_file != stdout)</span>
+<span class="lineNum">         </span><span class="branchTaken">            1611: branch 1 taken</span>
+</span><span class="lineNum">     596 </span><span class="lineCov">            1611:   <B><FONT COLOR="#A020F0">if</FONT></B> (output_file != stdout)</span>
 <span class="lineNum">     597 </span><span class="lineNoCov">               0:     fclose(output_file);</span>
 <span class="lineNum">     598 </span>                : 
 <span class="lineNum">     599 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">PROGRESS_REPORT</FONT>
@@ -808,12 +808,12 @@
 <span class="lineNum">     602 </span>                : 
 <span class="lineNum">     603 </span>                :   <I><FONT COLOR="#B22222">/* All done. */</FONT></I>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            4018: branch 1 taken</span>
-</span><span class="lineNum">     604 </span><span class="lineCov">            4018:   exit(jerr.num_warnings ? EXIT_WARNING : EXIT_SUCCESS);</span>
+<span class="lineNum">         </span><span class="branchTaken">            1611: branch 1 taken</span>
+</span><span class="lineNum">     604 </span><span class="lineCov">            1611:   exit(jerr.num_warnings ? EXIT_WARNING : EXIT_SUCCESS);</span>
 <span class="lineNum">     605 </span>                :   <B><FONT COLOR="#A020F0">return</FONT></B> 0;			<I><FONT COLOR="#B22222">/* suppress no-return-value warnings */</FONT></I>
 <span class="lineNum">     606 </span>                : }
 </pre>
 <hr>
-Generated: 2016-04-07&nbsp;12:37 by <a href="http://minormatter.com/zcov">zcov</a><br>
+Generated: 2016-04-07&nbsp;19:56 by <a href="http://minormatter.com/zcov">zcov</a><br>
 </body>
 </html>

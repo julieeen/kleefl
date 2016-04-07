@@ -22,7 +22,7 @@
   </tr>
   <tr>
     <td bgcolor=#ACACFF> <b>Generated:</b> </td>
-    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;12:37 </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;19:56 </td>
     <td width="30"></td>
     <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
     <td bgcolor=#F0F0FF align=right> <b>0.0%<b> </td>
@@ -47,7 +47,7 @@
     <td bgcolor=#F0F0FF> 1 </td>
     <td width="30"></td>
     <td bgcolor=#ACACFF> <b>Runs</b> </td>
-    <td bgcolor=#F0F0FF align=right> 13688 </td>
+    <td bgcolor=#F0F0FF align=right> 6378 </td>
   </tr>
 </table>
 </center>
@@ -89,16 +89,16 @@
 <span class="lineNum">      32 </span>                :  */</FONT></I>
 <span class="lineNum">      33 </span>                : 
 <span class="lineNum">      34 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B> *)
-<span class="lineNum">      35 </span><span class="lineCov">           87589: <B><FONT COLOR="#0000FF">jpeg_get_small</FONT></B> (j_common_ptr cinfo, size_t sizeofobject)</span>
+<span class="lineNum">      35 </span><span class="lineCov">           40801: <B><FONT COLOR="#0000FF">jpeg_get_small</FONT></B> (j_common_ptr cinfo, size_t sizeofobject)</span>
 <span class="lineNum">      36 </span>                : {
-<span class="lineNum">      37 </span><span class="lineCov">           87589:   <B><FONT COLOR="#A020F0">return</FONT></B> (<B><FONT COLOR="#228B22">void</FONT></B> *) malloc(sizeofobject);</span>
+<span class="lineNum">      37 </span><span class="lineCov">           40801:   <B><FONT COLOR="#A020F0">return</FONT></B> (<B><FONT COLOR="#228B22">void</FONT></B> *) malloc(sizeofobject);</span>
 <span class="lineNum">      38 </span>                : }
 <span class="lineNum">      39 </span>                : 
 <span class="lineNum">      40 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">      41 </span><span class="lineCov">           86780: <B><FONT COLOR="#0000FF">jpeg_free_small</FONT></B> (j_common_ptr cinfo, <B><FONT COLOR="#228B22">void</FONT></B> * object, size_t sizeofobject)</span>
+<span class="lineNum">      41 </span><span class="lineCov">           40542: <B><FONT COLOR="#0000FF">jpeg_free_small</FONT></B> (j_common_ptr cinfo, <B><FONT COLOR="#228B22">void</FONT></B> * object, size_t sizeofobject)</span>
 <span class="lineNum">      42 </span>                : {
-<span class="lineNum">      43 </span><span class="lineCov">           86780:   free(object);</span>
-<span class="lineNum">      44 </span><span class="lineCov">           86780: }</span>
+<span class="lineNum">      43 </span><span class="lineCov">           40542:   free(object);</span>
+<span class="lineNum">      44 </span><span class="lineCov">           40542: }</span>
 <span class="lineNum">      45 </span>                : 
 <span class="lineNum">      46 </span>                : 
 <span class="lineNum">      47 </span>                : <I><FONT COLOR="#B22222">/*
@@ -109,16 +109,16 @@
 <span class="lineNum">      52 </span>                :  */</FONT></I>
 <span class="lineNum">      53 </span>                : 
 <span class="lineNum">      54 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B> FAR *)
-<span class="lineNum">      55 </span><span class="lineCov">           54299: <B><FONT COLOR="#0000FF">jpeg_get_large</FONT></B> (j_common_ptr cinfo, size_t sizeofobject)</span>
+<span class="lineNum">      55 </span><span class="lineCov">           26596: <B><FONT COLOR="#0000FF">jpeg_get_large</FONT></B> (j_common_ptr cinfo, size_t sizeofobject)</span>
 <span class="lineNum">      56 </span>                : {
-<span class="lineNum">      57 </span><span class="lineCov">           54299:   <B><FONT COLOR="#A020F0">return</FONT></B> (<B><FONT COLOR="#228B22">void</FONT></B> FAR *) malloc(sizeofobject);</span>
+<span class="lineNum">      57 </span><span class="lineCov">           26596:   <B><FONT COLOR="#A020F0">return</FONT></B> (<B><FONT COLOR="#228B22">void</FONT></B> FAR *) malloc(sizeofobject);</span>
 <span class="lineNum">      58 </span>                : }
 <span class="lineNum">      59 </span>                : 
 <span class="lineNum">      60 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">      61 </span><span class="lineCov">           54212: <B><FONT COLOR="#0000FF">jpeg_free_large</FONT></B> (j_common_ptr cinfo, <B><FONT COLOR="#228B22">void</FONT></B> FAR * object, size_t sizeofobject)</span>
+<span class="lineNum">      61 </span><span class="lineCov">           26570: <B><FONT COLOR="#0000FF">jpeg_free_large</FONT></B> (j_common_ptr cinfo, <B><FONT COLOR="#228B22">void</FONT></B> FAR * object, size_t sizeofobject)</span>
 <span class="lineNum">      62 </span>                : {
-<span class="lineNum">      63 </span><span class="lineCov">           54212:   free(object);</span>
-<span class="lineNum">      64 </span><span class="lineCov">           54212: }</span>
+<span class="lineNum">      63 </span><span class="lineCov">           26570:   free(object);</span>
+<span class="lineNum">      64 </span><span class="lineCov">           26570: }</span>
 <span class="lineNum">      65 </span>                : 
 <span class="lineNum">      66 </span>                : 
 <span class="lineNum">      67 </span>                : <I><FONT COLOR="#B22222">/*
@@ -127,10 +127,10 @@
 <span class="lineNum">      70 </span>                :  */</FONT></I>
 <span class="lineNum">      71 </span>                : 
 <span class="lineNum">      72 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">long</FONT></B>)
-<span class="lineNum">      73 </span><span class="lineCov">            3218: <B><FONT COLOR="#0000FF">jpeg_mem_available</FONT></B> (j_common_ptr cinfo, <B><FONT COLOR="#228B22">long</FONT></B> min_bytes_needed,</span>
+<span class="lineNum">      73 </span><span class="lineCov">            1894: <B><FONT COLOR="#0000FF">jpeg_mem_available</FONT></B> (j_common_ptr cinfo, <B><FONT COLOR="#228B22">long</FONT></B> min_bytes_needed,</span>
 <span class="lineNum">      74 </span>                : 		    <B><FONT COLOR="#228B22">long</FONT></B> max_bytes_needed, <B><FONT COLOR="#228B22">long</FONT></B> already_allocated)
 <span class="lineNum">      75 </span>                : {
-<span class="lineNum">      76 </span><span class="lineCov">            3218:   <B><FONT COLOR="#A020F0">return</FONT></B> max_bytes_needed;</span>
+<span class="lineNum">      76 </span><span class="lineCov">            1894:   <B><FONT COLOR="#A020F0">return</FONT></B> max_bytes_needed;</span>
 <span class="lineNum">      77 </span>                : }
 <span class="lineNum">      78 </span>                : 
 <span class="lineNum">      79 </span>                : 
@@ -154,18 +154,18 @@
 <span class="lineNum">      97 </span>                :  */</FONT></I>
 <span class="lineNum">      98 </span>                : 
 <span class="lineNum">      99 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">long</FONT></B>)
-<span class="lineNum">     100 </span><span class="lineCov">           13688: <B><FONT COLOR="#0000FF">jpeg_mem_init</FONT></B> (j_common_ptr cinfo)</span>
+<span class="lineNum">     100 </span><span class="lineCov">            6378: <B><FONT COLOR="#0000FF">jpeg_mem_init</FONT></B> (j_common_ptr cinfo)</span>
 <span class="lineNum">     101 </span>                : {
-<span class="lineNum">     102 </span><span class="lineCov">           13688:   <B><FONT COLOR="#A020F0">return</FONT></B> 0;			<I><FONT COLOR="#B22222">/* just set max_memory_to_use to 0 */</FONT></I></span>
+<span class="lineNum">     102 </span><span class="lineCov">            6378:   <B><FONT COLOR="#A020F0">return</FONT></B> 0;			<I><FONT COLOR="#B22222">/* just set max_memory_to_use to 0 */</FONT></I></span>
 <span class="lineNum">     103 </span>                : }
 <span class="lineNum">     104 </span>                : 
 <span class="lineNum">     105 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     106 </span><span class="lineCov">           13549: <B><FONT COLOR="#0000FF">jpeg_mem_term</FONT></B> (j_common_ptr cinfo)</span>
+<span class="lineNum">     106 </span><span class="lineCov">            6333: <B><FONT COLOR="#0000FF">jpeg_mem_term</FONT></B> (j_common_ptr cinfo)</span>
 <span class="lineNum">     107 </span>                : {
 <span class="lineNum">     108 </span>                :   <I><FONT COLOR="#B22222">/* no work */</FONT></I>
-<span class="lineNum">     109 </span><span class="lineCov">           13549: }</span>
+<span class="lineNum">     109 </span><span class="lineCov">            6333: }</span>
 </pre>
 <hr>
-Generated: 2016-04-07&nbsp;12:37 by <a href="http://minormatter.com/zcov">zcov</a><br>
+Generated: 2016-04-07&nbsp;19:56 by <a href="http://minormatter.com/zcov">zcov</a><br>
 </body>
 </html>

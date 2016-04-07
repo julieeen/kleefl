@@ -22,7 +22,7 @@
   </tr>
   <tr>
     <td bgcolor=#ACACFF> <b>Generated:</b> </td>
-    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;12:37 </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;19:56 </td>
     <td width="30"></td>
     <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
     <td bgcolor=#F0F0FF align=right> <b>1.7%<b> </td>
@@ -47,7 +47,7 @@
     <td bgcolor=#F0F0FF> 1 </td>
     <td width="30"></td>
     <td bgcolor=#ACACFF> <b>Runs</b> </td>
-    <td bgcolor=#F0F0FF align=right> 13685 </td>
+    <td bgcolor=#F0F0FF align=right> 6378 </td>
   </tr>
 </table>
 </center>
@@ -143,7 +143,7 @@
 <span class="lineNum">      70 </span>                : 
 <span class="lineNum">      71 </span>                : 
 <span class="lineNum">      72 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(boolean)
-<span class="lineNum">      73 </span><span class="lineCov">              96: <B><FONT COLOR="#0000FF">read_quant_tables</FONT></B> (j_compress_ptr cinfo, <B><FONT COLOR="#228B22">char</FONT></B> * filename,</span>
+<span class="lineNum">      73 </span><span class="lineCov">              30: <B><FONT COLOR="#0000FF">read_quant_tables</FONT></B> (j_compress_ptr cinfo, <B><FONT COLOR="#228B22">char</FONT></B> * filename,</span>
 <span class="lineNum">      74 </span>                : 		   <B><FONT COLOR="#228B22">int</FONT></B> scale_factor, boolean force_baseline)
 <span class="lineNum">      75 </span>                : <I><FONT COLOR="#B22222">/* Read a set of quantization tables from the specified file.
 <span class="lineNum">      76 </span>                :  * The file is plain ASCII text: decimal numbers with whitespace between.
@@ -160,11 +160,11 @@
 <span class="lineNum">      87 </span>                :   <B><FONT COLOR="#228B22">long</FONT></B> val;
 <span class="lineNum">      88 </span>                :   <B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> table[DCTSIZE2];
 <span class="lineNum">      89 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">              96: branch 1 taken</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">              30: branch 1 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
-</span><span class="lineNum">      90 </span><span class="lineCov">              96:   <B><FONT COLOR="#A020F0">if</FONT></B> ((fp = fopen(filename, <B><FONT COLOR="#BC8F8F">&quot;r&quot;</FONT></B>)) == NULL) {</span>
-<span class="lineNum">      91 </span><span class="lineCov">              96:     fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;Can't open table file %s\n&quot;</FONT></B>, filename);</span>
-<span class="lineNum">      92 </span><span class="lineCov">              96:     <B><FONT COLOR="#A020F0">return</FONT></B> FALSE;</span>
+</span><span class="lineNum">      90 </span><span class="lineCov">              30:   <B><FONT COLOR="#A020F0">if</FONT></B> ((fp = fopen(filename, <B><FONT COLOR="#BC8F8F">&quot;r&quot;</FONT></B>)) == NULL) {</span>
+<span class="lineNum">      91 </span><span class="lineCov">              30:     fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;Can't open table file %s\n&quot;</FONT></B>, filename);</span>
+<span class="lineNum">      92 </span><span class="lineCov">              30:     <B><FONT COLOR="#A020F0">return</FONT></B> FALSE;</span>
 <span class="lineNum">      93 </span>                :   }
 <span class="lineNum">      94 </span><span class="lineNoCov">               0:   tblno = 0;</span>
 <span class="lineNum">      95 </span>                : 
@@ -509,6 +509,6 @@
 <span class="lineNum">     332 </span>                : }
 </pre>
 <hr>
-Generated: 2016-04-07&nbsp;12:37 by <a href="http://minormatter.com/zcov">zcov</a><br>
+Generated: 2016-04-07&nbsp;19:56 by <a href="http://minormatter.com/zcov">zcov</a><br>
 </body>
 </html>

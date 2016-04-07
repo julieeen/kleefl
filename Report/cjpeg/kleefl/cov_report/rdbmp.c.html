@@ -22,7 +22,7 @@
   </tr>
   <tr>
     <td bgcolor=#ACACFF> <b>Generated:</b> </td>
-    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;12:37 </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;19:56 </td>
     <td width="30"></td>
     <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
     <td bgcolor=#F0F0FF align=right> <b>13.7%<b> </td>
@@ -47,7 +47,7 @@
     <td bgcolor=#F0F0FF> 1 </td>
     <td width="30"></td>
     <td bgcolor=#ACACFF> <b>Runs</b> </td>
-    <td bgcolor=#F0F0FF align=right> 13685 </td>
+    <td bgcolor=#F0F0FF align=right> 6378 </td>
   </tr>
 </table>
 </center>
@@ -321,9 +321,9 @@
 <span class="lineNum">     238 </span>                :  */</FONT></I>
 <span class="lineNum">     239 </span>                : 
 <span class="lineNum">     240 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     241 </span><span class="lineCov">             189: <B><FONT COLOR="#0000FF">start_input_bmp</FONT></B> (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)</span>
+<span class="lineNum">     241 </span><span class="lineCov">              75: <B><FONT COLOR="#0000FF">start_input_bmp</FONT></B> (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)</span>
 <span class="lineNum">     242 </span>                : {
-<span class="lineNum">     243 </span><span class="lineCov">             189:   bmp_source_ptr source = (bmp_source_ptr) sinfo;</span>
+<span class="lineNum">     243 </span><span class="lineCov">              75:   bmp_source_ptr source = (bmp_source_ptr) sinfo;</span>
 <span class="lineNum">     244 </span>                :   U_CHAR bmpfileheader[14];
 <span class="lineNum">     245 </span>                :   U_CHAR bmpinfoheader[64];
 <span class="lineNum">     246 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <B><FONT COLOR="#0000FF">GET_2B</FONT></B>(array,offset)  ((unsigned int) UCH(array[offset]) + \
@@ -334,42 +334,42 @@
 <span class="lineNum">     251 </span>                : 			       (((INT32) UCH(array[offset+3])) &lt;&lt; 24))
 <span class="lineNum">     252 </span>                :   INT32 bfOffBits;
 <span class="lineNum">     253 </span>                :   INT32 headerSize;
-<span class="lineNum">     254 </span><span class="lineCov">             189:   INT32 biWidth = 0;		<I><FONT COLOR="#B22222">/* initialize to avoid compiler warning */</FONT></I></span>
-<span class="lineNum">     255 </span><span class="lineCov">             189:   INT32 biHeight = 0;</span>
+<span class="lineNum">     254 </span><span class="lineCov">              75:   INT32 biWidth = 0;		<I><FONT COLOR="#B22222">/* initialize to avoid compiler warning */</FONT></I></span>
+<span class="lineNum">     255 </span><span class="lineCov">              75:   INT32 biHeight = 0;</span>
 <span class="lineNum">     256 </span>                :   <B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> biPlanes;
 <span class="lineNum">     257 </span>                :   INT32 biCompression;
 <span class="lineNum">     258 </span>                :   INT32 biXPelsPerMeter,biYPelsPerMeter;
-<span class="lineNum">     259 </span><span class="lineCov">             189:   INT32 biClrUsed = 0;</span>
-<span class="lineNum">     260 </span><span class="lineCov">             189:   <B><FONT COLOR="#228B22">int</FONT></B> mapentrysize = 0;		<I><FONT COLOR="#B22222">/* 0 indicates no colormap */</FONT></I></span>
+<span class="lineNum">     259 </span><span class="lineCov">              75:   INT32 biClrUsed = 0;</span>
+<span class="lineNum">     260 </span><span class="lineCov">              75:   <B><FONT COLOR="#228B22">int</FONT></B> mapentrysize = 0;		<I><FONT COLOR="#B22222">/* 0 indicates no colormap */</FONT></I></span>
 <span class="lineNum">     261 </span>                :   INT32 bPad;
 <span class="lineNum">     262 </span>                :   JDIMENSION row_width;
 <span class="lineNum">     263 </span>                : 
 <span class="lineNum">     264 </span>                :   <I><FONT COLOR="#B22222">/* Read and verify the bitmap file header */</FONT></I>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">              88: branch 1 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">             101: branch 2 taken</span>
-</span><span class="lineNum">     265 </span><span class="lineCov">             189:   <B><FONT COLOR="#A020F0">if</FONT></B> (! ReadOK(source-&gt;pub.input_file, bmpfileheader, 14))</span>
-<span class="lineNum">     266 </span><span class="lineCov">              88:     ERREXIT(cinfo, JERR_INPUT_EOF);</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">              45: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">              56: branch 1 taken</span>
-</span><span class="lineNum">     267 </span><span class="lineCov">             101:   <B><FONT COLOR="#A020F0">if</FONT></B> (GET_2B(bmpfileheader,0) != 0x4D42) <I><FONT COLOR="#B22222">/* 'BM' */</FONT></I></span>
-<span class="lineNum">     268 </span><span class="lineCov">              45:     ERREXIT(cinfo, JERR_BMP_NOT);</span>
-<span class="lineNum">     269 </span><span class="lineCov">              56:   bfOffBits = (INT32) GET_4B(bmpfileheader,10);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">              30: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">              45: branch 2 taken</span>
+</span><span class="lineNum">     265 </span><span class="lineCov">              75:   <B><FONT COLOR="#A020F0">if</FONT></B> (! ReadOK(source-&gt;pub.input_file, bmpfileheader, 14))</span>
+<span class="lineNum">     266 </span><span class="lineCov">              30:     ERREXIT(cinfo, JERR_INPUT_EOF);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">              15: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">              30: branch 1 taken</span>
+</span><span class="lineNum">     267 </span><span class="lineCov">              45:   <B><FONT COLOR="#A020F0">if</FONT></B> (GET_2B(bmpfileheader,0) != 0x4D42) <I><FONT COLOR="#B22222">/* 'BM' */</FONT></I></span>
+<span class="lineNum">     268 </span><span class="lineCov">              15:     ERREXIT(cinfo, JERR_BMP_NOT);</span>
+<span class="lineNum">     269 </span><span class="lineCov">              30:   bfOffBits = (INT32) GET_4B(bmpfileheader,10);</span>
 <span class="lineNum">     270 </span>                :   <I><FONT COLOR="#B22222">/* We ignore the remaining fileheader fields */</FONT></I>
 <span class="lineNum">     271 </span>                : 
 <span class="lineNum">     272 </span>                :   <I><FONT COLOR="#B22222">/* The infoheader might be 12 bytes (OS/2 1.x), 40 bytes (Windows),
 <span class="lineNum">     273 </span>                :    * or 64 bytes (OS/2 2.x).  Check the first 4 bytes to find out which.
 <span class="lineNum">     274 </span>                :    */</FONT></I>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">              28: branch 1 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">              28: branch 2 taken</span>
-</span><span class="lineNum">     275 </span><span class="lineCov">              56:   <B><FONT COLOR="#A020F0">if</FONT></B> (! ReadOK(source-&gt;pub.input_file, bmpinfoheader, 4))</span>
-<span class="lineNum">     276 </span><span class="lineCov">              28:     ERREXIT(cinfo, JERR_INPUT_EOF);</span>
-<span class="lineNum">     277 </span><span class="lineCov">              28:   headerSize = (INT32) GET_4B(bmpinfoheader,0);</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">              28: branch 0 taken</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">              15: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">              15: branch 2 taken</span>
+</span><span class="lineNum">     275 </span><span class="lineCov">              30:   <B><FONT COLOR="#A020F0">if</FONT></B> (! ReadOK(source-&gt;pub.input_file, bmpinfoheader, 4))</span>
+<span class="lineNum">     276 </span><span class="lineCov">              15:     ERREXIT(cinfo, JERR_INPUT_EOF);</span>
+<span class="lineNum">     277 </span><span class="lineCov">              15:   headerSize = (INT32) GET_4B(bmpinfoheader,0);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">              15: branch 0 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">              28: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">              15: branch 2 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
-</span><span class="lineNum">     278 </span><span class="lineCov">              28:   <B><FONT COLOR="#A020F0">if</FONT></B> (headerSize &lt; 12 || headerSize &gt; 64)</span>
-<span class="lineNum">     279 </span><span class="lineCov">              28:     ERREXIT(cinfo, JERR_BMP_BADHEADER);</span>
+</span><span class="lineNum">     278 </span><span class="lineCov">              15:   <B><FONT COLOR="#A020F0">if</FONT></B> (headerSize &lt; 12 || headerSize &gt; 64)</span>
+<span class="lineNum">     279 </span><span class="lineCov">              15:     ERREXIT(cinfo, JERR_BMP_BADHEADER);</span>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
 </span><span class="lineNum">     280 </span><span class="lineNoCov">               0:   <B><FONT COLOR="#A020F0">if</FONT></B> (! ReadOK(source-&gt;pub.input_file, bmpinfoheader+4, headerSize-4))</span>
@@ -550,25 +550,25 @@
 <span class="lineNum">     420 </span>                :  */</FONT></I>
 <span class="lineNum">     421 </span>                : 
 <span class="lineNum">     422 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(cjpeg_source_ptr)
-<span class="lineNum">     423 </span><span class="lineCov">             189: <B><FONT COLOR="#0000FF">jinit_read_bmp</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     423 </span><span class="lineCov">              75: <B><FONT COLOR="#0000FF">jinit_read_bmp</FONT></B> (j_compress_ptr cinfo)</span>
 <span class="lineNum">     424 </span>                : {
 <span class="lineNum">     425 </span>                :   bmp_source_ptr source;
 <span class="lineNum">     426 </span>                : 
 <span class="lineNum">     427 </span>                :   <I><FONT COLOR="#B22222">/* Create module interface object */</FONT></I>
-<span class="lineNum">     428 </span><span class="lineCov">             189:   source = (bmp_source_ptr)</span>
-<span class="lineNum">     429 </span><span class="lineCov">             189:       (*cinfo-&gt;mem-&gt;alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
+<span class="lineNum">     428 </span><span class="lineCov">              75:   source = (bmp_source_ptr)</span>
+<span class="lineNum">     429 </span><span class="lineCov">              75:       (*cinfo-&gt;mem-&gt;alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
 <span class="lineNum">     430 </span>                : 				  SIZEOF(bmp_source_struct));
-<span class="lineNum">     431 </span><span class="lineCov">             189:   source-&gt;cinfo = cinfo;	<I><FONT COLOR="#B22222">/* make back link for subroutines */</FONT></I></span>
+<span class="lineNum">     431 </span><span class="lineCov">              75:   source-&gt;cinfo = cinfo;	<I><FONT COLOR="#B22222">/* make back link for subroutines */</FONT></I></span>
 <span class="lineNum">     432 </span>                :   <I><FONT COLOR="#B22222">/* Fill in method ptrs, except get_pixel_rows which start_input sets */</FONT></I>
-<span class="lineNum">     433 </span><span class="lineCov">             189:   source-&gt;pub.start_input = start_input_bmp;</span>
-<span class="lineNum">     434 </span><span class="lineCov">             189:   source-&gt;pub.finish_input = finish_input_bmp;</span>
+<span class="lineNum">     433 </span><span class="lineCov">              75:   source-&gt;pub.start_input = start_input_bmp;</span>
+<span class="lineNum">     434 </span><span class="lineCov">              75:   source-&gt;pub.finish_input = finish_input_bmp;</span>
 <span class="lineNum">     435 </span>                : 
-<span class="lineNum">     436 </span><span class="lineCov">             189:   <B><FONT COLOR="#A020F0">return</FONT></B> (cjpeg_source_ptr) source;</span>
+<span class="lineNum">     436 </span><span class="lineCov">              75:   <B><FONT COLOR="#A020F0">return</FONT></B> (cjpeg_source_ptr) source;</span>
 <span class="lineNum">     437 </span>                : }
 <span class="lineNum">     438 </span>                : 
 <span class="lineNum">     439 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B> <I><FONT COLOR="#B22222">/* BMP_SUPPORTED */</FONT></I>
 </pre>
 <hr>
-Generated: 2016-04-07&nbsp;12:37 by <a href="http://minormatter.com/zcov">zcov</a><br>
+Generated: 2016-04-07&nbsp;19:56 by <a href="http://minormatter.com/zcov">zcov</a><br>
 </body>
 </html>

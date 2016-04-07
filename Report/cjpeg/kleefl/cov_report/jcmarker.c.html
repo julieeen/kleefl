@@ -22,7 +22,7 @@
   </tr>
   <tr>
     <td bgcolor=#ACACFF> <b>Generated:</b> </td>
-    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;12:37 </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;19:56 </td>
     <td width="30"></td>
     <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
     <td bgcolor=#F0F0FF align=right> <b>79.6%<b> </td>
@@ -47,7 +47,7 @@
     <td bgcolor=#F0F0FF> 1 </td>
     <td width="30"></td>
     <td bgcolor=#ACACFF> <b>Runs</b> </td>
-    <td bgcolor=#F0F0FF align=right> 13686 </td>
+    <td bgcolor=#F0F0FF align=right> 6378 </td>
   </tr>
 </table>
 </center>
@@ -162,39 +162,39 @@
 <span class="lineNum">     105 </span>                :  */</FONT></I>
 <span class="lineNum">     106 </span>                : 
 <span class="lineNum">     107 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     108 </span><span class="lineCov">         2851497: <B><FONT COLOR="#0000FF">emit_byte</FONT></B> (j_compress_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> val)</span>
+<span class="lineNum">     108 </span><span class="lineCov">         1306935: <B><FONT COLOR="#0000FF">emit_byte</FONT></B> (j_compress_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> val)</span>
 <span class="lineNum">     109 </span>                : <I><FONT COLOR="#B22222">/* Emit a byte */</FONT></I>
 <span class="lineNum">     110 </span>                : {
-<span class="lineNum">     111 </span><span class="lineCov">         2851497:   <B><FONT COLOR="#228B22">struct</FONT></B> jpeg_destination_mgr * dest = cinfo-&gt;dest;</span>
+<span class="lineNum">     111 </span><span class="lineCov">         1306935:   <B><FONT COLOR="#228B22">struct</FONT></B> jpeg_destination_mgr * dest = cinfo-&gt;dest;</span>
 <span class="lineNum">     112 </span>                : 
-<span class="lineNum">     113 </span><span class="lineCov">         2851497:   *(dest-&gt;next_output_byte)++ = (JOCTET) val;</span>
+<span class="lineNum">     113 </span><span class="lineCov">         1306935:   *(dest-&gt;next_output_byte)++ = (JOCTET) val;</span>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">         2851497: branch 1 taken</span>
-</span><span class="lineNum">     114 </span><span class="lineCov">         2851497:   <B><FONT COLOR="#A020F0">if</FONT></B> (--dest-&gt;free_in_buffer == 0) {</span>
+<span class="lineNum">         </span><span class="branchTaken">         1306935: branch 1 taken</span>
+</span><span class="lineNum">     114 </span><span class="lineCov">         1306935:   <B><FONT COLOR="#A020F0">if</FONT></B> (--dest-&gt;free_in_buffer == 0) {</span>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
 </span><span class="lineNum">     115 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (! (*dest-&gt;empty_output_buffer) (cinfo))</span>
 <span class="lineNum">     116 </span><span class="lineNoCov">               0:       ERREXIT(cinfo, JERR_CANT_SUSPEND);</span>
 <span class="lineNum">     117 </span>                :   }
-<span class="lineNum">     118 </span><span class="lineCov">         2851497: }</span>
+<span class="lineNum">     118 </span><span class="lineCov">         1306935: }</span>
 <span class="lineNum">     119 </span>                : 
 <span class="lineNum">     120 </span>                : 
 <span class="lineNum">     121 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     122 </span><span class="lineCov">           68606: <B><FONT COLOR="#0000FF">emit_marker</FONT></B> (j_compress_ptr cinfo, JPEG_MARKER mark)</span>
+<span class="lineNum">     122 </span><span class="lineCov">           30712: <B><FONT COLOR="#0000FF">emit_marker</FONT></B> (j_compress_ptr cinfo, JPEG_MARKER mark)</span>
 <span class="lineNum">     123 </span>                : <I><FONT COLOR="#B22222">/* Emit a marker code */</FONT></I>
 <span class="lineNum">     124 </span>                : {
-<span class="lineNum">     125 </span><span class="lineCov">           68606:   emit_byte(cinfo, 0xFF);</span>
-<span class="lineNum">     126 </span><span class="lineCov">           68606:   emit_byte(cinfo, (<B><FONT COLOR="#228B22">int</FONT></B>) mark);</span>
-<span class="lineNum">     127 </span><span class="lineCov">           68606: }</span>
+<span class="lineNum">     125 </span><span class="lineCov">           30712:   emit_byte(cinfo, 0xFF);</span>
+<span class="lineNum">     126 </span><span class="lineCov">           30712:   emit_byte(cinfo, (<B><FONT COLOR="#228B22">int</FONT></B>) mark);</span>
+<span class="lineNum">     127 </span><span class="lineCov">           30712: }</span>
 <span class="lineNum">     128 </span>                : 
 <span class="lineNum">     129 </span>                : 
 <span class="lineNum">     130 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     131 </span><span class="lineCov">           86457: <B><FONT COLOR="#0000FF">emit_2bytes</FONT></B> (j_compress_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> value)</span>
+<span class="lineNum">     131 </span><span class="lineCov">           39687: <B><FONT COLOR="#0000FF">emit_2bytes</FONT></B> (j_compress_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> value)</span>
 <span class="lineNum">     132 </span>                : <I><FONT COLOR="#B22222">/* Emit a 2-byte integer; these are always MSB first in JPEG files */</FONT></I>
 <span class="lineNum">     133 </span>                : {
-<span class="lineNum">     134 </span><span class="lineCov">           86457:   emit_byte(cinfo, (value &gt;&gt; 8) &amp; 0xFF);</span>
-<span class="lineNum">     135 </span><span class="lineCov">           86457:   emit_byte(cinfo, value &amp; 0xFF);</span>
-<span class="lineNum">     136 </span><span class="lineCov">           86457: }</span>
+<span class="lineNum">     134 </span><span class="lineCov">           39687:   emit_byte(cinfo, (value &gt;&gt; 8) &amp; 0xFF);</span>
+<span class="lineNum">     135 </span><span class="lineCov">           39687:   emit_byte(cinfo, value &amp; 0xFF);</span>
+<span class="lineNum">     136 </span><span class="lineCov">           39687: }</span>
 <span class="lineNum">     137 </span>                : 
 <span class="lineNum">     138 </span>                : 
 <span class="lineNum">     139 </span>                : <I><FONT COLOR="#B22222">/*
@@ -202,107 +202,107 @@
 <span class="lineNum">     141 </span>                :  */</FONT></I>
 <span class="lineNum">     142 </span>                : 
 <span class="lineNum">     143 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">int</FONT></B>)
-<span class="lineNum">     144 </span><span class="lineCov">           11640: <B><FONT COLOR="#0000FF">emit_dqt</FONT></B> (j_compress_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> index)</span>
+<span class="lineNum">     144 </span><span class="lineCov">            5513: <B><FONT COLOR="#0000FF">emit_dqt</FONT></B> (j_compress_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> index)</span>
 <span class="lineNum">     145 </span>                : <I><FONT COLOR="#B22222">/* Emit a DQT marker */</FONT></I>
 <span class="lineNum">     146 </span>                : <I><FONT COLOR="#B22222">/* Returns the precision used (0 = 8bits, 1 = 16bits) for baseline checking */</FONT></I>
 <span class="lineNum">     147 </span>                : {
-<span class="lineNum">     148 </span><span class="lineCov">           11640:   JQUANT_TBL * qtbl = cinfo-&gt;quant_tbl_ptrs[index];</span>
+<span class="lineNum">     148 </span><span class="lineCov">            5513:   JQUANT_TBL * qtbl = cinfo-&gt;quant_tbl_ptrs[index];</span>
 <span class="lineNum">     149 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> prec;
 <span class="lineNum">     150 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> i;
 <span class="lineNum">     151 </span>                : 
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           11640: branch 1 taken</span>
-</span><span class="lineNum">     152 </span><span class="lineCov">           11640:   <B><FONT COLOR="#A020F0">if</FONT></B> (qtbl == NULL)</span>
+<span class="lineNum">         </span><span class="branchTaken">            5513: branch 1 taken</span>
+</span><span class="lineNum">     152 </span><span class="lineCov">            5513:   <B><FONT COLOR="#A020F0">if</FONT></B> (qtbl == NULL)</span>
 <span class="lineNum">     153 </span><span class="lineNoCov">               0:     ERREXIT1(cinfo, JERR_NO_QUANT_TABLE, index);</span>
 <span class="lineNum">     154 </span>                : 
-<span class="lineNum">     155 </span><span class="lineCov">           11640:   prec = 0;</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          744960: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           11640: branch 1 taken</span>
-</span><span class="lineNum">     156 </span><span class="lineCov">          756600:   <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; DCTSIZE2; i++) {</span>
+<span class="lineNum">     155 </span><span class="lineCov">            5513:   prec = 0;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          352832: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            5513: branch 1 taken</span>
+</span><span class="lineNum">     156 </span><span class="lineCov">          358345:   <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; DCTSIZE2; i++) {</span>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">          744960: branch 1 taken</span>
-</span><span class="lineNum">     157 </span><span class="lineCov">          744960:     <B><FONT COLOR="#A020F0">if</FONT></B> (qtbl-&gt;quantval[i] &gt; 255)</span>
+<span class="lineNum">         </span><span class="branchTaken">          352832: branch 1 taken</span>
+</span><span class="lineNum">     157 </span><span class="lineCov">          352832:     <B><FONT COLOR="#A020F0">if</FONT></B> (qtbl-&gt;quantval[i] &gt; 255)</span>
 <span class="lineNum">     158 </span><span class="lineNoCov">               0:       prec = 1;</span>
 <span class="lineNum">     159 </span>                :   }
 <span class="lineNum">     160 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            9021: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            2619: branch 1 taken</span>
-</span><span class="lineNum">     161 </span><span class="lineCov">           11640:   <B><FONT COLOR="#A020F0">if</FONT></B> (! qtbl-&gt;sent_table) {</span>
-<span class="lineNum">     162 </span><span class="lineCov">            9021:     emit_marker(cinfo, M_DQT);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            4267: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1246: branch 1 taken</span>
+</span><span class="lineNum">     161 </span><span class="lineCov">            5513:   <B><FONT COLOR="#A020F0">if</FONT></B> (! qtbl-&gt;sent_table) {</span>
+<span class="lineNum">     162 </span><span class="lineCov">            4267:     emit_marker(cinfo, M_DQT);</span>
 <span class="lineNum">     163 </span>                : 
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            9021: branch 1 taken</span>
-</span><span class="lineNum">     164 </span><span class="lineCov">            9021:     emit_2bytes(cinfo, prec ? DCTSIZE2*2 + 1 + 2 : DCTSIZE2 + 1 + 2);</span>
+<span class="lineNum">         </span><span class="branchTaken">            4267: branch 1 taken</span>
+</span><span class="lineNum">     164 </span><span class="lineCov">            4267:     emit_2bytes(cinfo, prec ? DCTSIZE2*2 + 1 + 2 : DCTSIZE2 + 1 + 2);</span>
 <span class="lineNum">     165 </span>                : 
-<span class="lineNum">     166 </span><span class="lineCov">            9021:     emit_byte(cinfo, index + (prec&lt;&lt;4));</span>
+<span class="lineNum">     166 </span><span class="lineCov">            4267:     emit_byte(cinfo, index + (prec&lt;&lt;4));</span>
 <span class="lineNum">     167 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          577344: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            9021: branch 1 taken</span>
-</span><span class="lineNum">     168 </span><span class="lineCov">          586365:     <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; DCTSIZE2; i++) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          273088: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4267: branch 1 taken</span>
+</span><span class="lineNum">     168 </span><span class="lineCov">          277355:     <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; DCTSIZE2; i++) {</span>
 <span class="lineNum">     169 </span>                :       <I><FONT COLOR="#B22222">/* The table entries must be emitted in zigzag order. */</FONT></I>
-<span class="lineNum">     170 </span><span class="lineCov">          577344:       <B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> qval = qtbl-&gt;quantval[jpeg_natural_order[i]];</span>
+<span class="lineNum">     170 </span><span class="lineCov">          273088:       <B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> qval = qtbl-&gt;quantval[jpeg_natural_order[i]];</span>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">          577344: branch 1 taken</span>
-</span><span class="lineNum">     171 </span><span class="lineCov">          577344:       <B><FONT COLOR="#A020F0">if</FONT></B> (prec)</span>
+<span class="lineNum">         </span><span class="branchTaken">          273088: branch 1 taken</span>
+</span><span class="lineNum">     171 </span><span class="lineCov">          273088:       <B><FONT COLOR="#A020F0">if</FONT></B> (prec)</span>
 <span class="lineNum">     172 </span><span class="lineNoCov">               0: 	emit_byte(cinfo, (<B><FONT COLOR="#228B22">int</FONT></B>) (qval &gt;&gt; 8));</span>
-<span class="lineNum">     173 </span><span class="lineCov">          577344:       emit_byte(cinfo, (<B><FONT COLOR="#228B22">int</FONT></B>) (qval &amp; 0xFF));</span>
+<span class="lineNum">     173 </span><span class="lineCov">          273088:       emit_byte(cinfo, (<B><FONT COLOR="#228B22">int</FONT></B>) (qval &amp; 0xFF));</span>
 <span class="lineNum">     174 </span>                :     }
 <span class="lineNum">     175 </span>                : 
-<span class="lineNum">     176 </span><span class="lineCov">            9021:     qtbl-&gt;sent_table = TRUE;</span>
+<span class="lineNum">     176 </span><span class="lineCov">            4267:     qtbl-&gt;sent_table = TRUE;</span>
 <span class="lineNum">     177 </span>                :   }
 <span class="lineNum">     178 </span>                : 
-<span class="lineNum">     179 </span><span class="lineCov">           11640:   <B><FONT COLOR="#A020F0">return</FONT></B> prec;</span>
+<span class="lineNum">     179 </span><span class="lineCov">            5513:   <B><FONT COLOR="#A020F0">return</FONT></B> prec;</span>
 <span class="lineNum">     180 </span>                : }
 <span class="lineNum">     181 </span>                : 
 <span class="lineNum">     182 </span>                : 
 <span class="lineNum">     183 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     184 </span><span class="lineCov">           25581: <B><FONT COLOR="#0000FF">emit_dht</FONT></B> (j_compress_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> index, boolean is_ac)</span>
+<span class="lineNum">     184 </span><span class="lineCov">           11446: <B><FONT COLOR="#0000FF">emit_dht</FONT></B> (j_compress_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> index, boolean is_ac)</span>
 <span class="lineNum">     185 </span>                : <I><FONT COLOR="#B22222">/* Emit a DHT marker */</FONT></I>
 <span class="lineNum">     186 </span>                : {
 <span class="lineNum">     187 </span>                :   JHUFF_TBL * htbl;
 <span class="lineNum">     188 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> length, i;
 <span class="lineNum">     189 </span>                :   
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           13941: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           11640: branch 1 taken</span>
-</span><span class="lineNum">     190 </span><span class="lineCov">           25581:   <B><FONT COLOR="#A020F0">if</FONT></B> (is_ac) {</span>
-<span class="lineNum">     191 </span><span class="lineCov">           13941:     htbl = cinfo-&gt;ac_huff_tbl_ptrs[index];</span>
-<span class="lineNum">     192 </span><span class="lineCov">           13941:     index += 0x10;		<I><FONT COLOR="#B22222">/* output index has AC bit set */</FONT></I></span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            5933: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            5513: branch 1 taken</span>
+</span><span class="lineNum">     190 </span><span class="lineCov">           11446:   <B><FONT COLOR="#A020F0">if</FONT></B> (is_ac) {</span>
+<span class="lineNum">     191 </span><span class="lineCov">            5933:     htbl = cinfo-&gt;ac_huff_tbl_ptrs[index];</span>
+<span class="lineNum">     192 </span><span class="lineCov">            5933:     index += 0x10;		<I><FONT COLOR="#B22222">/* output index has AC bit set */</FONT></I></span>
 <span class="lineNum">     193 </span>                :   } <B><FONT COLOR="#A020F0">else</FONT></B> {
-<span class="lineNum">     194 </span><span class="lineCov">           11640:     htbl = cinfo-&gt;dc_huff_tbl_ptrs[index];</span>
+<span class="lineNum">     194 </span><span class="lineCov">            5513:     htbl = cinfo-&gt;dc_huff_tbl_ptrs[index];</span>
 <span class="lineNum">     195 </span>                :   }
 <span class="lineNum">     196 </span>                : 
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           25581: branch 1 taken</span>
-</span><span class="lineNum">     197 </span><span class="lineCov">           25581:   <B><FONT COLOR="#A020F0">if</FONT></B> (htbl == NULL)</span>
+<span class="lineNum">         </span><span class="branchTaken">           11446: branch 1 taken</span>
+</span><span class="lineNum">     197 </span><span class="lineCov">           11446:   <B><FONT COLOR="#A020F0">if</FONT></B> (htbl == NULL)</span>
 <span class="lineNum">     198 </span><span class="lineNoCov">               0:     ERREXIT1(cinfo, JERR_NO_HUFF_TABLE, index);</span>
 <span class="lineNum">     199 </span>                :   
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           20616: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            4965: branch 1 taken</span>
-</span><span class="lineNum">     200 </span><span class="lineCov">           25581:   <B><FONT COLOR="#A020F0">if</FONT></B> (! htbl-&gt;sent_table) {</span>
-<span class="lineNum">     201 </span><span class="lineCov">           20616:     emit_marker(cinfo, M_DHT);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            8984: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2462: branch 1 taken</span>
+</span><span class="lineNum">     200 </span><span class="lineCov">           11446:   <B><FONT COLOR="#A020F0">if</FONT></B> (! htbl-&gt;sent_table) {</span>
+<span class="lineNum">     201 </span><span class="lineCov">            8984:     emit_marker(cinfo, M_DHT);</span>
 <span class="lineNum">     202 </span>                :     
-<span class="lineNum">     203 </span><span class="lineCov">           20616:     length = 0;</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          329856: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           20616: branch 1 taken</span>
-</span><span class="lineNum">     204 </span><span class="lineCov">          350472:     <B><FONT COLOR="#A020F0">for</FONT></B> (i = 1; i &lt;= 16; i++)</span>
-<span class="lineNum">     205 </span><span class="lineCov">          329856:       length += htbl-&gt;bits[i];</span>
+<span class="lineNum">     203 </span><span class="lineCov">            8984:     length = 0;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          143744: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            8984: branch 1 taken</span>
+</span><span class="lineNum">     204 </span><span class="lineCov">          152728:     <B><FONT COLOR="#A020F0">for</FONT></B> (i = 1; i &lt;= 16; i++)</span>
+<span class="lineNum">     205 </span><span class="lineCov">          143744:       length += htbl-&gt;bits[i];</span>
 <span class="lineNum">     206 </span>                :     
-<span class="lineNum">     207 </span><span class="lineCov">           20616:     emit_2bytes(cinfo, length + 2 + 1 + 16);</span>
-<span class="lineNum">     208 </span><span class="lineCov">           20616:     emit_byte(cinfo, index);</span>
+<span class="lineNum">     207 </span><span class="lineCov">            8984:     emit_2bytes(cinfo, length + 2 + 1 + 16);</span>
+<span class="lineNum">     208 </span><span class="lineCov">            8984:     emit_byte(cinfo, index);</span>
 <span class="lineNum">     209 </span>                :     
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          329856: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           20616: branch 1 taken</span>
-</span><span class="lineNum">     210 </span><span class="lineCov">          350472:     <B><FONT COLOR="#A020F0">for</FONT></B> (i = 1; i &lt;= 16; i++)</span>
-<span class="lineNum">     211 </span><span class="lineCov">          329856:       emit_byte(cinfo, htbl-&gt;bits[i]);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          143744: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            8984: branch 1 taken</span>
+</span><span class="lineNum">     210 </span><span class="lineCov">          152728:     <B><FONT COLOR="#A020F0">for</FONT></B> (i = 1; i &lt;= 16; i++)</span>
+<span class="lineNum">     211 </span><span class="lineCov">          143744:       emit_byte(cinfo, htbl-&gt;bits[i]);</span>
 <span class="lineNum">     212 </span>                :     
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">         1392078: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           20616: branch 1 taken</span>
-</span><span class="lineNum">     213 </span><span class="lineCov">         1412694:     <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; length; i++)</span>
-<span class="lineNum">     214 </span><span class="lineCov">         1392078:       emit_byte(cinfo, htbl-&gt;huffval[i]);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          640483: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            8984: branch 1 taken</span>
+</span><span class="lineNum">     213 </span><span class="lineCov">          649467:     <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; length; i++)</span>
+<span class="lineNum">     214 </span><span class="lineCov">          640483:       emit_byte(cinfo, htbl-&gt;huffval[i]);</span>
 <span class="lineNum">     215 </span>                :     
-<span class="lineNum">     216 </span><span class="lineCov">           20616:     htbl-&gt;sent_table = TRUE;</span>
+<span class="lineNum">     216 </span><span class="lineCov">            8984:     htbl-&gt;sent_table = TRUE;</span>
 <span class="lineNum">     217 </span>                :   }
-<span class="lineNum">     218 </span><span class="lineCov">           25581: }</span>
+<span class="lineNum">     218 </span><span class="lineCov">           11446: }</span>
 <span class="lineNum">     219 </span>                : 
 <span class="lineNum">     220 </span>                : 
 <span class="lineNum">     221 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
@@ -361,95 +361,95 @@
 <span class="lineNum">     274 </span>                : 
 <span class="lineNum">     275 </span>                : 
 <span class="lineNum">     276 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     277 </span><span class="lineCov">            6402: <B><FONT COLOR="#0000FF">emit_sof</FONT></B> (j_compress_ptr cinfo, JPEG_MARKER code)</span>
+<span class="lineNum">     277 </span><span class="lineCov">            3021: <B><FONT COLOR="#0000FF">emit_sof</FONT></B> (j_compress_ptr cinfo, JPEG_MARKER code)</span>
 <span class="lineNum">     278 </span>                : <I><FONT COLOR="#B22222">/* Emit a SOF marker */</FONT></I>
 <span class="lineNum">     279 </span>                : {
 <span class="lineNum">     280 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> ci;
 <span class="lineNum">     281 </span>                :   jpeg_component_info *compptr;
 <span class="lineNum">     282 </span>                :   
-<span class="lineNum">     283 </span><span class="lineCov">            6402:   emit_marker(cinfo, code);</span>
+<span class="lineNum">     283 </span><span class="lineCov">            3021:   emit_marker(cinfo, code);</span>
 <span class="lineNum">     284 </span>                :   
-<span class="lineNum">     285 </span><span class="lineCov">            6402:   emit_2bytes(cinfo, 3 * cinfo-&gt;num_components + 2 + 5 + 1); <I><FONT COLOR="#B22222">/* length */</FONT></I></span>
+<span class="lineNum">     285 </span><span class="lineCov">            3021:   emit_2bytes(cinfo, 3 * cinfo-&gt;num_components + 2 + 5 + 1); <I><FONT COLOR="#B22222">/* length */</FONT></I></span>
 <span class="lineNum">     286 </span>                : 
 <span class="lineNum">     287 </span>                :   <I><FONT COLOR="#B22222">/* Make sure image isn't bigger than SOF field can handle */</FONT></I>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            6402: branch 0 taken</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            3021: branch 0 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            6402: branch 3 taken</span>
-</span><span class="lineNum">     288 </span><span class="lineCov">           12804:   <B><FONT COLOR="#A020F0">if</FONT></B> ((<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;image_height &gt; 65535L ||</span>
-<span class="lineNum">     289 </span><span class="lineCov">            6402:       (<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;image_width &gt; 65535L)</span>
+<span class="lineNum">         </span><span class="branchTaken">            3021: branch 3 taken</span>
+</span><span class="lineNum">     288 </span><span class="lineCov">            6042:   <B><FONT COLOR="#A020F0">if</FONT></B> ((<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;image_height &gt; 65535L ||</span>
+<span class="lineNum">     289 </span><span class="lineCov">            3021:       (<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;image_width &gt; 65535L)</span>
 <span class="lineNum">     290 </span><span class="lineNoCov">               0:     ERREXIT1(cinfo, JERR_IMAGE_TOO_BIG, (<B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B>) 65535);</span>
 <span class="lineNum">     291 </span>                : 
-<span class="lineNum">     292 </span><span class="lineCov">            6402:   emit_byte(cinfo, cinfo-&gt;data_precision);</span>
-<span class="lineNum">     293 </span><span class="lineCov">            6402:   emit_2bytes(cinfo, (<B><FONT COLOR="#228B22">int</FONT></B>) cinfo-&gt;image_height);</span>
-<span class="lineNum">     294 </span><span class="lineCov">            6402:   emit_2bytes(cinfo, (<B><FONT COLOR="#228B22">int</FONT></B>) cinfo-&gt;image_width);</span>
+<span class="lineNum">     292 </span><span class="lineCov">            3021:   emit_byte(cinfo, cinfo-&gt;data_precision);</span>
+<span class="lineNum">     293 </span><span class="lineCov">            3021:   emit_2bytes(cinfo, (<B><FONT COLOR="#228B22">int</FONT></B>) cinfo-&gt;image_height);</span>
+<span class="lineNum">     294 </span><span class="lineCov">            3021:   emit_2bytes(cinfo, (<B><FONT COLOR="#228B22">int</FONT></B>) cinfo-&gt;image_width);</span>
 <span class="lineNum">     295 </span>                : 
-<span class="lineNum">     296 </span><span class="lineCov">            6402:   emit_byte(cinfo, cinfo-&gt;num_components);</span>
+<span class="lineNum">     296 </span><span class="lineCov">            3021:   emit_byte(cinfo, cinfo-&gt;num_components);</span>
 <span class="lineNum">     297 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           11640: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            6402: branch 1 taken</span>
-</span><span class="lineNum">     298 </span><span class="lineCov">           24444:   <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0, compptr = cinfo-&gt;comp_info; ci &lt; cinfo-&gt;num_components;</span>
-<span class="lineNum">     299 </span><span class="lineCov">           11640:        ci++, compptr++) {</span>
-<span class="lineNum">     300 </span><span class="lineCov">           11640:     emit_byte(cinfo, compptr-&gt;component_id);</span>
-<span class="lineNum">     301 </span><span class="lineCov">           11640:     emit_byte(cinfo, (compptr-&gt;h_samp_factor &lt;&lt; 4) + compptr-&gt;v_samp_factor);</span>
-<span class="lineNum">     302 </span><span class="lineCov">           11640:     emit_byte(cinfo, compptr-&gt;quant_tbl_no);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            5513: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3021: branch 1 taken</span>
+</span><span class="lineNum">     298 </span><span class="lineCov">           11555:   <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0, compptr = cinfo-&gt;comp_info; ci &lt; cinfo-&gt;num_components;</span>
+<span class="lineNum">     299 </span><span class="lineCov">            5513:        ci++, compptr++) {</span>
+<span class="lineNum">     300 </span><span class="lineCov">            5513:     emit_byte(cinfo, compptr-&gt;component_id);</span>
+<span class="lineNum">     301 </span><span class="lineCov">            5513:     emit_byte(cinfo, (compptr-&gt;h_samp_factor &lt;&lt; 4) + compptr-&gt;v_samp_factor);</span>
+<span class="lineNum">     302 </span><span class="lineCov">            5513:     emit_byte(cinfo, compptr-&gt;quant_tbl_no);</span>
 <span class="lineNum">     303 </span>                :   }
-<span class="lineNum">     304 </span><span class="lineCov">            6402: }</span>
+<span class="lineNum">     304 </span><span class="lineCov">            3021: }</span>
 <span class="lineNum">     305 </span>                : 
 <span class="lineNum">     306 </span>                : 
 <span class="lineNum">     307 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     308 </span><span class="lineCov">           10419: <B><FONT COLOR="#0000FF">emit_sos</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     308 </span><span class="lineCov">            3741: <B><FONT COLOR="#0000FF">emit_sos</FONT></B> (j_compress_ptr cinfo)</span>
 <span class="lineNum">     309 </span>                : <I><FONT COLOR="#B22222">/* Emit a SOS marker */</FONT></I>
 <span class="lineNum">     310 </span>                : {
 <span class="lineNum">     311 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> i, td, ta;
 <span class="lineNum">     312 </span>                :   jpeg_component_info *compptr;
 <span class="lineNum">     313 </span>                :   
-<span class="lineNum">     314 </span><span class="lineCov">           10419:   emit_marker(cinfo, M_SOS);</span>
+<span class="lineNum">     314 </span><span class="lineCov">            3741:   emit_marker(cinfo, M_SOS);</span>
 <span class="lineNum">     315 </span>                :   
-<span class="lineNum">     316 </span><span class="lineCov">           10419:   emit_2bytes(cinfo, 2 * cinfo-&gt;comps_in_scan + 2 + 1 + 3); <I><FONT COLOR="#B22222">/* length */</FONT></I></span>
+<span class="lineNum">     316 </span><span class="lineCov">            3741:   emit_2bytes(cinfo, 2 * cinfo-&gt;comps_in_scan + 2 + 1 + 3); <I><FONT COLOR="#B22222">/* length */</FONT></I></span>
 <span class="lineNum">     317 </span>                :   
-<span class="lineNum">     318 </span><span class="lineCov">           10419:   emit_byte(cinfo, cinfo-&gt;comps_in_scan);</span>
+<span class="lineNum">     318 </span><span class="lineCov">            3741:   emit_byte(cinfo, cinfo-&gt;comps_in_scan);</span>
 <span class="lineNum">     319 </span>                :   
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           16203: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           10419: branch 1 taken</span>
-</span><span class="lineNum">     320 </span><span class="lineCov">           26622:   <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; cinfo-&gt;comps_in_scan; i++) {</span>
-<span class="lineNum">     321 </span><span class="lineCov">           16203:     compptr = cinfo-&gt;cur_comp_info[i];</span>
-<span class="lineNum">     322 </span><span class="lineCov">           16203:     emit_byte(cinfo, compptr-&gt;component_id);</span>
-<span class="lineNum">     323 </span><span class="lineCov">           16203:     td = compptr-&gt;dc_tbl_no;</span>
-<span class="lineNum">     324 </span><span class="lineCov">           16203:     ta = compptr-&gt;ac_tbl_no;</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            5694: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           10509: branch 1 taken</span>
-</span><span class="lineNum">     325 </span><span class="lineCov">           16203:     <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;progressive_mode) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            6293: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3741: branch 1 taken</span>
+</span><span class="lineNum">     320 </span><span class="lineCov">           10034:   <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; cinfo-&gt;comps_in_scan; i++) {</span>
+<span class="lineNum">     321 </span><span class="lineCov">            6293:     compptr = cinfo-&gt;cur_comp_info[i];</span>
+<span class="lineNum">     322 </span><span class="lineCov">            6293:     emit_byte(cinfo, compptr-&gt;component_id);</span>
+<span class="lineNum">     323 </span><span class="lineCov">            6293:     td = compptr-&gt;dc_tbl_no;</span>
+<span class="lineNum">     324 </span><span class="lineCov">            6293:     ta = compptr-&gt;ac_tbl_no;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             960: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            5333: branch 1 taken</span>
+</span><span class="lineNum">     325 </span><span class="lineCov">            6293:     <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;progressive_mode) {</span>
 <span class="lineNum">     326 </span>                :       <I><FONT COLOR="#B22222">/* Progressive mode: only DC or only AC tables are used in one scan;
 <span class="lineNum">     327 </span>                :        * furthermore, Huffman coding of DC refinement uses no table at all.
 <span class="lineNum">     328 </span>                :        * We emit 0 for unused field(s); this is recommended by the P&amp;M text
 <span class="lineNum">     329 </span>                :        * but does not seem to be specified in the standard.
 <span class="lineNum">     330 </span>                :        */</FONT></I>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            2262: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            3432: branch 1 taken</span>
-</span><span class="lineNum">     331 </span><span class="lineCov">            5694:       <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;Ss == 0) {</span>
-<span class="lineNum">     332 </span><span class="lineCov">            2262: 	ta = 0;			<I><FONT COLOR="#B22222">/* DC scan */</FONT></I></span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1131: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            1131: branch 1 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            1131: branch 2 taken</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             360: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             600: branch 1 taken</span>
+</span><span class="lineNum">     331 </span><span class="lineCov">             960:       <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;Ss == 0) {</span>
+<span class="lineNum">     332 </span><span class="lineCov">             360: 	ta = 0;			<I><FONT COLOR="#B22222">/* DC scan */</FONT></I></span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             180: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             180: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             180: branch 2 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
-</span><span class="lineNum">     333 </span><span class="lineCov">            2262: 	<B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;Ah != 0 &amp;&amp; !cinfo-&gt;arith_code)</span>
-<span class="lineNum">     334 </span><span class="lineCov">            1131: 	  td = 0;		<I><FONT COLOR="#B22222">/* no DC table either */</FONT></I></span>
+</span><span class="lineNum">     333 </span><span class="lineCov">             360: 	<B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;Ah != 0 &amp;&amp; !cinfo-&gt;arith_code)</span>
+<span class="lineNum">     334 </span><span class="lineCov">             180: 	  td = 0;		<I><FONT COLOR="#B22222">/* no DC table either */</FONT></I></span>
 <span class="lineNum">     335 </span>                :       } <B><FONT COLOR="#A020F0">else</FONT></B> {
-<span class="lineNum">     336 </span><span class="lineCov">            3432: 	td = 0;			<I><FONT COLOR="#B22222">/* AC scan */</FONT></I></span>
+<span class="lineNum">     336 </span><span class="lineCov">             600: 	td = 0;			<I><FONT COLOR="#B22222">/* AC scan */</FONT></I></span>
 <span class="lineNum">     337 </span>                :       }
 <span class="lineNum">     338 </span>                :     }
-<span class="lineNum">     339 </span><span class="lineCov">           16203:     emit_byte(cinfo, (td &lt;&lt; 4) + ta);</span>
+<span class="lineNum">     339 </span><span class="lineCov">            6293:     emit_byte(cinfo, (td &lt;&lt; 4) + ta);</span>
 <span class="lineNum">     340 </span>                :   }
 <span class="lineNum">     341 </span>                : 
-<span class="lineNum">     342 </span><span class="lineCov">           10419:   emit_byte(cinfo, cinfo-&gt;Ss);</span>
-<span class="lineNum">     343 </span><span class="lineCov">           10419:   emit_byte(cinfo, cinfo-&gt;Se);</span>
-<span class="lineNum">     344 </span><span class="lineCov">           10419:   emit_byte(cinfo, (cinfo-&gt;Ah &lt;&lt; 4) + cinfo-&gt;Al);</span>
-<span class="lineNum">     345 </span><span class="lineCov">           10419: }</span>
+<span class="lineNum">     342 </span><span class="lineCov">            3741:   emit_byte(cinfo, cinfo-&gt;Ss);</span>
+<span class="lineNum">     343 </span><span class="lineCov">            3741:   emit_byte(cinfo, cinfo-&gt;Se);</span>
+<span class="lineNum">     344 </span><span class="lineCov">            3741:   emit_byte(cinfo, (cinfo-&gt;Ah &lt;&lt; 4) + cinfo-&gt;Al);</span>
+<span class="lineNum">     345 </span><span class="lineCov">            3741: }</span>
 <span class="lineNum">     346 </span>                : 
 <span class="lineNum">     347 </span>                : 
 <span class="lineNum">     348 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     349 </span><span class="lineCov">            9065: <B><FONT COLOR="#0000FF">emit_jfif_app0</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     349 </span><span class="lineCov">            4544: <B><FONT COLOR="#0000FF">emit_jfif_app0</FONT></B> (j_compress_ptr cinfo)</span>
 <span class="lineNum">     350 </span>                : <I><FONT COLOR="#B22222">/* Emit a JFIF-compliant APP0 marker */</FONT></I>
 <span class="lineNum">     351 </span>                : {
 <span class="lineNum">     352 </span>                :   <I><FONT COLOR="#B22222">/*
@@ -464,23 +464,23 @@
 <span class="lineNum">     361 </span>                :    * Thumbnail Y size		(1 byte)
 <span class="lineNum">     362 </span>                :    */</FONT></I>
 <span class="lineNum">     363 </span>                :   
-<span class="lineNum">     364 </span><span class="lineCov">            9065:   emit_marker(cinfo, M_APP0);</span>
+<span class="lineNum">     364 </span><span class="lineCov">            4544:   emit_marker(cinfo, M_APP0);</span>
 <span class="lineNum">     365 </span>                :   
-<span class="lineNum">     366 </span><span class="lineCov">            9065:   emit_2bytes(cinfo, 2 + 4 + 1 + 2 + 1 + 2 + 2 + 1 + 1); <I><FONT COLOR="#B22222">/* length */</FONT></I></span>
+<span class="lineNum">     366 </span><span class="lineCov">            4544:   emit_2bytes(cinfo, 2 + 4 + 1 + 2 + 1 + 2 + 2 + 1 + 1); <I><FONT COLOR="#B22222">/* length */</FONT></I></span>
 <span class="lineNum">     367 </span>                : 
-<span class="lineNum">     368 </span><span class="lineCov">            9065:   emit_byte(cinfo, 0x4A);	<I><FONT COLOR="#B22222">/* Identifier: ASCII &quot;JFIF&quot; */</FONT></I></span>
-<span class="lineNum">     369 </span><span class="lineCov">            9065:   emit_byte(cinfo, 0x46);</span>
-<span class="lineNum">     370 </span><span class="lineCov">            9065:   emit_byte(cinfo, 0x49);</span>
-<span class="lineNum">     371 </span><span class="lineCov">            9065:   emit_byte(cinfo, 0x46);</span>
-<span class="lineNum">     372 </span><span class="lineCov">            9065:   emit_byte(cinfo, 0);</span>
-<span class="lineNum">     373 </span><span class="lineCov">            9065:   emit_byte(cinfo, cinfo-&gt;JFIF_major_version); <I><FONT COLOR="#B22222">/* Version fields */</FONT></I></span>
-<span class="lineNum">     374 </span><span class="lineCov">            9065:   emit_byte(cinfo, cinfo-&gt;JFIF_minor_version);</span>
-<span class="lineNum">     375 </span><span class="lineCov">            9065:   emit_byte(cinfo, cinfo-&gt;density_unit); <I><FONT COLOR="#B22222">/* Pixel size information */</FONT></I></span>
-<span class="lineNum">     376 </span><span class="lineCov">            9065:   emit_2bytes(cinfo, (<B><FONT COLOR="#228B22">int</FONT></B>) cinfo-&gt;X_density);</span>
-<span class="lineNum">     377 </span><span class="lineCov">            9065:   emit_2bytes(cinfo, (<B><FONT COLOR="#228B22">int</FONT></B>) cinfo-&gt;Y_density);</span>
-<span class="lineNum">     378 </span><span class="lineCov">            9065:   emit_byte(cinfo, 0);		<I><FONT COLOR="#B22222">/* No thumbnail image */</FONT></I></span>
-<span class="lineNum">     379 </span><span class="lineCov">            9065:   emit_byte(cinfo, 0);</span>
-<span class="lineNum">     380 </span><span class="lineCov">            9065: }</span>
+<span class="lineNum">     368 </span><span class="lineCov">            4544:   emit_byte(cinfo, 0x4A);	<I><FONT COLOR="#B22222">/* Identifier: ASCII &quot;JFIF&quot; */</FONT></I></span>
+<span class="lineNum">     369 </span><span class="lineCov">            4544:   emit_byte(cinfo, 0x46);</span>
+<span class="lineNum">     370 </span><span class="lineCov">            4544:   emit_byte(cinfo, 0x49);</span>
+<span class="lineNum">     371 </span><span class="lineCov">            4544:   emit_byte(cinfo, 0x46);</span>
+<span class="lineNum">     372 </span><span class="lineCov">            4544:   emit_byte(cinfo, 0);</span>
+<span class="lineNum">     373 </span><span class="lineCov">            4544:   emit_byte(cinfo, cinfo-&gt;JFIF_major_version); <I><FONT COLOR="#B22222">/* Version fields */</FONT></I></span>
+<span class="lineNum">     374 </span><span class="lineCov">            4544:   emit_byte(cinfo, cinfo-&gt;JFIF_minor_version);</span>
+<span class="lineNum">     375 </span><span class="lineCov">            4544:   emit_byte(cinfo, cinfo-&gt;density_unit); <I><FONT COLOR="#B22222">/* Pixel size information */</FONT></I></span>
+<span class="lineNum">     376 </span><span class="lineCov">            4544:   emit_2bytes(cinfo, (<B><FONT COLOR="#228B22">int</FONT></B>) cinfo-&gt;X_density);</span>
+<span class="lineNum">     377 </span><span class="lineCov">            4544:   emit_2bytes(cinfo, (<B><FONT COLOR="#228B22">int</FONT></B>) cinfo-&gt;Y_density);</span>
+<span class="lineNum">     378 </span><span class="lineCov">            4544:   emit_byte(cinfo, 0);		<I><FONT COLOR="#B22222">/* No thumbnail image */</FONT></I></span>
+<span class="lineNum">     379 </span><span class="lineCov">            4544:   emit_byte(cinfo, 0);</span>
+<span class="lineNum">     380 </span><span class="lineCov">            4544: }</span>
 <span class="lineNum">     381 </span>                : 
 <span class="lineNum">     382 </span>                : 
 <span class="lineNum">     383 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
@@ -574,24 +574,24 @@
 <span class="lineNum">     466 </span>                :  */</FONT></I>
 <span class="lineNum">     467 </span>                : 
 <span class="lineNum">     468 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     469 </span><span class="lineCov">            9065: <B><FONT COLOR="#0000FF">write_file_header</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     469 </span><span class="lineCov">            4544: <B><FONT COLOR="#0000FF">write_file_header</FONT></B> (j_compress_ptr cinfo)</span>
 <span class="lineNum">     470 </span>                : {
-<span class="lineNum">     471 </span><span class="lineCov">            9065:   my_marker_ptr marker = (my_marker_ptr) cinfo-&gt;marker;</span>
+<span class="lineNum">     471 </span><span class="lineCov">            4544:   my_marker_ptr marker = (my_marker_ptr) cinfo-&gt;marker;</span>
 <span class="lineNum">     472 </span>                : 
-<span class="lineNum">     473 </span><span class="lineCov">            9065:   emit_marker(cinfo, M_SOI);	<I><FONT COLOR="#B22222">/* first the SOI */</FONT></I></span>
+<span class="lineNum">     473 </span><span class="lineCov">            4544:   emit_marker(cinfo, M_SOI);	<I><FONT COLOR="#B22222">/* first the SOI */</FONT></I></span>
 <span class="lineNum">     474 </span>                : 
 <span class="lineNum">     475 </span>                :   <I><FONT COLOR="#B22222">/* SOI is defined to reset restart interval to 0 */</FONT></I>
-<span class="lineNum">     476 </span><span class="lineCov">            9065:   marker-&gt;last_restart_interval = 0;</span>
+<span class="lineNum">     476 </span><span class="lineCov">            4544:   marker-&gt;last_restart_interval = 0;</span>
 <span class="lineNum">     477 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            9065: branch 0 taken</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            4544: branch 0 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-</span><span class="lineNum">     478 </span><span class="lineCov">            9065:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;write_JFIF_header)	<I><FONT COLOR="#B22222">/* next an optional JFIF APP0 */</FONT></I></span>
-<span class="lineNum">     479 </span><span class="lineCov">            9065:     emit_jfif_app0(cinfo);</span>
+</span><span class="lineNum">     478 </span><span class="lineCov">            4544:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;write_JFIF_header)	<I><FONT COLOR="#B22222">/* next an optional JFIF APP0 */</FONT></I></span>
+<span class="lineNum">     479 </span><span class="lineCov">            4544:     emit_jfif_app0(cinfo);</span>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            9065: branch 1 taken</span>
-</span><span class="lineNum">     480 </span><span class="lineCov">            9065:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;write_Adobe_marker) <I><FONT COLOR="#B22222">/* next an optional Adobe APP14 */</FONT></I></span>
+<span class="lineNum">         </span><span class="branchTaken">            4544: branch 1 taken</span>
+</span><span class="lineNum">     480 </span><span class="lineCov">            4544:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;write_Adobe_marker) <I><FONT COLOR="#B22222">/* next an optional Adobe APP14 */</FONT></I></span>
 <span class="lineNum">     481 </span><span class="lineNoCov">               0:     emit_adobe_app14(cinfo);</span>
-<span class="lineNum">     482 </span><span class="lineCov">            9065: }</span>
+<span class="lineNum">     482 </span><span class="lineCov">            4544: }</span>
 <span class="lineNum">     483 </span>                : 
 <span class="lineNum">     484 </span>                : 
 <span class="lineNum">     485 </span>                : <I><FONT COLOR="#B22222">/*
@@ -603,7 +603,7 @@
 <span class="lineNum">     491 </span>                :  */</FONT></I>
 <span class="lineNum">     492 </span>                : 
 <span class="lineNum">     493 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     494 </span><span class="lineCov">            6402: <B><FONT COLOR="#0000FF">write_frame_header</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     494 </span><span class="lineCov">            3021: <B><FONT COLOR="#0000FF">write_frame_header</FONT></B> (j_compress_ptr cinfo)</span>
 <span class="lineNum">     495 </span>                : {
 <span class="lineNum">     496 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> ci, prec;
 <span class="lineNum">     497 </span>                :   boolean is_baseline;
@@ -612,45 +612,45 @@
 <span class="lineNum">     500 </span>                :   <I><FONT COLOR="#B22222">/* Emit DQT for each quantization table.
 <span class="lineNum">     501 </span>                :    * Note that emit_dqt() suppresses any duplicate tables.
 <span class="lineNum">     502 </span>                :    */</FONT></I>
-<span class="lineNum">     503 </span><span class="lineCov">            6402:   prec = 0;</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           11640: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            6402: branch 1 taken</span>
-</span><span class="lineNum">     504 </span><span class="lineCov">           24444:   <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0, compptr = cinfo-&gt;comp_info; ci &lt; cinfo-&gt;num_components;</span>
-<span class="lineNum">     505 </span><span class="lineCov">           11640:        ci++, compptr++) {</span>
-<span class="lineNum">     506 </span><span class="lineCov">           11640:     prec += emit_dqt(cinfo, compptr-&gt;quant_tbl_no);</span>
+<span class="lineNum">     503 </span><span class="lineCov">            3021:   prec = 0;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            5513: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3021: branch 1 taken</span>
+</span><span class="lineNum">     504 </span><span class="lineCov">           11555:   <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0, compptr = cinfo-&gt;comp_info; ci &lt; cinfo-&gt;num_components;</span>
+<span class="lineNum">     505 </span><span class="lineCov">            5513:        ci++, compptr++) {</span>
+<span class="lineNum">     506 </span><span class="lineCov">            5513:     prec += emit_dqt(cinfo, compptr-&gt;quant_tbl_no);</span>
 <span class="lineNum">     507 </span>                :   }
 <span class="lineNum">     508 </span>                :   <I><FONT COLOR="#B22222">/* now prec is nonzero iff there are any 16-bit quant tables. */</FONT></I>
 <span class="lineNum">     509 </span>                : 
 <span class="lineNum">     510 </span>                :   <I><FONT COLOR="#B22222">/* Check for a non-baseline specification.
 <span class="lineNum">     511 </span>                :    * Note we assume that Huffman table numbers won't be changed later.
 <span class="lineNum">     512 </span>                :    */</FONT></I>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            6402: branch 0 taken</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            3021: branch 0 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            5817: branch 2 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">             585: branch 3 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2901: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             120: branch 3 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 4 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            5817: branch 5 taken</span>
-</span><span class="lineNum">     513 </span><span class="lineCov">           12219:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;arith_code || cinfo-&gt;progressive_mode ||</span>
-<span class="lineNum">     514 </span><span class="lineCov">            5817:       cinfo-&gt;data_precision != 8) {</span>
-<span class="lineNum">     515 </span><span class="lineCov">             585:     is_baseline = FALSE;</span>
+<span class="lineNum">         </span><span class="branchTaken">            2901: branch 5 taken</span>
+</span><span class="lineNum">     513 </span><span class="lineCov">            5922:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;arith_code || cinfo-&gt;progressive_mode ||</span>
+<span class="lineNum">     514 </span><span class="lineCov">            2901:       cinfo-&gt;data_precision != 8) {</span>
+<span class="lineNum">     515 </span><span class="lineCov">             120:     is_baseline = FALSE;</span>
 <span class="lineNum">     516 </span>                :   } <B><FONT COLOR="#A020F0">else</FONT></B> {
-<span class="lineNum">     517 </span><span class="lineCov">            5817:     is_baseline = TRUE;</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           10509: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            5817: branch 1 taken</span>
-</span><span class="lineNum">     518 </span><span class="lineCov">           22143:     <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0, compptr = cinfo-&gt;comp_info; ci &lt; cinfo-&gt;num_components;</span>
-<span class="lineNum">     519 </span><span class="lineCov">           10509: 	 ci++, compptr++) {</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           10509: branch 0 taken</span>
+<span class="lineNum">     517 </span><span class="lineCov">            2901:     is_baseline = TRUE;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            5333: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2901: branch 1 taken</span>
+</span><span class="lineNum">     518 </span><span class="lineCov">           11135:     <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0, compptr = cinfo-&gt;comp_info; ci &lt; cinfo-&gt;num_components;</span>
+<span class="lineNum">     519 </span><span class="lineCov">            5333: 	 ci++, compptr++) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            5333: branch 0 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           10509: branch 3 taken</span>
-</span><span class="lineNum">     520 </span><span class="lineCov">           10509:       <B><FONT COLOR="#A020F0">if</FONT></B> (compptr-&gt;dc_tbl_no &gt; 1 || compptr-&gt;ac_tbl_no &gt; 1)</span>
+<span class="lineNum">         </span><span class="branchTaken">            5333: branch 3 taken</span>
+</span><span class="lineNum">     520 </span><span class="lineCov">            5333:       <B><FONT COLOR="#A020F0">if</FONT></B> (compptr-&gt;dc_tbl_no &gt; 1 || compptr-&gt;ac_tbl_no &gt; 1)</span>
 <span class="lineNum">     521 </span><span class="lineNoCov">               0: 	is_baseline = FALSE;</span>
 <span class="lineNum">     522 </span>                :     }
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            5817: branch 1 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            5817: branch 2 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            5817: branch 3 taken</span>
-</span><span class="lineNum">     523 </span><span class="lineCov">            5817:     <B><FONT COLOR="#A020F0">if</FONT></B> (prec &amp;&amp; is_baseline) {</span>
+<span class="lineNum">         </span><span class="branchTaken">            2901: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2901: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2901: branch 3 taken</span>
+</span><span class="lineNum">     523 </span><span class="lineCov">            2901:     <B><FONT COLOR="#A020F0">if</FONT></B> (prec &amp;&amp; is_baseline) {</span>
 <span class="lineNum">     524 </span><span class="lineNoCov">               0:       is_baseline = FALSE;</span>
 <span class="lineNum">     525 </span>                :       <I><FONT COLOR="#B22222">/* If it's baseline except for quantizer size, warn the user */</FONT></I>
 <span class="lineNum">     526 </span><span class="lineNoCov">               0:       TRACEMS(cinfo, 0, JTRC_16BIT_TABLES);</span>
@@ -659,22 +659,22 @@
 <span class="lineNum">     529 </span>                : 
 <span class="lineNum">     530 </span>                :   <I><FONT COLOR="#B22222">/* Emit the proper SOF marker */</FONT></I>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            6402: branch 1 taken</span>
-</span><span class="lineNum">     531 </span><span class="lineCov">            6402:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;arith_code) {</span>
+<span class="lineNum">         </span><span class="branchTaken">            3021: branch 1 taken</span>
+</span><span class="lineNum">     531 </span><span class="lineCov">            3021:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;arith_code) {</span>
 <span class="lineNum">     532 </span><span class="lineNoCov">               0:     emit_sof(cinfo, M_SOF9);	<I><FONT COLOR="#B22222">/* SOF code for arithmetic coding */</FONT></I></span>
 <span class="lineNum">     533 </span>                :   } <B><FONT COLOR="#A020F0">else</FONT></B> {
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             585: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            5817: branch 1 taken</span>
-</span><span class="lineNum">     534 </span><span class="lineCov">            6402:     <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;progressive_mode)</span>
-<span class="lineNum">     535 </span><span class="lineCov">             585:       emit_sof(cinfo, M_SOF2);	<I><FONT COLOR="#B22222">/* SOF code for progressive Huffman */</FONT></I></span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            5817: branch 0 taken</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             120: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2901: branch 1 taken</span>
+</span><span class="lineNum">     534 </span><span class="lineCov">            3021:     <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;progressive_mode)</span>
+<span class="lineNum">     535 </span><span class="lineCov">             120:       emit_sof(cinfo, M_SOF2);	<I><FONT COLOR="#B22222">/* SOF code for progressive Huffman */</FONT></I></span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            2901: branch 0 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-</span><span class="lineNum">     536 </span><span class="lineCov">            5817:     <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (is_baseline)</span>
-<span class="lineNum">     537 </span><span class="lineCov">            5817:       emit_sof(cinfo, M_SOF0);	<I><FONT COLOR="#B22222">/* SOF code for baseline implementation */</FONT></I></span>
+</span><span class="lineNum">     536 </span><span class="lineCov">            2901:     <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (is_baseline)</span>
+<span class="lineNum">     537 </span><span class="lineCov">            2901:       emit_sof(cinfo, M_SOF0);	<I><FONT COLOR="#B22222">/* SOF code for baseline implementation */</FONT></I></span>
 <span class="lineNum">     538 </span>                :     <B><FONT COLOR="#A020F0">else</FONT></B>
 <span class="lineNum">     539 </span><span class="lineNoCov">               0:       emit_sof(cinfo, M_SOF1);	<I><FONT COLOR="#B22222">/* SOF code for non-baseline Huffman file */</FONT></I></span>
 <span class="lineNum">     540 </span>                :   }
-<span class="lineNum">     541 </span><span class="lineCov">            6402: }</span>
+<span class="lineNum">     541 </span><span class="lineCov">            3021: }</span>
 <span class="lineNum">     542 </span>                : 
 <span class="lineNum">     543 </span>                : 
 <span class="lineNum">     544 </span>                : <I><FONT COLOR="#B22222">/*
@@ -684,15 +684,15 @@
 <span class="lineNum">     548 </span>                :  */</FONT></I>
 <span class="lineNum">     549 </span>                : 
 <span class="lineNum">     550 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     551 </span><span class="lineCov">           10419: <B><FONT COLOR="#0000FF">write_scan_header</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     551 </span><span class="lineCov">            3741: <B><FONT COLOR="#0000FF">write_scan_header</FONT></B> (j_compress_ptr cinfo)</span>
 <span class="lineNum">     552 </span>                : {
-<span class="lineNum">     553 </span><span class="lineCov">           10419:   my_marker_ptr marker = (my_marker_ptr) cinfo-&gt;marker;</span>
+<span class="lineNum">     553 </span><span class="lineCov">            3741:   my_marker_ptr marker = (my_marker_ptr) cinfo-&gt;marker;</span>
 <span class="lineNum">     554 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> i;
 <span class="lineNum">     555 </span>                :   jpeg_component_info *compptr;
 <span class="lineNum">     556 </span>                : 
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           10419: branch 1 taken</span>
-</span><span class="lineNum">     557 </span><span class="lineCov">           10419:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;arith_code) {</span>
+<span class="lineNum">         </span><span class="branchTaken">            3741: branch 1 taken</span>
+</span><span class="lineNum">     557 </span><span class="lineCov">            3741:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;arith_code) {</span>
 <span class="lineNum">     558 </span>                :     <I><FONT COLOR="#B22222">/* Emit arith conditioning info.  We may have some duplication
 <span class="lineNum">     559 </span>                :      * if the file has multiple scans, but it's so small it's hardly
 <span class="lineNum">     560 </span>                :      * worth worrying about.
@@ -702,28 +702,28 @@
 <span class="lineNum">     564 </span>                :     <I><FONT COLOR="#B22222">/* Emit Huffman tables.
 <span class="lineNum">     565 </span>                :      * Note that emit_dht() suppresses any duplicate tables.
 <span class="lineNum">     566 </span>                :      */</FONT></I>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           16203: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           10419: branch 1 taken</span>
-</span><span class="lineNum">     567 </span><span class="lineCov">           26622:     <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; cinfo-&gt;comps_in_scan; i++) {</span>
-<span class="lineNum">     568 </span><span class="lineCov">           16203:       compptr = cinfo-&gt;cur_comp_info[i];</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            5694: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           10509: branch 1 taken</span>
-</span><span class="lineNum">     569 </span><span class="lineCov">           16203:       <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;progressive_mode) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            6293: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3741: branch 1 taken</span>
+</span><span class="lineNum">     567 </span><span class="lineCov">           10034:     <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; cinfo-&gt;comps_in_scan; i++) {</span>
+<span class="lineNum">     568 </span><span class="lineCov">            6293:       compptr = cinfo-&gt;cur_comp_info[i];</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             960: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            5333: branch 1 taken</span>
+</span><span class="lineNum">     569 </span><span class="lineCov">            6293:       <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;progressive_mode) {</span>
 <span class="lineNum">     570 </span>                : 	<I><FONT COLOR="#B22222">/* Progressive mode: only DC or only AC tables are used in one scan */</FONT></I>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            2262: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            3432: branch 1 taken</span>
-</span><span class="lineNum">     571 </span><span class="lineCov">            5694: 	<B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;Ss == 0) {</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1131: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            1131: branch 1 taken</span>
-</span><span class="lineNum">     572 </span><span class="lineCov">            2262: 	  <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;Ah == 0)	<I><FONT COLOR="#B22222">/* DC needs no table for refinement scan */</FONT></I></span>
-<span class="lineNum">     573 </span><span class="lineCov">            1131: 	    emit_dht(cinfo, compptr-&gt;dc_tbl_no, FALSE);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             360: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             600: branch 1 taken</span>
+</span><span class="lineNum">     571 </span><span class="lineCov">             960: 	<B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;Ss == 0) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             180: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             180: branch 1 taken</span>
+</span><span class="lineNum">     572 </span><span class="lineCov">             360: 	  <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;Ah == 0)	<I><FONT COLOR="#B22222">/* DC needs no table for refinement scan */</FONT></I></span>
+<span class="lineNum">     573 </span><span class="lineCov">             180: 	    emit_dht(cinfo, compptr-&gt;dc_tbl_no, FALSE);</span>
 <span class="lineNum">     574 </span>                : 	} <B><FONT COLOR="#A020F0">else</FONT></B> {
-<span class="lineNum">     575 </span><span class="lineCov">            3432: 	  emit_dht(cinfo, compptr-&gt;ac_tbl_no, TRUE);</span>
+<span class="lineNum">     575 </span><span class="lineCov">             600: 	  emit_dht(cinfo, compptr-&gt;ac_tbl_no, TRUE);</span>
 <span class="lineNum">     576 </span>                : 	}
 <span class="lineNum">     577 </span>                :       } <B><FONT COLOR="#A020F0">else</FONT></B> {
 <span class="lineNum">     578 </span>                : 	<I><FONT COLOR="#B22222">/* Sequential mode: need both DC and AC tables */</FONT></I>
-<span class="lineNum">     579 </span><span class="lineCov">           10509: 	emit_dht(cinfo, compptr-&gt;dc_tbl_no, FALSE);</span>
-<span class="lineNum">     580 </span><span class="lineCov">           10509: 	emit_dht(cinfo, compptr-&gt;ac_tbl_no, TRUE);</span>
+<span class="lineNum">     579 </span><span class="lineCov">            5333: 	emit_dht(cinfo, compptr-&gt;dc_tbl_no, FALSE);</span>
+<span class="lineNum">     580 </span><span class="lineCov">            5333: 	emit_dht(cinfo, compptr-&gt;ac_tbl_no, TRUE);</span>
 <span class="lineNum">     581 </span>                :       }
 <span class="lineNum">     582 </span>                :     }
 <span class="lineNum">     583 </span>                :   }
@@ -732,14 +732,14 @@
 <span class="lineNum">     586 </span>                :    * We avoid wasting space with unnecessary DRIs, however.
 <span class="lineNum">     587 </span>                :    */</FONT></I>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           10419: branch 1 taken</span>
-</span><span class="lineNum">     588 </span><span class="lineCov">           10419:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;restart_interval != marker-&gt;last_restart_interval) {</span>
+<span class="lineNum">         </span><span class="branchTaken">            3741: branch 1 taken</span>
+</span><span class="lineNum">     588 </span><span class="lineCov">            3741:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;restart_interval != marker-&gt;last_restart_interval) {</span>
 <span class="lineNum">     589 </span><span class="lineNoCov">               0:     emit_dri(cinfo);</span>
 <span class="lineNum">     590 </span><span class="lineNoCov">               0:     marker-&gt;last_restart_interval = cinfo-&gt;restart_interval;</span>
 <span class="lineNum">     591 </span>                :   }
 <span class="lineNum">     592 </span>                : 
-<span class="lineNum">     593 </span><span class="lineCov">           10419:   emit_sos(cinfo);</span>
-<span class="lineNum">     594 </span><span class="lineCov">           10419: }</span>
+<span class="lineNum">     593 </span><span class="lineCov">            3741:   emit_sos(cinfo);</span>
+<span class="lineNum">     594 </span><span class="lineCov">            3741: }</span>
 <span class="lineNum">     595 </span>                : 
 <span class="lineNum">     596 </span>                : 
 <span class="lineNum">     597 </span>                : <I><FONT COLOR="#B22222">/*
@@ -747,10 +747,10 @@
 <span class="lineNum">     599 </span>                :  */</FONT></I>
 <span class="lineNum">     600 </span>                : 
 <span class="lineNum">     601 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     602 </span><span class="lineCov">            4018: <B><FONT COLOR="#0000FF">write_file_trailer</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     602 </span><span class="lineCov">            1611: <B><FONT COLOR="#0000FF">write_file_trailer</FONT></B> (j_compress_ptr cinfo)</span>
 <span class="lineNum">     603 </span>                : {
-<span class="lineNum">     604 </span><span class="lineCov">            4018:   emit_marker(cinfo, M_EOI);</span>
-<span class="lineNum">     605 </span><span class="lineCov">            4018: }</span>
+<span class="lineNum">     604 </span><span class="lineCov">            1611:   emit_marker(cinfo, M_EOI);</span>
+<span class="lineNum">     605 </span><span class="lineCov">            1611: }</span>
 <span class="lineNum">     606 </span>                : 
 <span class="lineNum">     607 </span>                : 
 <span class="lineNum">     608 </span>                : <I><FONT COLOR="#B22222">/*
@@ -802,28 +802,28 @@
 <span class="lineNum">     642 </span>                :  */</FONT></I>
 <span class="lineNum">     643 </span>                : 
 <span class="lineNum">     644 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     645 </span><span class="lineCov">            9065: <B><FONT COLOR="#0000FF">jinit_marker_writer</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     645 </span><span class="lineCov">            4544: <B><FONT COLOR="#0000FF">jinit_marker_writer</FONT></B> (j_compress_ptr cinfo)</span>
 <span class="lineNum">     646 </span>                : {
 <span class="lineNum">     647 </span>                :   my_marker_ptr marker;
 <span class="lineNum">     648 </span>                : 
 <span class="lineNum">     649 </span>                :   <I><FONT COLOR="#B22222">/* Create the subobject */</FONT></I>
-<span class="lineNum">     650 </span><span class="lineCov">            9065:   marker = (my_marker_ptr)</span>
-<span class="lineNum">     651 </span><span class="lineCov">            9065:     (*cinfo-&gt;mem-&gt;alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
+<span class="lineNum">     650 </span><span class="lineCov">            4544:   marker = (my_marker_ptr)</span>
+<span class="lineNum">     651 </span><span class="lineCov">            4544:     (*cinfo-&gt;mem-&gt;alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
 <span class="lineNum">     652 </span>                : 				SIZEOF(my_marker_writer));
-<span class="lineNum">     653 </span><span class="lineCov">            9065:   cinfo-&gt;marker = (<B><FONT COLOR="#228B22">struct</FONT></B> jpeg_marker_writer *) marker;</span>
+<span class="lineNum">     653 </span><span class="lineCov">            4544:   cinfo-&gt;marker = (<B><FONT COLOR="#228B22">struct</FONT></B> jpeg_marker_writer *) marker;</span>
 <span class="lineNum">     654 </span>                :   <I><FONT COLOR="#B22222">/* Initialize method pointers */</FONT></I>
-<span class="lineNum">     655 </span><span class="lineCov">            9065:   marker-&gt;pub.write_file_header = write_file_header;</span>
-<span class="lineNum">     656 </span><span class="lineCov">            9065:   marker-&gt;pub.write_frame_header = write_frame_header;</span>
-<span class="lineNum">     657 </span><span class="lineCov">            9065:   marker-&gt;pub.write_scan_header = write_scan_header;</span>
-<span class="lineNum">     658 </span><span class="lineCov">            9065:   marker-&gt;pub.write_file_trailer = write_file_trailer;</span>
-<span class="lineNum">     659 </span><span class="lineCov">            9065:   marker-&gt;pub.write_tables_only = write_tables_only;</span>
-<span class="lineNum">     660 </span><span class="lineCov">            9065:   marker-&gt;pub.write_marker_header = write_marker_header;</span>
-<span class="lineNum">     661 </span><span class="lineCov">            9065:   marker-&gt;pub.write_marker_byte = write_marker_byte;</span>
+<span class="lineNum">     655 </span><span class="lineCov">            4544:   marker-&gt;pub.write_file_header = write_file_header;</span>
+<span class="lineNum">     656 </span><span class="lineCov">            4544:   marker-&gt;pub.write_frame_header = write_frame_header;</span>
+<span class="lineNum">     657 </span><span class="lineCov">            4544:   marker-&gt;pub.write_scan_header = write_scan_header;</span>
+<span class="lineNum">     658 </span><span class="lineCov">            4544:   marker-&gt;pub.write_file_trailer = write_file_trailer;</span>
+<span class="lineNum">     659 </span><span class="lineCov">            4544:   marker-&gt;pub.write_tables_only = write_tables_only;</span>
+<span class="lineNum">     660 </span><span class="lineCov">            4544:   marker-&gt;pub.write_marker_header = write_marker_header;</span>
+<span class="lineNum">     661 </span><span class="lineCov">            4544:   marker-&gt;pub.write_marker_byte = write_marker_byte;</span>
 <span class="lineNum">     662 </span>                :   <I><FONT COLOR="#B22222">/* Initialize private state */</FONT></I>
-<span class="lineNum">     663 </span><span class="lineCov">            9065:   marker-&gt;last_restart_interval = 0;</span>
-<span class="lineNum">     664 </span><span class="lineCov">            9065: }</span>
+<span class="lineNum">     663 </span><span class="lineCov">            4544:   marker-&gt;last_restart_interval = 0;</span>
+<span class="lineNum">     664 </span><span class="lineCov">            4544: }</span>
 </pre>
 <hr>
-Generated: 2016-04-07&nbsp;12:37 by <a href="http://minormatter.com/zcov">zcov</a><br>
+Generated: 2016-04-07&nbsp;19:56 by <a href="http://minormatter.com/zcov">zcov</a><br>
 </body>
 </html>

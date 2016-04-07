@@ -22,7 +22,7 @@
   </tr>
   <tr>
     <td bgcolor=#ACACFF> <b>Generated:</b> </td>
-    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;12:37 </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;19:56 </td>
     <td width="30"></td>
     <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
     <td bgcolor=#F0F0FF align=right> <b>100.0%<b> </td>
@@ -47,7 +47,7 @@
     <td bgcolor=#F0F0FF> 1 </td>
     <td width="30"></td>
     <td bgcolor=#ACACFF> <b>Runs</b> </td>
-    <td bgcolor=#F0F0FF align=right> 13686 </td>
+    <td bgcolor=#F0F0FF align=right> 6378 </td>
   </tr>
 </table>
 </center>
@@ -84,61 +84,61 @@
 <span class="lineNum">      27 </span>                :  */</FONT></I>
 <span class="lineNum">      28 </span>                : 
 <span class="lineNum">      29 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">      30 </span><span class="lineCov">            9300: <B><FONT COLOR="#0000FF">jinit_compress_master</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">      30 </span><span class="lineCov">            4659: <B><FONT COLOR="#0000FF">jinit_compress_master</FONT></B> (j_compress_ptr cinfo)</span>
 <span class="lineNum">      31 </span>                : {
 <span class="lineNum">      32 </span>                :   <I><FONT COLOR="#B22222">/* Initialize master control (includes parameter checking/processing) */</FONT></I>
-<span class="lineNum">      33 </span><span class="lineCov">            9300:   jinit_c_master_control(cinfo, FALSE <I><FONT COLOR="#B22222">/* full compression */</FONT></I>);</span>
+<span class="lineNum">      33 </span><span class="lineCov">            4659:   jinit_c_master_control(cinfo, FALSE <I><FONT COLOR="#B22222">/* full compression */</FONT></I>);</span>
 <span class="lineNum">      34 </span>                : 
 <span class="lineNum">      35 </span>                :   <I><FONT COLOR="#B22222">/* Preprocessing */</FONT></I>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            9065: branch 0 taken</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            4544: branch 0 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-</span><span class="lineNum">      36 </span><span class="lineCov">            9065:   <B><FONT COLOR="#A020F0">if</FONT></B> (! cinfo-&gt;raw_data_in) {</span>
-<span class="lineNum">      37 </span><span class="lineCov">            9065:     jinit_color_converter(cinfo);</span>
-<span class="lineNum">      38 </span><span class="lineCov">            9065:     jinit_downsampler(cinfo);</span>
-<span class="lineNum">      39 </span><span class="lineCov">            9065:     jinit_c_prep_controller(cinfo, FALSE <I><FONT COLOR="#B22222">/* never need full buffer here */</FONT></I>);</span>
+</span><span class="lineNum">      36 </span><span class="lineCov">            4544:   <B><FONT COLOR="#A020F0">if</FONT></B> (! cinfo-&gt;raw_data_in) {</span>
+<span class="lineNum">      37 </span><span class="lineCov">            4544:     jinit_color_converter(cinfo);</span>
+<span class="lineNum">      38 </span><span class="lineCov">            4544:     jinit_downsampler(cinfo);</span>
+<span class="lineNum">      39 </span><span class="lineCov">            4544:     jinit_c_prep_controller(cinfo, FALSE <I><FONT COLOR="#B22222">/* never need full buffer here */</FONT></I>);</span>
 <span class="lineNum">      40 </span>                :   }
 <span class="lineNum">      41 </span>                :   <I><FONT COLOR="#B22222">/* Forward DCT */</FONT></I>
-<span class="lineNum">      42 </span><span class="lineCov">            9065:   jinit_forward_dct(cinfo);</span>
+<span class="lineNum">      42 </span><span class="lineCov">            4544:   jinit_forward_dct(cinfo);</span>
 <span class="lineNum">      43 </span>                :   <I><FONT COLOR="#B22222">/* Entropy encoding: either Huffman or arithmetic coding. */</FONT></I>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            9065: branch 1 taken</span>
-</span><span class="lineNum">      44 </span><span class="lineCov">            9065:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;arith_code) {</span>
+<span class="lineNum">         </span><span class="branchTaken">            4544: branch 1 taken</span>
+</span><span class="lineNum">      44 </span><span class="lineCov">            4544:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;arith_code) {</span>
 <span class="lineNum">      45 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_ARITH_NOTIMPL);</span>
 <span class="lineNum">      46 </span>                :   } <B><FONT COLOR="#A020F0">else</FONT></B> {
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             942: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            8123: branch 1 taken</span>
-</span><span class="lineNum">      47 </span><span class="lineCov">            9065:     <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;progressive_mode) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             267: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4277: branch 1 taken</span>
+</span><span class="lineNum">      47 </span><span class="lineCov">            4544:     <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;progressive_mode) {</span>
 <span class="lineNum">      48 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">C_PROGRESSIVE_SUPPORTED</FONT>
-<span class="lineNum">      49 </span><span class="lineCov">             942:       jinit_phuff_encoder(cinfo);</span>
+<span class="lineNum">      49 </span><span class="lineCov">             267:       jinit_phuff_encoder(cinfo);</span>
 <span class="lineNum">      50 </span>                : #<B><FONT COLOR="#5F9EA0">else</FONT></B>
 <span class="lineNum">      51 </span>                :       ERREXIT(cinfo, JERR_NOT_COMPILED);
 <span class="lineNum">      52 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
 <span class="lineNum">      53 </span>                :     } <B><FONT COLOR="#A020F0">else</FONT></B>
-<span class="lineNum">      54 </span><span class="lineCov">            8123:       jinit_huff_encoder(cinfo);</span>
+<span class="lineNum">      54 </span><span class="lineCov">            4277:       jinit_huff_encoder(cinfo);</span>
 <span class="lineNum">      55 </span>                :   }
 <span class="lineNum">      56 </span>                : 
 <span class="lineNum">      57 </span>                :   <I><FONT COLOR="#B22222">/* Need a full-image coefficient buffer in any multi-pass mode. */</FONT></I>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            8123: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">             942: branch 1 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">             606: branch 2 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            7517: branch 3 taken</span>
-</span><span class="lineNum">      58 </span><span class="lineCov">           17188:   jinit_c_coef_controller(cinfo,</span>
-<span class="lineNum">      59 </span><span class="lineCov">           17188: 		(boolean) (cinfo-&gt;num_scans &gt; 1 || cinfo-&gt;optimize_coding));</span>
-<span class="lineNum">      60 </span><span class="lineCov">            9065:   jinit_c_main_controller(cinfo, FALSE <I><FONT COLOR="#B22222">/* never need full buffer here */</FONT></I>);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            4277: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             267: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             762: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3515: branch 3 taken</span>
+</span><span class="lineNum">      58 </span><span class="lineCov">            8821:   jinit_c_coef_controller(cinfo,</span>
+<span class="lineNum">      59 </span><span class="lineCov">            8821: 		(boolean) (cinfo-&gt;num_scans &gt; 1 || cinfo-&gt;optimize_coding));</span>
+<span class="lineNum">      60 </span><span class="lineCov">            4544:   jinit_c_main_controller(cinfo, FALSE <I><FONT COLOR="#B22222">/* never need full buffer here */</FONT></I>);</span>
 <span class="lineNum">      61 </span>                : 
-<span class="lineNum">      62 </span><span class="lineCov">            9065:   jinit_marker_writer(cinfo);</span>
+<span class="lineNum">      62 </span><span class="lineCov">            4544:   jinit_marker_writer(cinfo);</span>
 <span class="lineNum">      63 </span>                : 
 <span class="lineNum">      64 </span>                :   <I><FONT COLOR="#B22222">/* We can now tell the memory manager to allocate virtual arrays. */</FONT></I>
-<span class="lineNum">      65 </span><span class="lineCov">            9065:   (*cinfo-&gt;mem-&gt;realize_virt_arrays) ((j_common_ptr) cinfo);</span>
+<span class="lineNum">      65 </span><span class="lineCov">            4544:   (*cinfo-&gt;mem-&gt;realize_virt_arrays) ((j_common_ptr) cinfo);</span>
 <span class="lineNum">      66 </span>                : 
 <span class="lineNum">      67 </span>                :   <I><FONT COLOR="#B22222">/* Write the datastream header (SOI) immediately.
 <span class="lineNum">      68 </span>                :    * Frame and scan headers are postponed till later.
 <span class="lineNum">      69 </span>                :    * This lets application insert special markers after the SOI.
 <span class="lineNum">      70 </span>                :    */</FONT></I>
-<span class="lineNum">      71 </span><span class="lineCov">            9065:   (*cinfo-&gt;marker-&gt;write_file_header) (cinfo);</span>
-<span class="lineNum">      72 </span><span class="lineCov">            9065: }</span>
+<span class="lineNum">      71 </span><span class="lineCov">            4544:   (*cinfo-&gt;marker-&gt;write_file_header) (cinfo);</span>
+<span class="lineNum">      72 </span><span class="lineCov">            4544: }</span>
 </pre>
 <hr>
-Generated: 2016-04-07&nbsp;12:37 by <a href="http://minormatter.com/zcov">zcov</a><br>
+Generated: 2016-04-07&nbsp;19:56 by <a href="http://minormatter.com/zcov">zcov</a><br>
 </body>
 </html>

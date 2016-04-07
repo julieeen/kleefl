@@ -22,7 +22,7 @@
   </tr>
   <tr>
     <td bgcolor=#ACACFF> <b>Generated:</b> </td>
-    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;12:37 </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;19:56 </td>
     <td width="30"></td>
     <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
     <td bgcolor=#F0F0FF align=right> <b>85.7%<b> </td>
@@ -47,7 +47,7 @@
     <td bgcolor=#F0F0FF> 1 </td>
     <td width="30"></td>
     <td bgcolor=#ACACFF> <b>Runs</b> </td>
-    <td bgcolor=#F0F0FF align=right> 13688 </td>
+    <td bgcolor=#F0F0FF align=right> 6378 </td>
   </tr>
 </table>
 </center>
@@ -124,15 +124,15 @@
 <span class="lineNum">      67 </span>                :  */</FONT></I>
 <span class="lineNum">      68 </span>                : 
 <span class="lineNum">      69 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">      70 </span><span class="lineCov">            9529: <B><FONT COLOR="#0000FF">error_exit</FONT></B> (j_common_ptr cinfo)</span>
+<span class="lineNum">      70 </span><span class="lineCov">            4722: <B><FONT COLOR="#0000FF">error_exit</FONT></B> (j_common_ptr cinfo)</span>
 <span class="lineNum">      71 </span>                : {
 <span class="lineNum">      72 </span>                :   <I><FONT COLOR="#B22222">/* Always display the message */</FONT></I>
-<span class="lineNum">      73 </span><span class="lineCov">            9529:   (*cinfo-&gt;err-&gt;output_message) (cinfo);</span>
+<span class="lineNum">      73 </span><span class="lineCov">            4722:   (*cinfo-&gt;err-&gt;output_message) (cinfo);</span>
 <span class="lineNum">      74 </span>                : 
 <span class="lineNum">      75 </span>                :   <I><FONT COLOR="#B22222">/* Let the memory manager delete any temp files before we die */</FONT></I>
-<span class="lineNum">      76 </span><span class="lineCov">            9529:   jpeg_destroy(cinfo);</span>
+<span class="lineNum">      76 </span><span class="lineCov">            4722:   jpeg_destroy(cinfo);</span>
 <span class="lineNum">      77 </span>                : 
-<span class="lineNum">      78 </span><span class="lineCov">            9529:   exit(EXIT_FAILURE);</span>
+<span class="lineNum">      78 </span><span class="lineCov">            4722:   exit(EXIT_FAILURE);</span>
 <span class="lineNum">      79 </span>                : }
 <span class="lineNum">      80 </span>                : 
 <span class="lineNum">      81 </span>                : 
@@ -152,12 +152,12 @@
 <span class="lineNum">      95 </span>                :  */</FONT></I>
 <span class="lineNum">      96 </span>                : 
 <span class="lineNum">      97 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">      98 </span><span class="lineCov">           11218: <B><FONT COLOR="#0000FF">output_message</FONT></B> (j_common_ptr cinfo)</span>
+<span class="lineNum">      98 </span><span class="lineCov">            5769: <B><FONT COLOR="#0000FF">output_message</FONT></B> (j_common_ptr cinfo)</span>
 <span class="lineNum">      99 </span>                : {
 <span class="lineNum">     100 </span>                :   <B><FONT COLOR="#228B22">char</FONT></B> buffer[JMSG_LENGTH_MAX];
 <span class="lineNum">     101 </span>                : 
 <span class="lineNum">     102 </span>                :   <I><FONT COLOR="#B22222">/* Create the message */</FONT></I>
-<span class="lineNum">     103 </span><span class="lineCov">           11218:   (*cinfo-&gt;err-&gt;format_message) (cinfo, buffer);</span>
+<span class="lineNum">     103 </span><span class="lineCov">            5769:   (*cinfo-&gt;err-&gt;format_message) (cinfo, buffer);</span>
 <span class="lineNum">     104 </span>                : 
 <span class="lineNum">     105 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">USE_WINDOWS_MESSAGEBOX</FONT>
 <span class="lineNum">     106 </span>                :   <I><FONT COLOR="#B22222">/* Display it in a message dialog box */</FONT></I>
@@ -165,9 +165,9 @@
 <span class="lineNum">     108 </span>                : 	     MB_OK | MB_ICONERROR);
 <span class="lineNum">     109 </span>                : #<B><FONT COLOR="#5F9EA0">else</FONT></B>
 <span class="lineNum">     110 </span>                :   <I><FONT COLOR="#B22222">/* Send it to stderr, adding a newline */</FONT></I>
-<span class="lineNum">     111 </span><span class="lineCov">           11218:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;%s\n&quot;</FONT></B>, buffer);</span>
+<span class="lineNum">     111 </span><span class="lineCov">            5769:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;%s\n&quot;</FONT></B>, buffer);</span>
 <span class="lineNum">     112 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
-<span class="lineNum">     113 </span><span class="lineCov">           11218: }</span>
+<span class="lineNum">     113 </span><span class="lineCov">            5769: }</span>
 <span class="lineNum">     114 </span>                : 
 <span class="lineNum">     115 </span>                : 
 <span class="lineNum">     116 </span>                : <I><FONT COLOR="#B22222">/*
@@ -182,13 +182,13 @@
 <span class="lineNum">     125 </span>                :  */</FONT></I>
 <span class="lineNum">     126 </span>                : 
 <span class="lineNum">     127 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     128 </span><span class="lineCov">            9869: <B><FONT COLOR="#0000FF">emit_message</FONT></B> (j_common_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> msg_level)</span>
+<span class="lineNum">     128 </span><span class="lineCov">            4976: <B><FONT COLOR="#0000FF">emit_message</FONT></B> (j_common_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> msg_level)</span>
 <span class="lineNum">     129 </span>                : {
-<span class="lineNum">     130 </span><span class="lineCov">            9869:   <B><FONT COLOR="#228B22">struct</FONT></B> jpeg_error_mgr * err = cinfo-&gt;err;</span>
+<span class="lineNum">     130 </span><span class="lineCov">            4976:   <B><FONT COLOR="#228B22">struct</FONT></B> jpeg_error_mgr * err = cinfo-&gt;err;</span>
 <span class="lineNum">     131 </span>                : 
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            9869: branch 1 taken</span>
-</span><span class="lineNum">     132 </span><span class="lineCov">            9869:   <B><FONT COLOR="#A020F0">if</FONT></B> (msg_level &lt; 0) {</span>
+<span class="lineNum">         </span><span class="branchTaken">            4976: branch 1 taken</span>
+</span><span class="lineNum">     132 </span><span class="lineCov">            4976:   <B><FONT COLOR="#A020F0">if</FONT></B> (msg_level &lt; 0) {</span>
 <span class="lineNum">     133 </span>                :     <I><FONT COLOR="#B22222">/* It's a warning message.  Since corrupt files may generate many warnings,
 <span class="lineNum">     134 </span>                :      * the policy implemented here is to show only the first warning,
 <span class="lineNum">     135 </span>                :      * unless trace_level &gt;= 3.
@@ -203,12 +203,12 @@
 <span class="lineNum">     140 </span><span class="lineNoCov">               0:     err-&gt;num_warnings++;</span>
 <span class="lineNum">     141 </span>                :   } <B><FONT COLOR="#A020F0">else</FONT></B> {
 <span class="lineNum">     142 </span>                :     <I><FONT COLOR="#B22222">/* It's a trace message.  Show it if trace_level &gt;= msg_level. */</FONT></I>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1689: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            8180: branch 1 taken</span>
-</span><span class="lineNum">     143 </span><span class="lineCov">            9869:     <B><FONT COLOR="#A020F0">if</FONT></B> (err-&gt;trace_level &gt;= msg_level)</span>
-<span class="lineNum">     144 </span><span class="lineCov">            1689:       (*err-&gt;output_message) (cinfo);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1047: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3929: branch 1 taken</span>
+</span><span class="lineNum">     143 </span><span class="lineCov">            4976:     <B><FONT COLOR="#A020F0">if</FONT></B> (err-&gt;trace_level &gt;= msg_level)</span>
+<span class="lineNum">     144 </span><span class="lineCov">            1047:       (*err-&gt;output_message) (cinfo);</span>
 <span class="lineNum">     145 </span>                :   }
-<span class="lineNum">     146 </span><span class="lineCov">            9869: }</span>
+<span class="lineNum">     146 </span><span class="lineCov">            4976: }</span>
 <span class="lineNum">     147 </span>                : 
 <span class="lineNum">     148 </span>                : 
 <span class="lineNum">     149 </span>                : <I><FONT COLOR="#B22222">/*
@@ -219,70 +219,70 @@
 <span class="lineNum">     154 </span>                :  */</FONT></I>
 <span class="lineNum">     155 </span>                : 
 <span class="lineNum">     156 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     157 </span><span class="lineCov">           11218: <B><FONT COLOR="#0000FF">format_message</FONT></B> (j_common_ptr cinfo, <B><FONT COLOR="#228B22">char</FONT></B> * buffer)</span>
+<span class="lineNum">     157 </span><span class="lineCov">            5769: <B><FONT COLOR="#0000FF">format_message</FONT></B> (j_common_ptr cinfo, <B><FONT COLOR="#228B22">char</FONT></B> * buffer)</span>
 <span class="lineNum">     158 </span>                : {
-<span class="lineNum">     159 </span><span class="lineCov">           11218:   <B><FONT COLOR="#228B22">struct</FONT></B> jpeg_error_mgr * err = cinfo-&gt;err;</span>
-<span class="lineNum">     160 </span><span class="lineCov">           11218:   <B><FONT COLOR="#228B22">int</FONT></B> msg_code = err-&gt;msg_code;</span>
-<span class="lineNum">     161 </span><span class="lineCov">           11218:   <B><FONT COLOR="#228B22">const</FONT></B> <B><FONT COLOR="#228B22">char</FONT></B> * msgtext = NULL;</span>
+<span class="lineNum">     159 </span><span class="lineCov">            5769:   <B><FONT COLOR="#228B22">struct</FONT></B> jpeg_error_mgr * err = cinfo-&gt;err;</span>
+<span class="lineNum">     160 </span><span class="lineCov">            5769:   <B><FONT COLOR="#228B22">int</FONT></B> msg_code = err-&gt;msg_code;</span>
+<span class="lineNum">     161 </span><span class="lineCov">            5769:   <B><FONT COLOR="#228B22">const</FONT></B> <B><FONT COLOR="#228B22">char</FONT></B> * msgtext = NULL;</span>
 <span class="lineNum">     162 </span>                :   <B><FONT COLOR="#228B22">const</FONT></B> <B><FONT COLOR="#228B22">char</FONT></B> * msgptr;
 <span class="lineNum">     163 </span>                :   <B><FONT COLOR="#228B22">char</FONT></B> ch;
 <span class="lineNum">     164 </span>                :   boolean isstring;
 <span class="lineNum">     165 </span>                : 
 <span class="lineNum">     166 </span>                :   <I><FONT COLOR="#B22222">/* Look up message string in proper table */</FONT></I>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           11218: branch 0 taken</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            5769: branch 0 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            7372: branch 2 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            3846: branch 3 taken</span>
-</span><span class="lineNum">     167 </span><span class="lineCov">           11218:   <B><FONT COLOR="#A020F0">if</FONT></B> (msg_code &gt; 0 &amp;&amp; msg_code &lt;= err-&gt;last_jpeg_message) {</span>
-<span class="lineNum">     168 </span><span class="lineCov">            7372:     msgtext = err-&gt;jpeg_message_table[msg_code];</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            3846: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3937: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1832: branch 3 taken</span>
+</span><span class="lineNum">     167 </span><span class="lineCov">            5769:   <B><FONT COLOR="#A020F0">if</FONT></B> (msg_code &gt; 0 &amp;&amp; msg_code &lt;= err-&gt;last_jpeg_message) {</span>
+<span class="lineNum">     168 </span><span class="lineCov">            3937:     msgtext = err-&gt;jpeg_message_table[msg_code];</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1832: branch 0 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            3846: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1832: branch 2 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
-</span><span class="lineNum">     169 </span><span class="lineCov">            7692:   } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (err-&gt;addon_message_table != NULL &amp;&amp;</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            3846: branch 0 taken</span>
+</span><span class="lineNum">     169 </span><span class="lineCov">            3664:   } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (err-&gt;addon_message_table != NULL &amp;&amp;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1832: branch 0 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-</span><span class="lineNum">     170 </span><span class="lineCov">            7692: 	     msg_code &gt;= err-&gt;first_addon_message &amp;&amp;</span>
-<span class="lineNum">     171 </span><span class="lineCov">            3846: 	     msg_code &lt;= err-&gt;last_addon_message) {</span>
-<span class="lineNum">     172 </span><span class="lineCov">            3846:     msgtext = err-&gt;addon_message_table[msg_code - err-&gt;first_addon_message];</span>
+</span><span class="lineNum">     170 </span><span class="lineCov">            3664: 	     msg_code &gt;= err-&gt;first_addon_message &amp;&amp;</span>
+<span class="lineNum">     171 </span><span class="lineCov">            1832: 	     msg_code &lt;= err-&gt;last_addon_message) {</span>
+<span class="lineNum">     172 </span><span class="lineCov">            1832:     msgtext = err-&gt;addon_message_table[msg_code - err-&gt;first_addon_message];</span>
 <span class="lineNum">     173 </span>                :   }
 <span class="lineNum">     174 </span>                : 
 <span class="lineNum">     175 </span>                :   <I><FONT COLOR="#B22222">/* Defend against bogus message number */</FONT></I>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           11218: branch 1 taken</span>
-</span><span class="lineNum">     176 </span><span class="lineCov">           11218:   <B><FONT COLOR="#A020F0">if</FONT></B> (msgtext == NULL) {</span>
+<span class="lineNum">         </span><span class="branchTaken">            5769: branch 1 taken</span>
+</span><span class="lineNum">     176 </span><span class="lineCov">            5769:   <B><FONT COLOR="#A020F0">if</FONT></B> (msgtext == NULL) {</span>
 <span class="lineNum">     177 </span><span class="lineNoCov">               0:     err-&gt;msg_parm.i[0] = msg_code;</span>
 <span class="lineNum">     178 </span><span class="lineNoCov">               0:     msgtext = err-&gt;jpeg_message_table[0];</span>
 <span class="lineNum">     179 </span>                :   }
 <span class="lineNum">     180 </span>                : 
 <span class="lineNum">     181 </span>                :   <I><FONT COLOR="#B22222">/* Check for string parameter, as indicated by %s in the message text */</FONT></I>
-<span class="lineNum">     182 </span><span class="lineCov">           11218:   isstring = FALSE;</span>
-<span class="lineNum">     183 </span><span class="lineCov">           11218:   msgptr = msgtext;</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          267243: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            9350: branch 1 taken</span>
-</span><span class="lineNum">     184 </span><span class="lineCov">          287811:   <B><FONT COLOR="#A020F0">while</FONT></B> ((ch = *msgptr++) != <B><FONT COLOR="#BC8F8F">'\0'</FONT></B>) {</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1868: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">          265375: branch 1 taken</span>
-</span><span class="lineNum">     185 </span><span class="lineCov">          267243:     <B><FONT COLOR="#A020F0">if</FONT></B> (ch == <B><FONT COLOR="#BC8F8F">'%'</FONT></B>) {</span>
+<span class="lineNum">     182 </span><span class="lineCov">            5769:   isstring = FALSE;</span>
+<span class="lineNum">     183 </span><span class="lineCov">            5769:   msgptr = msgtext;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          131815: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4654: branch 1 taken</span>
+</span><span class="lineNum">     184 </span><span class="lineCov">          142238:   <B><FONT COLOR="#A020F0">while</FONT></B> ((ch = *msgptr++) != <B><FONT COLOR="#BC8F8F">'\0'</FONT></B>) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1115: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          130700: branch 1 taken</span>
+</span><span class="lineNum">     185 </span><span class="lineCov">          131815:     <B><FONT COLOR="#A020F0">if</FONT></B> (ch == <B><FONT COLOR="#BC8F8F">'%'</FONT></B>) {</span>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            1868: branch 1 taken</span>
-</span><span class="lineNum">     186 </span><span class="lineCov">            1868:       <B><FONT COLOR="#A020F0">if</FONT></B> (*msgptr == <B><FONT COLOR="#BC8F8F">'s'</FONT></B>) isstring = TRUE;</span>
-<span class="lineNum">     187 </span><span class="lineCov">            1868:       <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">         </span><span class="branchTaken">            1115: branch 1 taken</span>
+</span><span class="lineNum">     186 </span><span class="lineCov">            1115:       <B><FONT COLOR="#A020F0">if</FONT></B> (*msgptr == <B><FONT COLOR="#BC8F8F">'s'</FONT></B>) isstring = TRUE;</span>
+<span class="lineNum">     187 </span><span class="lineCov">            1115:       <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
 <span class="lineNum">     188 </span>                :     }
 <span class="lineNum">     189 </span>                :   }
 <span class="lineNum">     190 </span>                : 
 <span class="lineNum">     191 </span>                :   <I><FONT COLOR="#B22222">/* Format the message into the passed buffer */</FONT></I>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           11218: branch 1 taken</span>
-</span><span class="lineNum">     192 </span><span class="lineCov">           11218:   <B><FONT COLOR="#A020F0">if</FONT></B> (isstring)</span>
+<span class="lineNum">         </span><span class="branchTaken">            5769: branch 1 taken</span>
+</span><span class="lineNum">     192 </span><span class="lineCov">            5769:   <B><FONT COLOR="#A020F0">if</FONT></B> (isstring)</span>
 <span class="lineNum">     193 </span><span class="lineNoCov">               0:     sprintf(buffer, msgtext, err-&gt;msg_parm.s);</span>
 <span class="lineNum">     194 </span>                :   <B><FONT COLOR="#A020F0">else</FONT></B>
-<span class="lineNum">     195 </span><span class="lineCov">           11218:     sprintf(buffer, msgtext,</span>
+<span class="lineNum">     195 </span><span class="lineCov">            5769:     sprintf(buffer, msgtext,</span>
 <span class="lineNum">     196 </span>                : 	    err-&gt;msg_parm.i[0], err-&gt;msg_parm.i[1],
 <span class="lineNum">     197 </span>                : 	    err-&gt;msg_parm.i[2], err-&gt;msg_parm.i[3],
 <span class="lineNum">     198 </span>                : 	    err-&gt;msg_parm.i[4], err-&gt;msg_parm.i[5],
 <span class="lineNum">     199 </span>                : 	    err-&gt;msg_parm.i[6], err-&gt;msg_parm.i[7]);
-<span class="lineNum">     200 </span><span class="lineCov">           11218: }</span>
+<span class="lineNum">     200 </span><span class="lineCov">            5769: }</span>
 <span class="lineNum">     201 </span>                : 
 <span class="lineNum">     202 </span>                : 
 <span class="lineNum">     203 </span>                : <I><FONT COLOR="#B22222">/*
@@ -294,12 +294,12 @@
 <span class="lineNum">     209 </span>                :  */</FONT></I>
 <span class="lineNum">     210 </span>                : 
 <span class="lineNum">     211 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     212 </span><span class="lineCov">            9302: <B><FONT COLOR="#0000FF">reset_error_mgr</FONT></B> (j_common_ptr cinfo)</span>
+<span class="lineNum">     212 </span><span class="lineCov">            4659: <B><FONT COLOR="#0000FF">reset_error_mgr</FONT></B> (j_common_ptr cinfo)</span>
 <span class="lineNum">     213 </span>                : {
-<span class="lineNum">     214 </span><span class="lineCov">            9302:   cinfo-&gt;err-&gt;num_warnings = 0;</span>
+<span class="lineNum">     214 </span><span class="lineCov">            4659:   cinfo-&gt;err-&gt;num_warnings = 0;</span>
 <span class="lineNum">     215 </span>                :   <I><FONT COLOR="#B22222">/* trace_level is not reset since it is an application-supplied parameter */</FONT></I>
-<span class="lineNum">     216 </span><span class="lineCov">            9302:   cinfo-&gt;err-&gt;msg_code = 0;	<I><FONT COLOR="#B22222">/* may be useful as a flag for &quot;no error&quot; */</FONT></I></span>
-<span class="lineNum">     217 </span><span class="lineCov">            9302: }</span>
+<span class="lineNum">     216 </span><span class="lineCov">            4659:   cinfo-&gt;err-&gt;msg_code = 0;	<I><FONT COLOR="#B22222">/* may be useful as a flag for &quot;no error&quot; */</FONT></I></span>
+<span class="lineNum">     217 </span><span class="lineCov">            4659: }</span>
 <span class="lineNum">     218 </span>                : 
 <span class="lineNum">     219 </span>                : 
 <span class="lineNum">     220 </span>                : <I><FONT COLOR="#B22222">/*
@@ -313,30 +313,30 @@
 <span class="lineNum">     228 </span>                :  */</FONT></I>
 <span class="lineNum">     229 </span>                : 
 <span class="lineNum">     230 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">struct</FONT></B> jpeg_error_mgr *)
-<span class="lineNum">     231 </span><span class="lineCov">           13688: <B><FONT COLOR="#0000FF">jpeg_std_error</FONT></B> (<B><FONT COLOR="#228B22">struct</FONT></B> jpeg_error_mgr * err)</span>
+<span class="lineNum">     231 </span><span class="lineCov">            6378: <B><FONT COLOR="#0000FF">jpeg_std_error</FONT></B> (<B><FONT COLOR="#228B22">struct</FONT></B> jpeg_error_mgr * err)</span>
 <span class="lineNum">     232 </span>                : {
-<span class="lineNum">     233 </span><span class="lineCov">           13688:   err-&gt;error_exit = error_exit;</span>
-<span class="lineNum">     234 </span><span class="lineCov">           13688:   err-&gt;emit_message = emit_message;</span>
-<span class="lineNum">     235 </span><span class="lineCov">           13688:   err-&gt;output_message = output_message;</span>
-<span class="lineNum">     236 </span><span class="lineCov">           13688:   err-&gt;format_message = format_message;</span>
-<span class="lineNum">     237 </span><span class="lineCov">           13688:   err-&gt;reset_error_mgr = reset_error_mgr;</span>
+<span class="lineNum">     233 </span><span class="lineCov">            6378:   err-&gt;error_exit = error_exit;</span>
+<span class="lineNum">     234 </span><span class="lineCov">            6378:   err-&gt;emit_message = emit_message;</span>
+<span class="lineNum">     235 </span><span class="lineCov">            6378:   err-&gt;output_message = output_message;</span>
+<span class="lineNum">     236 </span><span class="lineCov">            6378:   err-&gt;format_message = format_message;</span>
+<span class="lineNum">     237 </span><span class="lineCov">            6378:   err-&gt;reset_error_mgr = reset_error_mgr;</span>
 <span class="lineNum">     238 </span>                : 
-<span class="lineNum">     239 </span><span class="lineCov">           13688:   err-&gt;trace_level = 0;		<I><FONT COLOR="#B22222">/* default = no tracing */</FONT></I></span>
-<span class="lineNum">     240 </span><span class="lineCov">           13688:   err-&gt;num_warnings = 0;	<I><FONT COLOR="#B22222">/* no warnings emitted yet */</FONT></I></span>
-<span class="lineNum">     241 </span><span class="lineCov">           13688:   err-&gt;msg_code = 0;		<I><FONT COLOR="#B22222">/* may be useful as a flag for &quot;no error&quot; */</FONT></I></span>
+<span class="lineNum">     239 </span><span class="lineCov">            6378:   err-&gt;trace_level = 0;		<I><FONT COLOR="#B22222">/* default = no tracing */</FONT></I></span>
+<span class="lineNum">     240 </span><span class="lineCov">            6378:   err-&gt;num_warnings = 0;	<I><FONT COLOR="#B22222">/* no warnings emitted yet */</FONT></I></span>
+<span class="lineNum">     241 </span><span class="lineCov">            6378:   err-&gt;msg_code = 0;		<I><FONT COLOR="#B22222">/* may be useful as a flag for &quot;no error&quot; */</FONT></I></span>
 <span class="lineNum">     242 </span>                : 
 <span class="lineNum">     243 </span>                :   <I><FONT COLOR="#B22222">/* Initialize message table pointers */</FONT></I>
-<span class="lineNum">     244 </span><span class="lineCov">           13688:   err-&gt;jpeg_message_table = jpeg_std_message_table;</span>
-<span class="lineNum">     245 </span><span class="lineCov">           13688:   err-&gt;last_jpeg_message = (<B><FONT COLOR="#228B22">int</FONT></B>) JMSG_LASTMSGCODE - 1;</span>
+<span class="lineNum">     244 </span><span class="lineCov">            6378:   err-&gt;jpeg_message_table = jpeg_std_message_table;</span>
+<span class="lineNum">     245 </span><span class="lineCov">            6378:   err-&gt;last_jpeg_message = (<B><FONT COLOR="#228B22">int</FONT></B>) JMSG_LASTMSGCODE - 1;</span>
 <span class="lineNum">     246 </span>                : 
-<span class="lineNum">     247 </span><span class="lineCov">           13688:   err-&gt;addon_message_table = NULL;</span>
-<span class="lineNum">     248 </span><span class="lineCov">           13688:   err-&gt;first_addon_message = 0;	<I><FONT COLOR="#B22222">/* for safety */</FONT></I></span>
-<span class="lineNum">     249 </span><span class="lineCov">           13688:   err-&gt;last_addon_message = 0;</span>
+<span class="lineNum">     247 </span><span class="lineCov">            6378:   err-&gt;addon_message_table = NULL;</span>
+<span class="lineNum">     248 </span><span class="lineCov">            6378:   err-&gt;first_addon_message = 0;	<I><FONT COLOR="#B22222">/* for safety */</FONT></I></span>
+<span class="lineNum">     249 </span><span class="lineCov">            6378:   err-&gt;last_addon_message = 0;</span>
 <span class="lineNum">     250 </span>                : 
-<span class="lineNum">     251 </span><span class="lineCov">           13688:   <B><FONT COLOR="#A020F0">return</FONT></B> err;</span>
+<span class="lineNum">     251 </span><span class="lineCov">            6378:   <B><FONT COLOR="#A020F0">return</FONT></B> err;</span>
 <span class="lineNum">     252 </span>                : }
 </pre>
 <hr>
-Generated: 2016-04-07&nbsp;12:37 by <a href="http://minormatter.com/zcov">zcov</a><br>
+Generated: 2016-04-07&nbsp;19:56 by <a href="http://minormatter.com/zcov">zcov</a><br>
 </body>
 </html>

@@ -22,7 +22,7 @@
   </tr>
   <tr>
     <td bgcolor=#ACACFF> <b>Generated:</b> </td>
-    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;12:37 </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;19:56 </td>
     <td width="30"></td>
     <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
     <td bgcolor=#F0F0FF align=right> <b>51.9%<b> </td>
@@ -47,7 +47,7 @@
     <td bgcolor=#F0F0FF> 1 </td>
     <td width="30"></td>
     <td bgcolor=#ACACFF> <b>Runs</b> </td>
-    <td bgcolor=#F0F0FF align=right> 13687 </td>
+    <td bgcolor=#F0F0FF align=right> 6378 </td>
   </tr>
 </table>
 </center>
@@ -132,28 +132,28 @@
 <span class="lineNum">      75 </span>                :  */</FONT></I>
 <span class="lineNum">      76 </span>                : 
 <span class="lineNum">      77 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">      78 </span><span class="lineCov">            9066: <B><FONT COLOR="#0000FF">start_pass_prep</FONT></B> (j_compress_ptr cinfo, J_BUF_MODE pass_mode)</span>
+<span class="lineNum">      78 </span><span class="lineCov">            4544: <B><FONT COLOR="#0000FF">start_pass_prep</FONT></B> (j_compress_ptr cinfo, J_BUF_MODE pass_mode)</span>
 <span class="lineNum">      79 </span>                : {
-<span class="lineNum">      80 </span><span class="lineCov">            9066:   my_prep_ptr prep = (my_prep_ptr) cinfo-&gt;prep;</span>
+<span class="lineNum">      80 </span><span class="lineCov">            4544:   my_prep_ptr prep = (my_prep_ptr) cinfo-&gt;prep;</span>
 <span class="lineNum">      81 </span>                : 
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            9066: branch 1 taken</span>
-</span><span class="lineNum">      82 </span><span class="lineCov">            9066:   <B><FONT COLOR="#A020F0">if</FONT></B> (pass_mode != JBUF_PASS_THRU)</span>
+<span class="lineNum">         </span><span class="branchTaken">            4544: branch 1 taken</span>
+</span><span class="lineNum">      82 </span><span class="lineCov">            4544:   <B><FONT COLOR="#A020F0">if</FONT></B> (pass_mode != JBUF_PASS_THRU)</span>
 <span class="lineNum">      83 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);</span>
 <span class="lineNum">      84 </span>                : 
 <span class="lineNum">      85 </span>                :   <I><FONT COLOR="#B22222">/* Initialize total-height counter for detecting bottom of image */</FONT></I>
-<span class="lineNum">      86 </span><span class="lineCov">            9066:   prep-&gt;rows_to_go = cinfo-&gt;image_height;</span>
+<span class="lineNum">      86 </span><span class="lineCov">            4544:   prep-&gt;rows_to_go = cinfo-&gt;image_height;</span>
 <span class="lineNum">      87 </span>                :   <I><FONT COLOR="#B22222">/* Mark the conversion buffer empty */</FONT></I>
-<span class="lineNum">      88 </span><span class="lineCov">            9066:   prep-&gt;next_buf_row = 0;</span>
+<span class="lineNum">      88 </span><span class="lineCov">            4544:   prep-&gt;next_buf_row = 0;</span>
 <span class="lineNum">      89 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">CONTEXT_ROWS_SUPPORTED</FONT>
 <span class="lineNum">      90 </span>                :   <I><FONT COLOR="#B22222">/* Preset additional state variables for context mode.
 <span class="lineNum">      91 </span>                :    * These aren't used in non-context mode, so we needn't test which mode.
 <span class="lineNum">      92 </span>                :    */</FONT></I>
-<span class="lineNum">      93 </span><span class="lineCov">            9066:   prep-&gt;this_row_group = 0;</span>
+<span class="lineNum">      93 </span><span class="lineCov">            4544:   prep-&gt;this_row_group = 0;</span>
 <span class="lineNum">      94 </span>                :   <I><FONT COLOR="#B22222">/* Set next_buf_stop to stop after two row groups have been read in. */</FONT></I>
-<span class="lineNum">      95 </span><span class="lineCov">            9066:   prep-&gt;next_buf_stop = 2 * cinfo-&gt;max_v_samp_factor;</span>
+<span class="lineNum">      95 </span><span class="lineCov">            4544:   prep-&gt;next_buf_stop = 2 * cinfo-&gt;max_v_samp_factor;</span>
 <span class="lineNum">      96 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
-<span class="lineNum">      97 </span><span class="lineCov">            9066: }</span>
+<span class="lineNum">      97 </span><span class="lineCov">            4544: }</span>
 <span class="lineNum">      98 </span>                : 
 <span class="lineNum">      99 </span>                : 
 <span class="lineNum">     100 </span>                : <I><FONT COLOR="#B22222">/*
@@ -162,18 +162,18 @@
 <span class="lineNum">     103 </span>                :  */</FONT></I>
 <span class="lineNum">     104 </span>                : 
 <span class="lineNum">     105 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     106 </span><span class="lineCov">            9959: <B><FONT COLOR="#0000FF">expand_bottom_edge</FONT></B> (JSAMPARRAY image_data, JDIMENSION num_cols,</span>
+<span class="lineNum">     106 </span><span class="lineCov">            4384: <B><FONT COLOR="#0000FF">expand_bottom_edge</FONT></B> (JSAMPARRAY image_data, JDIMENSION num_cols,</span>
 <span class="lineNum">     107 </span>                : 		    <B><FONT COLOR="#228B22">int</FONT></B> input_rows, <B><FONT COLOR="#228B22">int</FONT></B> output_rows)
 <span class="lineNum">     108 </span>                : {
 <span class="lineNum">     109 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> row;
 <span class="lineNum">     110 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           45908: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            9959: branch 1 taken</span>
-</span><span class="lineNum">     111 </span><span class="lineCov">           55867:   <B><FONT COLOR="#A020F0">for</FONT></B> (row = input_rows; row &lt; output_rows; row++) {</span>
-<span class="lineNum">     112 </span><span class="lineCov">           45908:     jcopy_sample_rows(image_data, input_rows-1, image_data, row,</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           21855: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4384: branch 1 taken</span>
+</span><span class="lineNum">     111 </span><span class="lineCov">           26239:   <B><FONT COLOR="#A020F0">for</FONT></B> (row = input_rows; row &lt; output_rows; row++) {</span>
+<span class="lineNum">     112 </span><span class="lineCov">           21855:     jcopy_sample_rows(image_data, input_rows-1, image_data, row,</span>
 <span class="lineNum">     113 </span>                : 		      1, num_cols);
 <span class="lineNum">     114 </span>                :   }
-<span class="lineNum">     115 </span><span class="lineCov">            9959: }</span>
+<span class="lineNum">     115 </span><span class="lineCov">            4384: }</span>
 <span class="lineNum">     116 </span>                : 
 <span class="lineNum">     117 </span>                : 
 <span class="lineNum">     118 </span>                : <I><FONT COLOR="#B22222">/*
@@ -186,82 +186,82 @@
 <span class="lineNum">     125 </span>                :  */</FONT></I>
 <span class="lineNum">     126 </span>                : 
 <span class="lineNum">     127 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     128 </span><span class="lineCov">          461675: <B><FONT COLOR="#0000FF">pre_process_data</FONT></B> (j_compress_ptr cinfo,</span>
+<span class="lineNum">     128 </span><span class="lineCov">          268772: <B><FONT COLOR="#0000FF">pre_process_data</FONT></B> (j_compress_ptr cinfo,</span>
 <span class="lineNum">     129 </span>                : 		  JSAMPARRAY input_buf, JDIMENSION *in_row_ctr,
 <span class="lineNum">     130 </span>                : 		  JDIMENSION in_rows_avail,
 <span class="lineNum">     131 </span>                : 		  JSAMPIMAGE output_buf, JDIMENSION *out_row_group_ctr,
 <span class="lineNum">     132 </span>                : 		  JDIMENSION out_row_groups_avail)
 <span class="lineNum">     133 </span>                : {
-<span class="lineNum">     134 </span><span class="lineCov">          461675:   my_prep_ptr prep = (my_prep_ptr) cinfo-&gt;prep;</span>
+<span class="lineNum">     134 </span><span class="lineCov">          268772:   my_prep_ptr prep = (my_prep_ptr) cinfo-&gt;prep;</span>
 <span class="lineNum">     135 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> numrows, ci;
 <span class="lineNum">     136 </span>                :   JDIMENSION inrows;
 <span class="lineNum">     137 </span>                :   jpeg_component_info * compptr;
 <span class="lineNum">     138 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          430909: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">          458150: branch 1 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">          430909: branch 2 taken</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          248413: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          267328: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          248413: branch 2 taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
-</span><span class="lineNum">     139 </span><span class="lineCov">         1781643:   <B><FONT COLOR="#A020F0">while</FONT></B> (*in_row_ctr &lt; in_rows_avail &amp;&amp;</span>
-<span class="lineNum">     140 </span><span class="lineCov">          430909: 	 *out_row_group_ctr &lt; out_row_groups_avail) {</span>
+</span><span class="lineNum">     139 </span><span class="lineCov">         1032926:   <B><FONT COLOR="#A020F0">while</FONT></B> (*in_row_ctr &lt; in_rows_avail &amp;&amp;</span>
+<span class="lineNum">     140 </span><span class="lineCov">          248413: 	 *out_row_group_ctr &lt; out_row_groups_avail) {</span>
 <span class="lineNum">     141 </span>                :     <I><FONT COLOR="#B22222">/* Do color conversion to fill the conversion buffer. */</FONT></I>
-<span class="lineNum">     142 </span><span class="lineCov">          430909:     inrows = in_rows_avail - *in_row_ctr;</span>
-<span class="lineNum">     143 </span><span class="lineCov">          430909:     numrows = cinfo-&gt;max_v_samp_factor - prep-&gt;next_buf_row;</span>
-<span class="lineNum">     144 </span><span class="lineCov">          430909:     numrows = (<B><FONT COLOR="#228B22">int</FONT></B>) MIN((JDIMENSION) numrows, inrows);</span>
-<span class="lineNum">     145 </span><span class="lineCov">         1292727:     (*cinfo-&gt;cconvert-&gt;color_convert) (cinfo, input_buf + *in_row_ctr,</span>
-<span class="lineNum">     146 </span><span class="lineCov">          430909: 				       prep-&gt;color_buf,</span>
-<span class="lineNum">     147 </span><span class="lineCov">          430909: 				       (JDIMENSION) prep-&gt;next_buf_row,</span>
+<span class="lineNum">     142 </span><span class="lineCov">          248413:     inrows = in_rows_avail - *in_row_ctr;</span>
+<span class="lineNum">     143 </span><span class="lineCov">          248413:     numrows = cinfo-&gt;max_v_samp_factor - prep-&gt;next_buf_row;</span>
+<span class="lineNum">     144 </span><span class="lineCov">          248413:     numrows = (<B><FONT COLOR="#228B22">int</FONT></B>) MIN((JDIMENSION) numrows, inrows);</span>
+<span class="lineNum">     145 </span><span class="lineCov">          745239:     (*cinfo-&gt;cconvert-&gt;color_convert) (cinfo, input_buf + *in_row_ctr,</span>
+<span class="lineNum">     146 </span><span class="lineCov">          248413: 				       prep-&gt;color_buf,</span>
+<span class="lineNum">     147 </span><span class="lineCov">          248413: 				       (JDIMENSION) prep-&gt;next_buf_row,</span>
 <span class="lineNum">     148 </span>                : 				       numrows);
-<span class="lineNum">     149 </span><span class="lineCov">          430909:     *in_row_ctr += numrows;</span>
-<span class="lineNum">     150 </span><span class="lineCov">          430909:     prep-&gt;next_buf_row += numrows;</span>
-<span class="lineNum">     151 </span><span class="lineCov">          430909:     prep-&gt;rows_to_go -= numrows;</span>
+<span class="lineNum">     149 </span><span class="lineCov">          248413:     *in_row_ctr += numrows;</span>
+<span class="lineNum">     150 </span><span class="lineCov">          248413:     prep-&gt;next_buf_row += numrows;</span>
+<span class="lineNum">     151 </span><span class="lineCov">          248413:     prep-&gt;rows_to_go -= numrows;</span>
 <span class="lineNum">     152 </span>                :     <I><FONT COLOR="#B22222">/* If at bottom of image, pad to fill the conversion buffer. */</FONT></I>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            4019: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">          426890: branch 1 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            1064: branch 2 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            2955: branch 3 taken</span>
-</span><span class="lineNum">     153 </span><span class="lineCov">          434928:     <B><FONT COLOR="#A020F0">if</FONT></B> (prep-&gt;rows_to_go == 0 &amp;&amp;</span>
-<span class="lineNum">     154 </span><span class="lineCov">            4019: 	prep-&gt;next_buf_row &lt; cinfo-&gt;max_v_samp_factor) {</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            3192: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            1064: branch 1 taken</span>
-</span><span class="lineNum">     155 </span><span class="lineCov">            4256:       <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0; ci &lt; cinfo-&gt;num_components; ci++) {</span>
-<span class="lineNum">     156 </span><span class="lineCov">            3192: 	expand_bottom_edge(prep-&gt;color_buf[ci], cinfo-&gt;image_width,</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1611: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          246802: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             466: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1145: branch 3 taken</span>
+</span><span class="lineNum">     153 </span><span class="lineCov">          250024:     <B><FONT COLOR="#A020F0">if</FONT></B> (prep-&gt;rows_to_go == 0 &amp;&amp;</span>
+<span class="lineNum">     154 </span><span class="lineCov">            1611: 	prep-&gt;next_buf_row &lt; cinfo-&gt;max_v_samp_factor) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1398: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             466: branch 1 taken</span>
+</span><span class="lineNum">     155 </span><span class="lineCov">            1864:       <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0; ci &lt; cinfo-&gt;num_components; ci++) {</span>
+<span class="lineNum">     156 </span><span class="lineCov">            1398: 	expand_bottom_edge(prep-&gt;color_buf[ci], cinfo-&gt;image_width,</span>
 <span class="lineNum">     157 </span>                : 			   prep-&gt;next_buf_row, cinfo-&gt;max_v_samp_factor);
 <span class="lineNum">     158 </span>                :       }
-<span class="lineNum">     159 </span><span class="lineCov">            1064:       prep-&gt;next_buf_row = cinfo-&gt;max_v_samp_factor;</span>
+<span class="lineNum">     159 </span><span class="lineCov">             466:       prep-&gt;next_buf_row = cinfo-&gt;max_v_samp_factor;</span>
 <span class="lineNum">     160 </span>                :     }
 <span class="lineNum">     161 </span>                :     <I><FONT COLOR="#B22222">/* If we've filled the conversion buffer, empty it. */</FONT></I>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          266609: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">          164300: branch 1 taken</span>
-</span><span class="lineNum">     162 </span><span class="lineCov">          430909:     <B><FONT COLOR="#A020F0">if</FONT></B> (prep-&gt;next_buf_row == cinfo-&gt;max_v_samp_factor) {</span>
-<span class="lineNum">     163 </span><span class="lineCov">          533218:       (*cinfo-&gt;downsample-&gt;downsample) (cinfo,</span>
-<span class="lineNum">     164 </span><span class="lineCov">          266609: 					prep-&gt;color_buf, (JDIMENSION) 0,</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          172569: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           75844: branch 1 taken</span>
+</span><span class="lineNum">     162 </span><span class="lineCov">          248413:     <B><FONT COLOR="#A020F0">if</FONT></B> (prep-&gt;next_buf_row == cinfo-&gt;max_v_samp_factor) {</span>
+<span class="lineNum">     163 </span><span class="lineCov">          345138:       (*cinfo-&gt;downsample-&gt;downsample) (cinfo,</span>
+<span class="lineNum">     164 </span><span class="lineCov">          172569: 					prep-&gt;color_buf, (JDIMENSION) 0,</span>
 <span class="lineNum">     165 </span>                : 					output_buf, *out_row_group_ctr);
-<span class="lineNum">     166 </span><span class="lineCov">          266609:       prep-&gt;next_buf_row = 0;</span>
-<span class="lineNum">     167 </span><span class="lineCov">          266609:       (*out_row_group_ctr)++;</span>
+<span class="lineNum">     166 </span><span class="lineCov">          172569:       prep-&gt;next_buf_row = 0;</span>
+<span class="lineNum">     167 </span><span class="lineCov">          172569:       (*out_row_group_ctr)++;</span>
 <span class="lineNum">     168 </span>                :     }
 <span class="lineNum">     169 </span>                :     <I><FONT COLOR="#B22222">/* If at bottom of image, pad the output to a full iMCU height.
 <span class="lineNum">     170 </span>                :      * Note we assume the caller is providing a one-iMCU-height output buffer!
 <span class="lineNum">     171 </span>                :      */</FONT></I>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            4019: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">          426890: branch 1 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            3525: branch 2 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">             494: branch 3 taken</span>
-</span><span class="lineNum">     172 </span><span class="lineCov">          434928:     <B><FONT COLOR="#A020F0">if</FONT></B> (prep-&gt;rows_to_go == 0 &amp;&amp;</span>
-<span class="lineNum">     173 </span><span class="lineCov">            4019: 	*out_row_group_ctr &lt; out_row_groups_avail) {</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            6767: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            3525: branch 1 taken</span>
-</span><span class="lineNum">     174 </span><span class="lineCov">           13817:       <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0, compptr = cinfo-&gt;comp_info; ci &lt; cinfo-&gt;num_components;</span>
-<span class="lineNum">     175 </span><span class="lineCov">            6767: 	   ci++, compptr++) {</span>
-<span class="lineNum">     176 </span><span class="lineCov">           20301: 	expand_bottom_edge(output_buf[ci],</span>
-<span class="lineNum">     177 </span><span class="lineCov">            6767: 			   compptr-&gt;width_in_blocks * DCTSIZE,</span>
-<span class="lineNum">     178 </span><span class="lineCov">            6767: 			   (<B><FONT COLOR="#228B22">int</FONT></B>) (*out_row_group_ctr * compptr-&gt;v_samp_factor),</span>
-<span class="lineNum">     179 </span><span class="lineCov">            6767: 			   (<B><FONT COLOR="#228B22">int</FONT></B>) (out_row_groups_avail * compptr-&gt;v_samp_factor));</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1611: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          246802: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1444: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             167: branch 3 taken</span>
+</span><span class="lineNum">     172 </span><span class="lineCov">          250024:     <B><FONT COLOR="#A020F0">if</FONT></B> (prep-&gt;rows_to_go == 0 &amp;&amp;</span>
+<span class="lineNum">     173 </span><span class="lineCov">            1611: 	*out_row_group_ctr &lt; out_row_groups_avail) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            2986: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1444: branch 1 taken</span>
+</span><span class="lineNum">     174 </span><span class="lineCov">            5874:       <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0, compptr = cinfo-&gt;comp_info; ci &lt; cinfo-&gt;num_components;</span>
+<span class="lineNum">     175 </span><span class="lineCov">            2986: 	   ci++, compptr++) {</span>
+<span class="lineNum">     176 </span><span class="lineCov">            8958: 	expand_bottom_edge(output_buf[ci],</span>
+<span class="lineNum">     177 </span><span class="lineCov">            2986: 			   compptr-&gt;width_in_blocks * DCTSIZE,</span>
+<span class="lineNum">     178 </span><span class="lineCov">            2986: 			   (<B><FONT COLOR="#228B22">int</FONT></B>) (*out_row_group_ctr * compptr-&gt;v_samp_factor),</span>
+<span class="lineNum">     179 </span><span class="lineCov">            2986: 			   (<B><FONT COLOR="#228B22">int</FONT></B>) (out_row_groups_avail * compptr-&gt;v_samp_factor));</span>
 <span class="lineNum">     180 </span>                :       }
-<span class="lineNum">     181 </span><span class="lineCov">            3525:       *out_row_group_ctr = out_row_groups_avail;</span>
-<span class="lineNum">     182 </span><span class="lineCov">            3525:       <B><FONT COLOR="#A020F0">break</FONT></B>;			<I><FONT COLOR="#B22222">/* can exit outer loop without test */</FONT></I></span>
+<span class="lineNum">     181 </span><span class="lineCov">            1444:       *out_row_group_ctr = out_row_groups_avail;</span>
+<span class="lineNum">     182 </span><span class="lineCov">            1444:       <B><FONT COLOR="#A020F0">break</FONT></B>;			<I><FONT COLOR="#B22222">/* can exit outer loop without test */</FONT></I></span>
 <span class="lineNum">     183 </span>                :     }
 <span class="lineNum">     184 </span>                :   }
-<span class="lineNum">     185 </span><span class="lineCov">          461675: }</span>
+<span class="lineNum">     185 </span><span class="lineCov">          268772: }</span>
 <span class="lineNum">     186 </span>                : 
 <span class="lineNum">     187 </span>                : 
 <span class="lineNum">     188 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">CONTEXT_ROWS_SUPPORTED</FONT>
@@ -417,30 +417,30 @@
 <span class="lineNum">     312 </span>                :  */</FONT></I>
 <span class="lineNum">     313 </span>                : 
 <span class="lineNum">     314 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     315 </span><span class="lineCov">            9066: <B><FONT COLOR="#0000FF">jinit_c_prep_controller</FONT></B> (j_compress_ptr cinfo, boolean need_full_buffer)</span>
+<span class="lineNum">     315 </span><span class="lineCov">            4544: <B><FONT COLOR="#0000FF">jinit_c_prep_controller</FONT></B> (j_compress_ptr cinfo, boolean need_full_buffer)</span>
 <span class="lineNum">     316 </span>                : {
 <span class="lineNum">     317 </span>                :   my_prep_ptr prep;
 <span class="lineNum">     318 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> ci;
 <span class="lineNum">     319 </span>                :   jpeg_component_info * compptr;
 <span class="lineNum">     320 </span>                : 
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            9066: branch 1 taken</span>
-</span><span class="lineNum">     321 </span><span class="lineCov">            9066:   <B><FONT COLOR="#A020F0">if</FONT></B> (need_full_buffer)		<I><FONT COLOR="#B22222">/* safety check */</FONT></I></span>
+<span class="lineNum">         </span><span class="branchTaken">            4544: branch 1 taken</span>
+</span><span class="lineNum">     321 </span><span class="lineCov">            4544:   <B><FONT COLOR="#A020F0">if</FONT></B> (need_full_buffer)		<I><FONT COLOR="#B22222">/* safety check */</FONT></I></span>
 <span class="lineNum">     322 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);</span>
 <span class="lineNum">     323 </span>                : 
-<span class="lineNum">     324 </span><span class="lineCov">            9066:   prep = (my_prep_ptr)</span>
-<span class="lineNum">     325 </span><span class="lineCov">            9066:     (*cinfo-&gt;mem-&gt;alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
+<span class="lineNum">     324 </span><span class="lineCov">            4544:   prep = (my_prep_ptr)</span>
+<span class="lineNum">     325 </span><span class="lineCov">            4544:     (*cinfo-&gt;mem-&gt;alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
 <span class="lineNum">     326 </span>                : 				SIZEOF(my_prep_controller));
-<span class="lineNum">     327 </span><span class="lineCov">            9066:   cinfo-&gt;prep = (<B><FONT COLOR="#228B22">struct</FONT></B> jpeg_c_prep_controller *) prep;</span>
-<span class="lineNum">     328 </span><span class="lineCov">            9066:   prep-&gt;pub.start_pass = start_pass_prep;</span>
+<span class="lineNum">     327 </span><span class="lineCov">            4544:   cinfo-&gt;prep = (<B><FONT COLOR="#228B22">struct</FONT></B> jpeg_c_prep_controller *) prep;</span>
+<span class="lineNum">     328 </span><span class="lineCov">            4544:   prep-&gt;pub.start_pass = start_pass_prep;</span>
 <span class="lineNum">     329 </span>                : 
 <span class="lineNum">     330 </span>                :   <I><FONT COLOR="#B22222">/* Allocate the color conversion buffer.
 <span class="lineNum">     331 </span>                :    * We make the buffer wide enough to allow the downsampler to edge-expand
 <span class="lineNum">     332 </span>                :    * horizontally within the buffer, if it so chooses.
 <span class="lineNum">     333 </span>                :    */</FONT></I>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            9066: branch 1 taken</span>
-</span><span class="lineNum">     334 </span><span class="lineCov">            9066:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;downsample-&gt;need_context_rows) {</span>
+<span class="lineNum">         </span><span class="branchTaken">            4544: branch 1 taken</span>
+</span><span class="lineNum">     334 </span><span class="lineCov">            4544:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;downsample-&gt;need_context_rows) {</span>
 <span class="lineNum">     335 </span>                :     <I><FONT COLOR="#B22222">/* Set up to provide context rows */</FONT></I>
 <span class="lineNum">     336 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">CONTEXT_ROWS_SUPPORTED</FONT>
 <span class="lineNum">     337 </span><span class="lineNoCov">               0:     prep-&gt;pub.pre_process_data = pre_process_context;</span>
@@ -450,21 +450,21 @@
 <span class="lineNum">     341 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
 <span class="lineNum">     342 </span>                :   } <B><FONT COLOR="#A020F0">else</FONT></B> {
 <span class="lineNum">     343 </span>                :     <I><FONT COLOR="#B22222">/* No context, just make it tall enough for one row group */</FONT></I>
-<span class="lineNum">     344 </span><span class="lineCov">            9066:     prep-&gt;pub.pre_process_data = pre_process_data;</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           17278: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            9066: branch 1 taken</span>
-</span><span class="lineNum">     345 </span><span class="lineCov">           35410:     <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0, compptr = cinfo-&gt;comp_info; ci &lt; cinfo-&gt;num_components;</span>
-<span class="lineNum">     346 </span><span class="lineCov">           17278: 	 ci++, compptr++) {</span>
-<span class="lineNum">     347 </span><span class="lineCov">           34556:       prep-&gt;color_buf[ci] = (*cinfo-&gt;mem-&gt;alloc_sarray)</span>
-<span class="lineNum">     348 </span><span class="lineCov">           51834: 	((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
-<span class="lineNum">     349 </span><span class="lineCov">           34556: 	 (JDIMENSION) (((<B><FONT COLOR="#228B22">long</FONT></B>) compptr-&gt;width_in_blocks * DCTSIZE *</span>
-<span class="lineNum">     350 </span><span class="lineCov">           34556: 			cinfo-&gt;max_h_samp_factor) / compptr-&gt;h_samp_factor),</span>
-<span class="lineNum">     351 </span><span class="lineCov">           17278: 	 (JDIMENSION) cinfo-&gt;max_v_samp_factor);</span>
+<span class="lineNum">     344 </span><span class="lineCov">            4544:     prep-&gt;pub.pre_process_data = pre_process_data;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            8260: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4544: branch 1 taken</span>
+</span><span class="lineNum">     345 </span><span class="lineCov">           17348:     <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0, compptr = cinfo-&gt;comp_info; ci &lt; cinfo-&gt;num_components;</span>
+<span class="lineNum">     346 </span><span class="lineCov">            8260: 	 ci++, compptr++) {</span>
+<span class="lineNum">     347 </span><span class="lineCov">           16520:       prep-&gt;color_buf[ci] = (*cinfo-&gt;mem-&gt;alloc_sarray)</span>
+<span class="lineNum">     348 </span><span class="lineCov">           24780: 	((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
+<span class="lineNum">     349 </span><span class="lineCov">           16520: 	 (JDIMENSION) (((<B><FONT COLOR="#228B22">long</FONT></B>) compptr-&gt;width_in_blocks * DCTSIZE *</span>
+<span class="lineNum">     350 </span><span class="lineCov">           16520: 			cinfo-&gt;max_h_samp_factor) / compptr-&gt;h_samp_factor),</span>
+<span class="lineNum">     351 </span><span class="lineCov">            8260: 	 (JDIMENSION) cinfo-&gt;max_v_samp_factor);</span>
 <span class="lineNum">     352 </span>                :     }
 <span class="lineNum">     353 </span>                :   }
-<span class="lineNum">     354 </span><span class="lineCov">            9066: }</span>
+<span class="lineNum">     354 </span><span class="lineCov">            4544: }</span>
 </pre>
 <hr>
-Generated: 2016-04-07&nbsp;12:37 by <a href="http://minormatter.com/zcov">zcov</a><br>
+Generated: 2016-04-07&nbsp;19:56 by <a href="http://minormatter.com/zcov">zcov</a><br>
 </body>
 </html>

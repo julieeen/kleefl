@@ -22,7 +22,7 @@
   </tr>
   <tr>
     <td bgcolor=#ACACFF> <b>Generated:</b> </td>
-    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;12:37 </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;19:56 </td>
     <td width="30"></td>
     <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
     <td bgcolor=#F0F0FF align=right> <b>55.6%<b> </td>
@@ -47,7 +47,7 @@
     <td bgcolor=#F0F0FF> 1 </td>
     <td width="30"></td>
     <td bgcolor=#ACACFF> <b>Runs</b> </td>
-    <td bgcolor=#F0F0FF align=right> 13685 </td>
+    <td bgcolor=#F0F0FF align=right> 6378 </td>
   </tr>
 </table>
 </center>
@@ -84,19 +84,19 @@
 <span class="lineNum">      27 </span>                :  */</FONT></I>
 <span class="lineNum">      28 </span>                : 
 <span class="lineNum">      29 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">      30 </span><span class="lineCov">           13685: <B><FONT COLOR="#0000FF">jpeg_CreateCompress</FONT></B> (j_compress_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> version, size_t structsize)</span>
+<span class="lineNum">      30 </span><span class="lineCov">            6378: <B><FONT COLOR="#0000FF">jpeg_CreateCompress</FONT></B> (j_compress_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> version, size_t structsize)</span>
 <span class="lineNum">      31 </span>                : {
 <span class="lineNum">      32 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> i;
 <span class="lineNum">      33 </span>                : 
 <span class="lineNum">      34 </span>                :   <I><FONT COLOR="#B22222">/* Guard against version mismatches between library and caller. */</FONT></I>
-<span class="lineNum">      35 </span><span class="lineCov">           13685:   cinfo-&gt;mem = NULL;		<I><FONT COLOR="#B22222">/* so jpeg_destroy knows mem mgr not called */</FONT></I></span>
+<span class="lineNum">      35 </span><span class="lineCov">            6378:   cinfo-&gt;mem = NULL;		<I><FONT COLOR="#B22222">/* so jpeg_destroy knows mem mgr not called */</FONT></I></span>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           13685: branch 1 taken</span>
-</span><span class="lineNum">      36 </span><span class="lineCov">           13685:   <B><FONT COLOR="#A020F0">if</FONT></B> (version != JPEG_LIB_VERSION)</span>
+<span class="lineNum">         </span><span class="branchTaken">            6378: branch 1 taken</span>
+</span><span class="lineNum">      36 </span><span class="lineCov">            6378:   <B><FONT COLOR="#A020F0">if</FONT></B> (version != JPEG_LIB_VERSION)</span>
 <span class="lineNum">      37 </span><span class="lineNoCov">               0:     ERREXIT2(cinfo, JERR_BAD_LIB_VERSION, JPEG_LIB_VERSION, version);</span>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           13685: branch 1 taken</span>
-</span><span class="lineNum">      38 </span><span class="lineCov">           13685:   <B><FONT COLOR="#A020F0">if</FONT></B> (structsize != SIZEOF(<B><FONT COLOR="#228B22">struct</FONT></B> jpeg_compress_struct))</span>
+<span class="lineNum">         </span><span class="branchTaken">            6378: branch 1 taken</span>
+</span><span class="lineNum">      38 </span><span class="lineCov">            6378:   <B><FONT COLOR="#A020F0">if</FONT></B> (structsize != SIZEOF(<B><FONT COLOR="#228B22">struct</FONT></B> jpeg_compress_struct))</span>
 <span class="lineNum">      39 </span><span class="lineNoCov">               0:     ERREXIT2(cinfo, JERR_BAD_STRUCT_SIZE, </span>
 <span class="lineNum">      40 </span>                : 	     (<B><FONT COLOR="#228B22">int</FONT></B>) SIZEOF(<B><FONT COLOR="#228B22">struct</FONT></B> jpeg_compress_struct), (<B><FONT COLOR="#228B22">int</FONT></B>) structsize);
 <span class="lineNum">      41 </span>                : 
@@ -107,42 +107,42 @@
 <span class="lineNum">      46 </span>                :    * complain here.
 <span class="lineNum">      47 </span>                :    */</FONT></I>
 <span class="lineNum">      48 </span>                :   {
-<span class="lineNum">      49 </span><span class="lineCov">           13685:     <B><FONT COLOR="#228B22">struct</FONT></B> jpeg_error_mgr * err = cinfo-&gt;err;</span>
-<span class="lineNum">      50 </span><span class="lineCov">           13685:     <B><FONT COLOR="#228B22">void</FONT></B> * client_data = cinfo-&gt;client_data; <I><FONT COLOR="#B22222">/* ignore Purify complaint here */</FONT></I></span>
-<span class="lineNum">      51 </span><span class="lineCov">           13685:     MEMZERO(cinfo, SIZEOF(<B><FONT COLOR="#228B22">struct</FONT></B> jpeg_compress_struct));</span>
-<span class="lineNum">      52 </span><span class="lineCov">           13685:     cinfo-&gt;err = err;</span>
-<span class="lineNum">      53 </span><span class="lineCov">           13685:     cinfo-&gt;client_data = client_data;</span>
+<span class="lineNum">      49 </span><span class="lineCov">            6378:     <B><FONT COLOR="#228B22">struct</FONT></B> jpeg_error_mgr * err = cinfo-&gt;err;</span>
+<span class="lineNum">      50 </span><span class="lineCov">            6378:     <B><FONT COLOR="#228B22">void</FONT></B> * client_data = cinfo-&gt;client_data; <I><FONT COLOR="#B22222">/* ignore Purify complaint here */</FONT></I></span>
+<span class="lineNum">      51 </span><span class="lineCov">            6378:     MEMZERO(cinfo, SIZEOF(<B><FONT COLOR="#228B22">struct</FONT></B> jpeg_compress_struct));</span>
+<span class="lineNum">      52 </span><span class="lineCov">            6378:     cinfo-&gt;err = err;</span>
+<span class="lineNum">      53 </span><span class="lineCov">            6378:     cinfo-&gt;client_data = client_data;</span>
 <span class="lineNum">      54 </span>                :   }
-<span class="lineNum">      55 </span><span class="lineCov">           13685:   cinfo-&gt;is_decompressor = FALSE;</span>
+<span class="lineNum">      55 </span><span class="lineCov">            6378:   cinfo-&gt;is_decompressor = FALSE;</span>
 <span class="lineNum">      56 </span>                : 
 <span class="lineNum">      57 </span>                :   <I><FONT COLOR="#B22222">/* Initialize a memory manager instance for this object */</FONT></I>
-<span class="lineNum">      58 </span><span class="lineCov">           13685:   jinit_memory_mgr((j_common_ptr) cinfo);</span>
+<span class="lineNum">      58 </span><span class="lineCov">            6378:   jinit_memory_mgr((j_common_ptr) cinfo);</span>
 <span class="lineNum">      59 </span>                : 
 <span class="lineNum">      60 </span>                :   <I><FONT COLOR="#B22222">/* Zero out pointers to permanent structures. */</FONT></I>
-<span class="lineNum">      61 </span><span class="lineCov">           13685:   cinfo-&gt;progress = NULL;</span>
-<span class="lineNum">      62 </span><span class="lineCov">           13685:   cinfo-&gt;dest = NULL;</span>
+<span class="lineNum">      61 </span><span class="lineCov">            6378:   cinfo-&gt;progress = NULL;</span>
+<span class="lineNum">      62 </span><span class="lineCov">            6378:   cinfo-&gt;dest = NULL;</span>
 <span class="lineNum">      63 </span>                : 
-<span class="lineNum">      64 </span><span class="lineCov">           13685:   cinfo-&gt;comp_info = NULL;</span>
+<span class="lineNum">      64 </span><span class="lineCov">            6378:   cinfo-&gt;comp_info = NULL;</span>
 <span class="lineNum">      65 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           54740: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           13685: branch 1 taken</span>
-</span><span class="lineNum">      66 </span><span class="lineCov">           68425:   <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; NUM_QUANT_TBLS; i++)</span>
-<span class="lineNum">      67 </span><span class="lineCov">           54740:     cinfo-&gt;quant_tbl_ptrs[i] = NULL;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           25512: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            6378: branch 1 taken</span>
+</span><span class="lineNum">      66 </span><span class="lineCov">           31890:   <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; NUM_QUANT_TBLS; i++)</span>
+<span class="lineNum">      67 </span><span class="lineCov">           25512:     cinfo-&gt;quant_tbl_ptrs[i] = NULL;</span>
 <span class="lineNum">      68 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           54740: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           13685: branch 1 taken</span>
-</span><span class="lineNum">      69 </span><span class="lineCov">           68425:   <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; NUM_HUFF_TBLS; i++) {</span>
-<span class="lineNum">      70 </span><span class="lineCov">           54740:     cinfo-&gt;dc_huff_tbl_ptrs[i] = NULL;</span>
-<span class="lineNum">      71 </span><span class="lineCov">           54740:     cinfo-&gt;ac_huff_tbl_ptrs[i] = NULL;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           25512: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            6378: branch 1 taken</span>
+</span><span class="lineNum">      69 </span><span class="lineCov">           31890:   <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; NUM_HUFF_TBLS; i++) {</span>
+<span class="lineNum">      70 </span><span class="lineCov">           25512:     cinfo-&gt;dc_huff_tbl_ptrs[i] = NULL;</span>
+<span class="lineNum">      71 </span><span class="lineCov">           25512:     cinfo-&gt;ac_huff_tbl_ptrs[i] = NULL;</span>
 <span class="lineNum">      72 </span>                :   }
 <span class="lineNum">      73 </span>                : 
-<span class="lineNum">      74 </span><span class="lineCov">           13685:   cinfo-&gt;script_space = NULL;</span>
+<span class="lineNum">      74 </span><span class="lineCov">            6378:   cinfo-&gt;script_space = NULL;</span>
 <span class="lineNum">      75 </span>                : 
-<span class="lineNum">      76 </span><span class="lineCov">           13685:   cinfo-&gt;input_gamma = 1.0;	<I><FONT COLOR="#B22222">/* in case application forgets */</FONT></I></span>
+<span class="lineNum">      76 </span><span class="lineCov">            6378:   cinfo-&gt;input_gamma = 1.0;	<I><FONT COLOR="#B22222">/* in case application forgets */</FONT></I></span>
 <span class="lineNum">      77 </span>                : 
 <span class="lineNum">      78 </span>                :   <I><FONT COLOR="#B22222">/* OK, I'm ready */</FONT></I>
-<span class="lineNum">      79 </span><span class="lineCov">           13685:   cinfo-&gt;global_state = CSTATE_START;</span>
-<span class="lineNum">      80 </span><span class="lineCov">           13685: }</span>
+<span class="lineNum">      79 </span><span class="lineCov">            6378:   cinfo-&gt;global_state = CSTATE_START;</span>
+<span class="lineNum">      80 </span><span class="lineCov">            6378: }</span>
 <span class="lineNum">      81 </span>                : 
 <span class="lineNum">      82 </span>                : 
 <span class="lineNum">      83 </span>                : <I><FONT COLOR="#B22222">/*
@@ -150,10 +150,10 @@
 <span class="lineNum">      85 </span>                :  */</FONT></I>
 <span class="lineNum">      86 </span>                : 
 <span class="lineNum">      87 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">      88 </span><span class="lineCov">            4018: <B><FONT COLOR="#0000FF">jpeg_destroy_compress</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">      88 </span><span class="lineCov">            1611: <B><FONT COLOR="#0000FF">jpeg_destroy_compress</FONT></B> (j_compress_ptr cinfo)</span>
 <span class="lineNum">      89 </span>                : {
-<span class="lineNum">      90 </span><span class="lineCov">            4018:   jpeg_destroy((j_common_ptr) cinfo); <I><FONT COLOR="#B22222">/* use common routine */</FONT></I></span>
-<span class="lineNum">      91 </span><span class="lineCov">            4018: }</span>
+<span class="lineNum">      90 </span><span class="lineCov">            1611:   jpeg_destroy((j_common_ptr) cinfo); <I><FONT COLOR="#B22222">/* use common routine */</FONT></I></span>
+<span class="lineNum">      91 </span><span class="lineCov">            1611: }</span>
 <span class="lineNum">      92 </span>                : 
 <span class="lineNum">      93 </span>                : 
 <span class="lineNum">      94 </span>                : <I><FONT COLOR="#B22222">/*
@@ -181,34 +181,34 @@
 <span class="lineNum">     116 </span>                :  */</FONT></I>
 <span class="lineNum">     117 </span>                : 
 <span class="lineNum">     118 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     119 </span><span class="lineCov">            9300: <B><FONT COLOR="#0000FF">jpeg_suppress_tables</FONT></B> (j_compress_ptr cinfo, boolean suppress)</span>
+<span class="lineNum">     119 </span><span class="lineCov">            4659: <B><FONT COLOR="#0000FF">jpeg_suppress_tables</FONT></B> (j_compress_ptr cinfo, boolean suppress)</span>
 <span class="lineNum">     120 </span>                : {
 <span class="lineNum">     121 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> i;
 <span class="lineNum">     122 </span>                :   JQUANT_TBL * qtbl;
 <span class="lineNum">     123 </span>                :   JHUFF_TBL * htbl;
 <span class="lineNum">     124 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           37200: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            9300: branch 1 taken</span>
-</span><span class="lineNum">     125 </span><span class="lineCov">           46500:   <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; NUM_QUANT_TBLS; i++) {</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           18600: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           18600: branch 1 taken</span>
-</span><span class="lineNum">     126 </span><span class="lineCov">           37200:     <B><FONT COLOR="#A020F0">if</FONT></B> ((qtbl = cinfo-&gt;quant_tbl_ptrs[i]) != NULL)</span>
-<span class="lineNum">     127 </span><span class="lineCov">           18600:       qtbl-&gt;sent_table = suppress;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           18636: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4659: branch 1 taken</span>
+</span><span class="lineNum">     125 </span><span class="lineCov">           23295:   <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; NUM_QUANT_TBLS; i++) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            9318: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9318: branch 1 taken</span>
+</span><span class="lineNum">     126 </span><span class="lineCov">           18636:     <B><FONT COLOR="#A020F0">if</FONT></B> ((qtbl = cinfo-&gt;quant_tbl_ptrs[i]) != NULL)</span>
+<span class="lineNum">     127 </span><span class="lineCov">            9318:       qtbl-&gt;sent_table = suppress;</span>
 <span class="lineNum">     128 </span>                :   }
 <span class="lineNum">     129 </span>                : 
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           37200: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            9300: branch 1 taken</span>
-</span><span class="lineNum">     130 </span><span class="lineCov">           46500:   <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; NUM_HUFF_TBLS; i++) {</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           18600: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           18600: branch 1 taken</span>
-</span><span class="lineNum">     131 </span><span class="lineCov">           37200:     <B><FONT COLOR="#A020F0">if</FONT></B> ((htbl = cinfo-&gt;dc_huff_tbl_ptrs[i]) != NULL)</span>
-<span class="lineNum">     132 </span><span class="lineCov">           18600:       htbl-&gt;sent_table = suppress;</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           18600: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           18600: branch 1 taken</span>
-</span><span class="lineNum">     133 </span><span class="lineCov">           37200:     <B><FONT COLOR="#A020F0">if</FONT></B> ((htbl = cinfo-&gt;ac_huff_tbl_ptrs[i]) != NULL)</span>
-<span class="lineNum">     134 </span><span class="lineCov">           18600:       htbl-&gt;sent_table = suppress;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           18636: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4659: branch 1 taken</span>
+</span><span class="lineNum">     130 </span><span class="lineCov">           23295:   <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; NUM_HUFF_TBLS; i++) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            9318: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9318: branch 1 taken</span>
+</span><span class="lineNum">     131 </span><span class="lineCov">           18636:     <B><FONT COLOR="#A020F0">if</FONT></B> ((htbl = cinfo-&gt;dc_huff_tbl_ptrs[i]) != NULL)</span>
+<span class="lineNum">     132 </span><span class="lineCov">            9318:       htbl-&gt;sent_table = suppress;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            9318: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9318: branch 1 taken</span>
+</span><span class="lineNum">     133 </span><span class="lineCov">           18636:     <B><FONT COLOR="#A020F0">if</FONT></B> ((htbl = cinfo-&gt;ac_huff_tbl_ptrs[i]) != NULL)</span>
+<span class="lineNum">     134 </span><span class="lineCov">            9318:       htbl-&gt;sent_table = suppress;</span>
 <span class="lineNum">     135 </span>                :   }
-<span class="lineNum">     136 </span><span class="lineCov">            9300: }</span>
+<span class="lineNum">     136 </span><span class="lineCov">            4659: }</span>
 <span class="lineNum">     137 </span>                : 
 <span class="lineNum">     138 </span>                : 
 <span class="lineNum">     139 </span>                : <I><FONT COLOR="#B22222">/*
@@ -219,37 +219,37 @@
 <span class="lineNum">     144 </span>                :  */</FONT></I>
 <span class="lineNum">     145 </span>                : 
 <span class="lineNum">     146 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     147 </span><span class="lineCov">            4018: <B><FONT COLOR="#0000FF">jpeg_finish_compress</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     147 </span><span class="lineCov">            1611: <B><FONT COLOR="#0000FF">jpeg_finish_compress</FONT></B> (j_compress_ptr cinfo)</span>
 <span class="lineNum">     148 </span>                : {
 <span class="lineNum">     149 </span>                :   JDIMENSION iMCU_row;
 <span class="lineNum">     150 </span>                : 
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            4018: branch 1 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            4018: branch 2 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            4018: branch 3 taken</span>
-</span><span class="lineNum">     151 </span><span class="lineCov">            4018:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;global_state == CSTATE_SCANNING ||</span>
+<span class="lineNum">         </span><span class="branchTaken">            1611: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1611: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1611: branch 3 taken</span>
+</span><span class="lineNum">     151 </span><span class="lineCov">            1611:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;global_state == CSTATE_SCANNING ||</span>
 <span class="lineNum">     152 </span><span class="lineNoCov">               0:       cinfo-&gt;global_state == CSTATE_RAW_OK) {</span>
 <span class="lineNum">     153 </span>                :     <I><FONT COLOR="#B22222">/* Terminate first pass */</FONT></I>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            4018: branch 1 taken</span>
-</span><span class="lineNum">     154 </span><span class="lineCov">            4018:     <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;next_scanline &lt; cinfo-&gt;image_height)</span>
+<span class="lineNum">         </span><span class="branchTaken">            1611: branch 1 taken</span>
+</span><span class="lineNum">     154 </span><span class="lineCov">            1611:     <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;next_scanline &lt; cinfo-&gt;image_height)</span>
 <span class="lineNum">     155 </span><span class="lineNoCov">               0:       ERREXIT(cinfo, JERR_TOO_LITTLE_DATA);</span>
-<span class="lineNum">     156 </span><span class="lineCov">            4018:     (*cinfo-&gt;master-&gt;finish_pass) (cinfo);</span>
+<span class="lineNum">     156 </span><span class="lineCov">            1611:     (*cinfo-&gt;master-&gt;finish_pass) (cinfo);</span>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
 <span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
 </span><span class="lineNum">     157 </span><span class="lineNoCov">               0:   } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;global_state != CSTATE_WRCOEFS)</span>
 <span class="lineNum">     158 </span><span class="lineNoCov">               0:     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo-&gt;global_state);</span>
 <span class="lineNum">     159 </span>                :   <I><FONT COLOR="#B22222">/* Perform any remaining passes */</FONT></I>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            8250: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            4018: branch 1 taken</span>
-</span><span class="lineNum">     160 </span><span class="lineCov">           16286:   <B><FONT COLOR="#A020F0">while</FONT></B> (! cinfo-&gt;master-&gt;is_last_pass) {</span>
-<span class="lineNum">     161 </span><span class="lineCov">            8250:     (*cinfo-&gt;master-&gt;prepare_for_pass) (cinfo);</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           49884: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">            8250: branch 1 taken</span>
-</span><span class="lineNum">     162 </span><span class="lineCov">           58134:     <B><FONT COLOR="#A020F0">for</FONT></B> (iMCU_row = 0; iMCU_row &lt; cinfo-&gt;total_iMCU_rows; iMCU_row++) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1766: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1611: branch 1 taken</span>
+</span><span class="lineNum">     160 </span><span class="lineCov">            4988:   <B><FONT COLOR="#A020F0">while</FONT></B> (! cinfo-&gt;master-&gt;is_last_pass) {</span>
+<span class="lineNum">     161 </span><span class="lineCov">            1766:     (*cinfo-&gt;master-&gt;prepare_for_pass) (cinfo);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            5982: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1766: branch 1 taken</span>
+</span><span class="lineNum">     162 </span><span class="lineCov">            7748:     <B><FONT COLOR="#A020F0">for</FONT></B> (iMCU_row = 0; iMCU_row &lt; cinfo-&gt;total_iMCU_rows; iMCU_row++) {</span>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           49884: branch 1 taken</span>
-</span><span class="lineNum">     163 </span><span class="lineCov">           49884:       <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;progress != NULL) {</span>
+<span class="lineNum">         </span><span class="branchTaken">            5982: branch 1 taken</span>
+</span><span class="lineNum">     163 </span><span class="lineCov">            5982:       <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;progress != NULL) {</span>
 <span class="lineNum">     164 </span><span class="lineNoCov">               0: 	cinfo-&gt;progress-&gt;pass_counter = (<B><FONT COLOR="#228B22">long</FONT></B>) iMCU_row;</span>
 <span class="lineNum">     165 </span><span class="lineNoCov">               0: 	cinfo-&gt;progress-&gt;pass_limit = (<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;total_iMCU_rows;</span>
 <span class="lineNum">     166 </span><span class="lineNoCov">               0: 	(*cinfo-&gt;progress-&gt;progress_monitor) ((j_common_ptr) cinfo);</span>
@@ -258,18 +258,18 @@
 <span class="lineNum">     169 </span>                :        * all work is being done from the coefficient buffer.
 <span class="lineNum">     170 </span>                :        */</FONT></I>
 <span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
-<span class="lineNum">         </span><span class="branchTaken">           49884: branch 2 taken</span>
-</span><span class="lineNum">     171 </span><span class="lineCov">           49884:       <B><FONT COLOR="#A020F0">if</FONT></B> (! (*cinfo-&gt;coef-&gt;compress_data) (cinfo, (JSAMPIMAGE) NULL))</span>
+<span class="lineNum">         </span><span class="branchTaken">            5982: branch 2 taken</span>
+</span><span class="lineNum">     171 </span><span class="lineCov">            5982:       <B><FONT COLOR="#A020F0">if</FONT></B> (! (*cinfo-&gt;coef-&gt;compress_data) (cinfo, (JSAMPIMAGE) NULL))</span>
 <span class="lineNum">     172 </span><span class="lineNoCov">               0: 	ERREXIT(cinfo, JERR_CANT_SUSPEND);</span>
 <span class="lineNum">     173 </span>                :     }
-<span class="lineNum">     174 </span><span class="lineCov">            8250:     (*cinfo-&gt;master-&gt;finish_pass) (cinfo);</span>
+<span class="lineNum">     174 </span><span class="lineCov">            1766:     (*cinfo-&gt;master-&gt;finish_pass) (cinfo);</span>
 <span class="lineNum">     175 </span>                :   }
 <span class="lineNum">     176 </span>                :   <I><FONT COLOR="#B22222">/* Write EOI, do final cleanup */</FONT></I>
-<span class="lineNum">     177 </span><span class="lineCov">            4018:   (*cinfo-&gt;marker-&gt;write_file_trailer) (cinfo);</span>
-<span class="lineNum">     178 </span><span class="lineCov">            4018:   (*cinfo-&gt;dest-&gt;term_destination) (cinfo);</span>
+<span class="lineNum">     177 </span><span class="lineCov">            1611:   (*cinfo-&gt;marker-&gt;write_file_trailer) (cinfo);</span>
+<span class="lineNum">     178 </span><span class="lineCov">            1611:   (*cinfo-&gt;dest-&gt;term_destination) (cinfo);</span>
 <span class="lineNum">     179 </span>                :   <I><FONT COLOR="#B22222">/* We can use jpeg_abort to release memory and reset global_state */</FONT></I>
-<span class="lineNum">     180 </span><span class="lineCov">            4018:   jpeg_abort((j_common_ptr) cinfo);</span>
-<span class="lineNum">     181 </span><span class="lineCov">            4018: }</span>
+<span class="lineNum">     180 </span><span class="lineCov">            1611:   jpeg_abort((j_common_ptr) cinfo);</span>
+<span class="lineNum">     181 </span><span class="lineCov">            1611: }</span>
 <span class="lineNum">     182 </span>                : 
 <span class="lineNum">     183 </span>                : 
 <span class="lineNum">     184 </span>                : <I><FONT COLOR="#B22222">/*
@@ -391,6 +391,6 @@
 <span class="lineNum">     280 </span><span class="lineNoCov">               0: }</span>
 </pre>
 <hr>
-Generated: 2016-04-07&nbsp;12:37 by <a href="http://minormatter.com/zcov">zcov</a><br>
+Generated: 2016-04-07&nbsp;19:56 by <a href="http://minormatter.com/zcov">zcov</a><br>
 </body>
 </html>

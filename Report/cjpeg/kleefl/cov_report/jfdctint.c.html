@@ -22,7 +22,7 @@
   </tr>
   <tr>
     <td bgcolor=#ACACFF> <b>Generated:</b> </td>
-    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;12:37 </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;19:56 </td>
     <td width="30"></td>
     <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
     <td bgcolor=#F0F0FF align=right> <b>100.0%<b> </td>
@@ -47,7 +47,7 @@
     <td bgcolor=#F0F0FF> 1 </td>
     <td width="30"></td>
     <td bgcolor=#ACACFF> <b>Runs</b> </td>
-    <td bgcolor=#F0F0FF align=right> 13688 </td>
+    <td bgcolor=#F0F0FF align=right> 6378 </td>
   </tr>
 </table>
 </center>
@@ -194,7 +194,7 @@
 <span class="lineNum">     137 </span>                :  */</FONT></I>
 <span class="lineNum">     138 </span>                : 
 <span class="lineNum">     139 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
-<span class="lineNum">     140 </span><span class="lineCov">          179171: <B><FONT COLOR="#0000FF">jpeg_fdct_islow</FONT></B> (DCTELEM * data)</span>
+<span class="lineNum">     140 </span><span class="lineCov">           94666: <B><FONT COLOR="#0000FF">jpeg_fdct_islow</FONT></B> (DCTELEM * data)</span>
 <span class="lineNum">     141 </span>                : {
 <span class="lineNum">     142 </span>                :   INT32 tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7;
 <span class="lineNum">     143 </span>                :   INT32 tmp10, tmp11, tmp12, tmp13;
@@ -207,35 +207,35 @@
 <span class="lineNum">     150 </span>                :   <I><FONT COLOR="#B22222">/* Note results are scaled up by sqrt(8) compared to a true DCT; */</FONT></I>
 <span class="lineNum">     151 </span>                :   <I><FONT COLOR="#B22222">/* furthermore, we scale the results by 2**PASS1_BITS. */</FONT></I>
 <span class="lineNum">     152 </span>                : 
-<span class="lineNum">     153 </span><span class="lineCov">          179171:   dataptr = data;</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">         1433368: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">          179171: branch 1 taken</span>
-</span><span class="lineNum">     154 </span><span class="lineCov">         1612539:   <B><FONT COLOR="#A020F0">for</FONT></B> (ctr = DCTSIZE-1; ctr &gt;= 0; ctr--) {</span>
-<span class="lineNum">     155 </span><span class="lineCov">         1433368:     tmp0 = dataptr[0] + dataptr[7];</span>
-<span class="lineNum">     156 </span><span class="lineCov">         1433368:     tmp7 = dataptr[0] - dataptr[7];</span>
-<span class="lineNum">     157 </span><span class="lineCov">         1433368:     tmp1 = dataptr[1] + dataptr[6];</span>
-<span class="lineNum">     158 </span><span class="lineCov">         1433368:     tmp6 = dataptr[1] - dataptr[6];</span>
-<span class="lineNum">     159 </span><span class="lineCov">         1433368:     tmp2 = dataptr[2] + dataptr[5];</span>
-<span class="lineNum">     160 </span><span class="lineCov">         1433368:     tmp5 = dataptr[2] - dataptr[5];</span>
-<span class="lineNum">     161 </span><span class="lineCov">         1433368:     tmp3 = dataptr[3] + dataptr[4];</span>
-<span class="lineNum">     162 </span><span class="lineCov">         1433368:     tmp4 = dataptr[3] - dataptr[4];</span>
+<span class="lineNum">     153 </span><span class="lineCov">           94666:   dataptr = data;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          757328: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           94666: branch 1 taken</span>
+</span><span class="lineNum">     154 </span><span class="lineCov">          851994:   <B><FONT COLOR="#A020F0">for</FONT></B> (ctr = DCTSIZE-1; ctr &gt;= 0; ctr--) {</span>
+<span class="lineNum">     155 </span><span class="lineCov">          757328:     tmp0 = dataptr[0] + dataptr[7];</span>
+<span class="lineNum">     156 </span><span class="lineCov">          757328:     tmp7 = dataptr[0] - dataptr[7];</span>
+<span class="lineNum">     157 </span><span class="lineCov">          757328:     tmp1 = dataptr[1] + dataptr[6];</span>
+<span class="lineNum">     158 </span><span class="lineCov">          757328:     tmp6 = dataptr[1] - dataptr[6];</span>
+<span class="lineNum">     159 </span><span class="lineCov">          757328:     tmp2 = dataptr[2] + dataptr[5];</span>
+<span class="lineNum">     160 </span><span class="lineCov">          757328:     tmp5 = dataptr[2] - dataptr[5];</span>
+<span class="lineNum">     161 </span><span class="lineCov">          757328:     tmp3 = dataptr[3] + dataptr[4];</span>
+<span class="lineNum">     162 </span><span class="lineCov">          757328:     tmp4 = dataptr[3] - dataptr[4];</span>
 <span class="lineNum">     163 </span>                :     
 <span class="lineNum">     164 </span>                :     <I><FONT COLOR="#B22222">/* Even part per LL&amp;M figure 1 --- note that published figure is faulty;
 <span class="lineNum">     165 </span>                :      * rotator &quot;sqrt(2)*c1&quot; should be &quot;sqrt(2)*c6&quot;.
 <span class="lineNum">     166 </span>                :      */</FONT></I>
 <span class="lineNum">     167 </span>                :     
-<span class="lineNum">     168 </span><span class="lineCov">         1433368:     tmp10 = tmp0 + tmp3;</span>
-<span class="lineNum">     169 </span><span class="lineCov">         1433368:     tmp13 = tmp0 - tmp3;</span>
-<span class="lineNum">     170 </span><span class="lineCov">         1433368:     tmp11 = tmp1 + tmp2;</span>
-<span class="lineNum">     171 </span><span class="lineCov">         1433368:     tmp12 = tmp1 - tmp2;</span>
+<span class="lineNum">     168 </span><span class="lineCov">          757328:     tmp10 = tmp0 + tmp3;</span>
+<span class="lineNum">     169 </span><span class="lineCov">          757328:     tmp13 = tmp0 - tmp3;</span>
+<span class="lineNum">     170 </span><span class="lineCov">          757328:     tmp11 = tmp1 + tmp2;</span>
+<span class="lineNum">     171 </span><span class="lineCov">          757328:     tmp12 = tmp1 - tmp2;</span>
 <span class="lineNum">     172 </span>                :     
-<span class="lineNum">     173 </span><span class="lineCov">         1433368:     dataptr[0] = (DCTELEM) ((tmp10 + tmp11) &lt;&lt; PASS1_BITS);</span>
-<span class="lineNum">     174 </span><span class="lineCov">         1433368:     dataptr[4] = (DCTELEM) ((tmp10 - tmp11) &lt;&lt; PASS1_BITS);</span>
+<span class="lineNum">     173 </span><span class="lineCov">          757328:     dataptr[0] = (DCTELEM) ((tmp10 + tmp11) &lt;&lt; PASS1_BITS);</span>
+<span class="lineNum">     174 </span><span class="lineCov">          757328:     dataptr[4] = (DCTELEM) ((tmp10 - tmp11) &lt;&lt; PASS1_BITS);</span>
 <span class="lineNum">     175 </span>                :     
-<span class="lineNum">     176 </span><span class="lineCov">         1433368:     z1 = MULTIPLY(tmp12 + tmp13, FIX_0_541196100);</span>
-<span class="lineNum">     177 </span><span class="lineCov">         1433368:     dataptr[2] = (DCTELEM) DESCALE(z1 + MULTIPLY(tmp13, FIX_0_765366865),</span>
+<span class="lineNum">     176 </span><span class="lineCov">          757328:     z1 = MULTIPLY(tmp12 + tmp13, FIX_0_541196100);</span>
+<span class="lineNum">     177 </span><span class="lineCov">          757328:     dataptr[2] = (DCTELEM) DESCALE(z1 + MULTIPLY(tmp13, FIX_0_765366865),</span>
 <span class="lineNum">     178 </span>                : 				   CONST_BITS-PASS1_BITS);
-<span class="lineNum">     179 </span><span class="lineCov">         1433368:     dataptr[6] = (DCTELEM) DESCALE(z1 + MULTIPLY(tmp12, - FIX_1_847759065),</span>
+<span class="lineNum">     179 </span><span class="lineCov">          757328:     dataptr[6] = (DCTELEM) DESCALE(z1 + MULTIPLY(tmp12, - FIX_1_847759065),</span>
 <span class="lineNum">     180 </span>                : 				   CONST_BITS-PASS1_BITS);
 <span class="lineNum">     181 </span>                :     
 <span class="lineNum">     182 </span>                :     <I><FONT COLOR="#B22222">/* Odd part per figure 8 --- note paper omits factor of sqrt(2).
@@ -243,30 +243,30 @@
 <span class="lineNum">     184 </span>                :      * i0..i3 in the paper are tmp4..tmp7 here.
 <span class="lineNum">     185 </span>                :      */</FONT></I>
 <span class="lineNum">     186 </span>                :     
-<span class="lineNum">     187 </span><span class="lineCov">         1433368:     z1 = tmp4 + tmp7;</span>
-<span class="lineNum">     188 </span><span class="lineCov">         1433368:     z2 = tmp5 + tmp6;</span>
-<span class="lineNum">     189 </span><span class="lineCov">         1433368:     z3 = tmp4 + tmp6;</span>
-<span class="lineNum">     190 </span><span class="lineCov">         1433368:     z4 = tmp5 + tmp7;</span>
-<span class="lineNum">     191 </span><span class="lineCov">         1433368:     z5 = MULTIPLY(z3 + z4, FIX_1_175875602); <I><FONT COLOR="#B22222">/* sqrt(2) * c3 */</FONT></I></span>
+<span class="lineNum">     187 </span><span class="lineCov">          757328:     z1 = tmp4 + tmp7;</span>
+<span class="lineNum">     188 </span><span class="lineCov">          757328:     z2 = tmp5 + tmp6;</span>
+<span class="lineNum">     189 </span><span class="lineCov">          757328:     z3 = tmp4 + tmp6;</span>
+<span class="lineNum">     190 </span><span class="lineCov">          757328:     z4 = tmp5 + tmp7;</span>
+<span class="lineNum">     191 </span><span class="lineCov">          757328:     z5 = MULTIPLY(z3 + z4, FIX_1_175875602); <I><FONT COLOR="#B22222">/* sqrt(2) * c3 */</FONT></I></span>
 <span class="lineNum">     192 </span>                :     
-<span class="lineNum">     193 </span><span class="lineCov">         1433368:     tmp4 = MULTIPLY(tmp4, FIX_0_298631336); <I><FONT COLOR="#B22222">/* sqrt(2) * (-c1+c3+c5-c7) */</FONT></I></span>
-<span class="lineNum">     194 </span><span class="lineCov">         1433368:     tmp5 = MULTIPLY(tmp5, FIX_2_053119869); <I><FONT COLOR="#B22222">/* sqrt(2) * ( c1+c3-c5+c7) */</FONT></I></span>
-<span class="lineNum">     195 </span><span class="lineCov">         1433368:     tmp6 = MULTIPLY(tmp6, FIX_3_072711026); <I><FONT COLOR="#B22222">/* sqrt(2) * ( c1+c3+c5-c7) */</FONT></I></span>
-<span class="lineNum">     196 </span><span class="lineCov">         1433368:     tmp7 = MULTIPLY(tmp7, FIX_1_501321110); <I><FONT COLOR="#B22222">/* sqrt(2) * ( c1+c3-c5-c7) */</FONT></I></span>
-<span class="lineNum">     197 </span><span class="lineCov">         1433368:     z1 = MULTIPLY(z1, - FIX_0_899976223); <I><FONT COLOR="#B22222">/* sqrt(2) * (c7-c3) */</FONT></I></span>
-<span class="lineNum">     198 </span><span class="lineCov">         1433368:     z2 = MULTIPLY(z2, - FIX_2_562915447); <I><FONT COLOR="#B22222">/* sqrt(2) * (-c1-c3) */</FONT></I></span>
-<span class="lineNum">     199 </span><span class="lineCov">         1433368:     z3 = MULTIPLY(z3, - FIX_1_961570560); <I><FONT COLOR="#B22222">/* sqrt(2) * (-c3-c5) */</FONT></I></span>
-<span class="lineNum">     200 </span><span class="lineCov">         1433368:     z4 = MULTIPLY(z4, - FIX_0_390180644); <I><FONT COLOR="#B22222">/* sqrt(2) * (c5-c3) */</FONT></I></span>
+<span class="lineNum">     193 </span><span class="lineCov">          757328:     tmp4 = MULTIPLY(tmp4, FIX_0_298631336); <I><FONT COLOR="#B22222">/* sqrt(2) * (-c1+c3+c5-c7) */</FONT></I></span>
+<span class="lineNum">     194 </span><span class="lineCov">          757328:     tmp5 = MULTIPLY(tmp5, FIX_2_053119869); <I><FONT COLOR="#B22222">/* sqrt(2) * ( c1+c3-c5+c7) */</FONT></I></span>
+<span class="lineNum">     195 </span><span class="lineCov">          757328:     tmp6 = MULTIPLY(tmp6, FIX_3_072711026); <I><FONT COLOR="#B22222">/* sqrt(2) * ( c1+c3+c5-c7) */</FONT></I></span>
+<span class="lineNum">     196 </span><span class="lineCov">          757328:     tmp7 = MULTIPLY(tmp7, FIX_1_501321110); <I><FONT COLOR="#B22222">/* sqrt(2) * ( c1+c3-c5-c7) */</FONT></I></span>
+<span class="lineNum">     197 </span><span class="lineCov">          757328:     z1 = MULTIPLY(z1, - FIX_0_899976223); <I><FONT COLOR="#B22222">/* sqrt(2) * (c7-c3) */</FONT></I></span>
+<span class="lineNum">     198 </span><span class="lineCov">          757328:     z2 = MULTIPLY(z2, - FIX_2_562915447); <I><FONT COLOR="#B22222">/* sqrt(2) * (-c1-c3) */</FONT></I></span>
+<span class="lineNum">     199 </span><span class="lineCov">          757328:     z3 = MULTIPLY(z3, - FIX_1_961570560); <I><FONT COLOR="#B22222">/* sqrt(2) * (-c3-c5) */</FONT></I></span>
+<span class="lineNum">     200 </span><span class="lineCov">          757328:     z4 = MULTIPLY(z4, - FIX_0_390180644); <I><FONT COLOR="#B22222">/* sqrt(2) * (c5-c3) */</FONT></I></span>
 <span class="lineNum">     201 </span>                :     
-<span class="lineNum">     202 </span><span class="lineCov">         1433368:     z3 += z5;</span>
-<span class="lineNum">     203 </span><span class="lineCov">         1433368:     z4 += z5;</span>
+<span class="lineNum">     202 </span><span class="lineCov">          757328:     z3 += z5;</span>
+<span class="lineNum">     203 </span><span class="lineCov">          757328:     z4 += z5;</span>
 <span class="lineNum">     204 </span>                :     
-<span class="lineNum">     205 </span><span class="lineCov">         1433368:     dataptr[7] = (DCTELEM) DESCALE(tmp4 + z1 + z3, CONST_BITS-PASS1_BITS);</span>
-<span class="lineNum">     206 </span><span class="lineCov">         1433368:     dataptr[5] = (DCTELEM) DESCALE(tmp5 + z2 + z4, CONST_BITS-PASS1_BITS);</span>
-<span class="lineNum">     207 </span><span class="lineCov">         1433368:     dataptr[3] = (DCTELEM) DESCALE(tmp6 + z2 + z3, CONST_BITS-PASS1_BITS);</span>
-<span class="lineNum">     208 </span><span class="lineCov">         1433368:     dataptr[1] = (DCTELEM) DESCALE(tmp7 + z1 + z4, CONST_BITS-PASS1_BITS);</span>
+<span class="lineNum">     205 </span><span class="lineCov">          757328:     dataptr[7] = (DCTELEM) DESCALE(tmp4 + z1 + z3, CONST_BITS-PASS1_BITS);</span>
+<span class="lineNum">     206 </span><span class="lineCov">          757328:     dataptr[5] = (DCTELEM) DESCALE(tmp5 + z2 + z4, CONST_BITS-PASS1_BITS);</span>
+<span class="lineNum">     207 </span><span class="lineCov">          757328:     dataptr[3] = (DCTELEM) DESCALE(tmp6 + z2 + z3, CONST_BITS-PASS1_BITS);</span>
+<span class="lineNum">     208 </span><span class="lineCov">          757328:     dataptr[1] = (DCTELEM) DESCALE(tmp7 + z1 + z4, CONST_BITS-PASS1_BITS);</span>
 <span class="lineNum">     209 </span>                :     
-<span class="lineNum">     210 </span><span class="lineCov">         1433368:     dataptr += DCTSIZE;		<I><FONT COLOR="#B22222">/* advance pointer to next row */</FONT></I></span>
+<span class="lineNum">     210 </span><span class="lineCov">          757328:     dataptr += DCTSIZE;		<I><FONT COLOR="#B22222">/* advance pointer to next row */</FONT></I></span>
 <span class="lineNum">     211 </span>                :   }
 <span class="lineNum">     212 </span>                : 
 <span class="lineNum">     213 </span>                :   <I><FONT COLOR="#B22222">/* Pass 2: process columns.
@@ -274,35 +274,35 @@
 <span class="lineNum">     215 </span>                :    * by an overall factor of 8.
 <span class="lineNum">     216 </span>                :    */</FONT></I>
 <span class="lineNum">     217 </span>                : 
-<span class="lineNum">     218 </span><span class="lineCov">          179171:   dataptr = data;</span>
-<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">         1433368: branch 0 taken</span>
-<span class="lineNum">         </span><span class="branchTaken">          179171: branch 1 taken</span>
-</span><span class="lineNum">     219 </span><span class="lineCov">         1612539:   <B><FONT COLOR="#A020F0">for</FONT></B> (ctr = DCTSIZE-1; ctr &gt;= 0; ctr--) {</span>
-<span class="lineNum">     220 </span><span class="lineCov">         1433368:     tmp0 = dataptr[DCTSIZE*0] + dataptr[DCTSIZE*7];</span>
-<span class="lineNum">     221 </span><span class="lineCov">         1433368:     tmp7 = dataptr[DCTSIZE*0] - dataptr[DCTSIZE*7];</span>
-<span class="lineNum">     222 </span><span class="lineCov">         1433368:     tmp1 = dataptr[DCTSIZE*1] + dataptr[DCTSIZE*6];</span>
-<span class="lineNum">     223 </span><span class="lineCov">         1433368:     tmp6 = dataptr[DCTSIZE*1] - dataptr[DCTSIZE*6];</span>
-<span class="lineNum">     224 </span><span class="lineCov">         1433368:     tmp2 = dataptr[DCTSIZE*2] + dataptr[DCTSIZE*5];</span>
-<span class="lineNum">     225 </span><span class="lineCov">         1433368:     tmp5 = dataptr[DCTSIZE*2] - dataptr[DCTSIZE*5];</span>
-<span class="lineNum">     226 </span><span class="lineCov">         1433368:     tmp3 = dataptr[DCTSIZE*3] + dataptr[DCTSIZE*4];</span>
-<span class="lineNum">     227 </span><span class="lineCov">         1433368:     tmp4 = dataptr[DCTSIZE*3] - dataptr[DCTSIZE*4];</span>
+<span class="lineNum">     218 </span><span class="lineCov">           94666:   dataptr = data;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          757328: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           94666: branch 1 taken</span>
+</span><span class="lineNum">     219 </span><span class="lineCov">          851994:   <B><FONT COLOR="#A020F0">for</FONT></B> (ctr = DCTSIZE-1; ctr &gt;= 0; ctr--) {</span>
+<span class="lineNum">     220 </span><span class="lineCov">          757328:     tmp0 = dataptr[DCTSIZE*0] + dataptr[DCTSIZE*7];</span>
+<span class="lineNum">     221 </span><span class="lineCov">          757328:     tmp7 = dataptr[DCTSIZE*0] - dataptr[DCTSIZE*7];</span>
+<span class="lineNum">     222 </span><span class="lineCov">          757328:     tmp1 = dataptr[DCTSIZE*1] + dataptr[DCTSIZE*6];</span>
+<span class="lineNum">     223 </span><span class="lineCov">          757328:     tmp6 = dataptr[DCTSIZE*1] - dataptr[DCTSIZE*6];</span>
+<span class="lineNum">     224 </span><span class="lineCov">          757328:     tmp2 = dataptr[DCTSIZE*2] + dataptr[DCTSIZE*5];</span>
+<span class="lineNum">     225 </span><span class="lineCov">          757328:     tmp5 = dataptr[DCTSIZE*2] - dataptr[DCTSIZE*5];</span>
+<span class="lineNum">     226 </span><span class="lineCov">          757328:     tmp3 = dataptr[DCTSIZE*3] + dataptr[DCTSIZE*4];</span>
+<span class="lineNum">     227 </span><span class="lineCov">          757328:     tmp4 = dataptr[DCTSIZE*3] - dataptr[DCTSIZE*4];</span>
 <span class="lineNum">     228 </span>                :     
 <span class="lineNum">     229 </span>                :     <I><FONT COLOR="#B22222">/* Even part per LL&amp;M figure 1 --- note that published figure is faulty;
 <span class="lineNum">     230 </span>                :      * rotator &quot;sqrt(2)*c1&quot; should be &quot;sqrt(2)*c6&quot;.
 <span class="lineNum">     231 </span>                :      */</FONT></I>
 <span class="lineNum">     232 </span>                :     
-<span class="lineNum">     233 </span><span class="lineCov">         1433368:     tmp10 = tmp0 + tmp3;</span>
-<span class="lineNum">     234 </span><span class="lineCov">         1433368:     tmp13 = tmp0 - tmp3;</span>
-<span class="lineNum">     235 </span><span class="lineCov">         1433368:     tmp11 = tmp1 + tmp2;</span>
-<span class="lineNum">     236 </span><span class="lineCov">         1433368:     tmp12 = tmp1 - tmp2;</span>
+<span class="lineNum">     233 </span><span class="lineCov">          757328:     tmp10 = tmp0 + tmp3;</span>
+<span class="lineNum">     234 </span><span class="lineCov">          757328:     tmp13 = tmp0 - tmp3;</span>
+<span class="lineNum">     235 </span><span class="lineCov">          757328:     tmp11 = tmp1 + tmp2;</span>
+<span class="lineNum">     236 </span><span class="lineCov">          757328:     tmp12 = tmp1 - tmp2;</span>
 <span class="lineNum">     237 </span>                :     
-<span class="lineNum">     238 </span><span class="lineCov">         1433368:     dataptr[DCTSIZE*0] = (DCTELEM) DESCALE(tmp10 + tmp11, PASS1_BITS);</span>
-<span class="lineNum">     239 </span><span class="lineCov">         1433368:     dataptr[DCTSIZE*4] = (DCTELEM) DESCALE(tmp10 - tmp11, PASS1_BITS);</span>
+<span class="lineNum">     238 </span><span class="lineCov">          757328:     dataptr[DCTSIZE*0] = (DCTELEM) DESCALE(tmp10 + tmp11, PASS1_BITS);</span>
+<span class="lineNum">     239 </span><span class="lineCov">          757328:     dataptr[DCTSIZE*4] = (DCTELEM) DESCALE(tmp10 - tmp11, PASS1_BITS);</span>
 <span class="lineNum">     240 </span>                :     
-<span class="lineNum">     241 </span><span class="lineCov">         1433368:     z1 = MULTIPLY(tmp12 + tmp13, FIX_0_541196100);</span>
-<span class="lineNum">     242 </span><span class="lineCov">         1433368:     dataptr[DCTSIZE*2] = (DCTELEM) DESCALE(z1 + MULTIPLY(tmp13, FIX_0_765366865),</span>
+<span class="lineNum">     241 </span><span class="lineCov">          757328:     z1 = MULTIPLY(tmp12 + tmp13, FIX_0_541196100);</span>
+<span class="lineNum">     242 </span><span class="lineCov">          757328:     dataptr[DCTSIZE*2] = (DCTELEM) DESCALE(z1 + MULTIPLY(tmp13, FIX_0_765366865),</span>
 <span class="lineNum">     243 </span>                : 					   CONST_BITS+PASS1_BITS);
-<span class="lineNum">     244 </span><span class="lineCov">         1433368:     dataptr[DCTSIZE*6] = (DCTELEM) DESCALE(z1 + MULTIPLY(tmp12, - FIX_1_847759065),</span>
+<span class="lineNum">     244 </span><span class="lineCov">          757328:     dataptr[DCTSIZE*6] = (DCTELEM) DESCALE(z1 + MULTIPLY(tmp12, - FIX_1_847759065),</span>
 <span class="lineNum">     245 </span>                : 					   CONST_BITS+PASS1_BITS);
 <span class="lineNum">     246 </span>                :     
 <span class="lineNum">     247 </span>                :     <I><FONT COLOR="#B22222">/* Odd part per figure 8 --- note paper omits factor of sqrt(2).
@@ -310,40 +310,40 @@
 <span class="lineNum">     249 </span>                :      * i0..i3 in the paper are tmp4..tmp7 here.
 <span class="lineNum">     250 </span>                :      */</FONT></I>
 <span class="lineNum">     251 </span>                :     
-<span class="lineNum">     252 </span><span class="lineCov">         1433368:     z1 = tmp4 + tmp7;</span>
-<span class="lineNum">     253 </span><span class="lineCov">         1433368:     z2 = tmp5 + tmp6;</span>
-<span class="lineNum">     254 </span><span class="lineCov">         1433368:     z3 = tmp4 + tmp6;</span>
-<span class="lineNum">     255 </span><span class="lineCov">         1433368:     z4 = tmp5 + tmp7;</span>
-<span class="lineNum">     256 </span><span class="lineCov">         1433368:     z5 = MULTIPLY(z3 + z4, FIX_1_175875602); <I><FONT COLOR="#B22222">/* sqrt(2) * c3 */</FONT></I></span>
+<span class="lineNum">     252 </span><span class="lineCov">          757328:     z1 = tmp4 + tmp7;</span>
+<span class="lineNum">     253 </span><span class="lineCov">          757328:     z2 = tmp5 + tmp6;</span>
+<span class="lineNum">     254 </span><span class="lineCov">          757328:     z3 = tmp4 + tmp6;</span>
+<span class="lineNum">     255 </span><span class="lineCov">          757328:     z4 = tmp5 + tmp7;</span>
+<span class="lineNum">     256 </span><span class="lineCov">          757328:     z5 = MULTIPLY(z3 + z4, FIX_1_175875602); <I><FONT COLOR="#B22222">/* sqrt(2) * c3 */</FONT></I></span>
 <span class="lineNum">     257 </span>                :     
-<span class="lineNum">     258 </span><span class="lineCov">         1433368:     tmp4 = MULTIPLY(tmp4, FIX_0_298631336); <I><FONT COLOR="#B22222">/* sqrt(2) * (-c1+c3+c5-c7) */</FONT></I></span>
-<span class="lineNum">     259 </span><span class="lineCov">         1433368:     tmp5 = MULTIPLY(tmp5, FIX_2_053119869); <I><FONT COLOR="#B22222">/* sqrt(2) * ( c1+c3-c5+c7) */</FONT></I></span>
-<span class="lineNum">     260 </span><span class="lineCov">         1433368:     tmp6 = MULTIPLY(tmp6, FIX_3_072711026); <I><FONT COLOR="#B22222">/* sqrt(2) * ( c1+c3+c5-c7) */</FONT></I></span>
-<span class="lineNum">     261 </span><span class="lineCov">         1433368:     tmp7 = MULTIPLY(tmp7, FIX_1_501321110); <I><FONT COLOR="#B22222">/* sqrt(2) * ( c1+c3-c5-c7) */</FONT></I></span>
-<span class="lineNum">     262 </span><span class="lineCov">         1433368:     z1 = MULTIPLY(z1, - FIX_0_899976223); <I><FONT COLOR="#B22222">/* sqrt(2) * (c7-c3) */</FONT></I></span>
-<span class="lineNum">     263 </span><span class="lineCov">         1433368:     z2 = MULTIPLY(z2, - FIX_2_562915447); <I><FONT COLOR="#B22222">/* sqrt(2) * (-c1-c3) */</FONT></I></span>
-<span class="lineNum">     264 </span><span class="lineCov">         1433368:     z3 = MULTIPLY(z3, - FIX_1_961570560); <I><FONT COLOR="#B22222">/* sqrt(2) * (-c3-c5) */</FONT></I></span>
-<span class="lineNum">     265 </span><span class="lineCov">         1433368:     z4 = MULTIPLY(z4, - FIX_0_390180644); <I><FONT COLOR="#B22222">/* sqrt(2) * (c5-c3) */</FONT></I></span>
+<span class="lineNum">     258 </span><span class="lineCov">          757328:     tmp4 = MULTIPLY(tmp4, FIX_0_298631336); <I><FONT COLOR="#B22222">/* sqrt(2) * (-c1+c3+c5-c7) */</FONT></I></span>
+<span class="lineNum">     259 </span><span class="lineCov">          757328:     tmp5 = MULTIPLY(tmp5, FIX_2_053119869); <I><FONT COLOR="#B22222">/* sqrt(2) * ( c1+c3-c5+c7) */</FONT></I></span>
+<span class="lineNum">     260 </span><span class="lineCov">          757328:     tmp6 = MULTIPLY(tmp6, FIX_3_072711026); <I><FONT COLOR="#B22222">/* sqrt(2) * ( c1+c3+c5-c7) */</FONT></I></span>
+<span class="lineNum">     261 </span><span class="lineCov">          757328:     tmp7 = MULTIPLY(tmp7, FIX_1_501321110); <I><FONT COLOR="#B22222">/* sqrt(2) * ( c1+c3-c5-c7) */</FONT></I></span>
+<span class="lineNum">     262 </span><span class="lineCov">          757328:     z1 = MULTIPLY(z1, - FIX_0_899976223); <I><FONT COLOR="#B22222">/* sqrt(2) * (c7-c3) */</FONT></I></span>
+<span class="lineNum">     263 </span><span class="lineCov">          757328:     z2 = MULTIPLY(z2, - FIX_2_562915447); <I><FONT COLOR="#B22222">/* sqrt(2) * (-c1-c3) */</FONT></I></span>
+<span class="lineNum">     264 </span><span class="lineCov">          757328:     z3 = MULTIPLY(z3, - FIX_1_961570560); <I><FONT COLOR="#B22222">/* sqrt(2) * (-c3-c5) */</FONT></I></span>
+<span class="lineNum">     265 </span><span class="lineCov">          757328:     z4 = MULTIPLY(z4, - FIX_0_390180644); <I><FONT COLOR="#B22222">/* sqrt(2) * (c5-c3) */</FONT></I></span>
 <span class="lineNum">     266 </span>                :     
-<span class="lineNum">     267 </span><span class="lineCov">         1433368:     z3 += z5;</span>
-<span class="lineNum">     268 </span><span class="lineCov">         1433368:     z4 += z5;</span>
+<span class="lineNum">     267 </span><span class="lineCov">          757328:     z3 += z5;</span>
+<span class="lineNum">     268 </span><span class="lineCov">          757328:     z4 += z5;</span>
 <span class="lineNum">     269 </span>                :     
-<span class="lineNum">     270 </span><span class="lineCov">         1433368:     dataptr[DCTSIZE*7] = (DCTELEM) DESCALE(tmp4 + z1 + z3,</span>
+<span class="lineNum">     270 </span><span class="lineCov">          757328:     dataptr[DCTSIZE*7] = (DCTELEM) DESCALE(tmp4 + z1 + z3,</span>
 <span class="lineNum">     271 </span>                : 					   CONST_BITS+PASS1_BITS);
-<span class="lineNum">     272 </span><span class="lineCov">         1433368:     dataptr[DCTSIZE*5] = (DCTELEM) DESCALE(tmp5 + z2 + z4,</span>
+<span class="lineNum">     272 </span><span class="lineCov">          757328:     dataptr[DCTSIZE*5] = (DCTELEM) DESCALE(tmp5 + z2 + z4,</span>
 <span class="lineNum">     273 </span>                : 					   CONST_BITS+PASS1_BITS);
-<span class="lineNum">     274 </span><span class="lineCov">         1433368:     dataptr[DCTSIZE*3] = (DCTELEM) DESCALE(tmp6 + z2 + z3,</span>
+<span class="lineNum">     274 </span><span class="lineCov">          757328:     dataptr[DCTSIZE*3] = (DCTELEM) DESCALE(tmp6 + z2 + z3,</span>
 <span class="lineNum">     275 </span>                : 					   CONST_BITS+PASS1_BITS);
-<span class="lineNum">     276 </span><span class="lineCov">         1433368:     dataptr[DCTSIZE*1] = (DCTELEM) DESCALE(tmp7 + z1 + z4,</span>
+<span class="lineNum">     276 </span><span class="lineCov">          757328:     dataptr[DCTSIZE*1] = (DCTELEM) DESCALE(tmp7 + z1 + z4,</span>
 <span class="lineNum">     277 </span>                : 					   CONST_BITS+PASS1_BITS);
 <span class="lineNum">     278 </span>                :     
-<span class="lineNum">     279 </span><span class="lineCov">         1433368:     dataptr++;			<I><FONT COLOR="#B22222">/* advance pointer to next column */</FONT></I></span>
+<span class="lineNum">     279 </span><span class="lineCov">          757328:     dataptr++;			<I><FONT COLOR="#B22222">/* advance pointer to next column */</FONT></I></span>
 <span class="lineNum">     280 </span>                :   }
-<span class="lineNum">     281 </span><span class="lineCov">          179171: }</span>
+<span class="lineNum">     281 </span><span class="lineCov">           94666: }</span>
 <span class="lineNum">     282 </span>                : 
 <span class="lineNum">     283 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B> <I><FONT COLOR="#B22222">/* DCT_ISLOW_SUPPORTED */</FONT></I>
 </pre>
 <hr>
-Generated: 2016-04-07&nbsp;12:37 by <a href="http://minormatter.com/zcov">zcov</a><br>
+Generated: 2016-04-07&nbsp;19:56 by <a href="http://minormatter.com/zcov">zcov</a><br>
 </body>
 </html>
