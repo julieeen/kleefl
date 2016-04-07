@@ -401,14 +401,19 @@ def main(args):
 
 
 	# move proper inputs into fuzzy in dir
+	cnt_input_bytes = 0
 	if not os.path.exists(afl_dir+dict_dir):
 		os.makedirs(afl_dir+dict_dir)
 	for input_file in os.listdir(file_tmp_dir):
 		#print file_tmp_dir+input_file+" "+afl_dir+dict_dir
 		copy(file_tmp_dir+input_file, afl_dir+dict_dir+input_file)
+		statinfo = os.stat(afl_dir+dict_dir+input_file)
+		cnt_input_bytes += statinfo.st_size
+
+	print "COPY: "+str(cnt_input_bytes)+" bytes of input data to "+afl_dir+dict_dir
 
 	#clean tmp input dir
-	#rmtree(file_tmp_dir)
+	rmtree(file_tmp_dir)
 	os.remove("app")
 		
 	# finally setup the afl calls!
@@ -447,7 +452,7 @@ def main(args):
 			print cmd.afl_call()
 			f.write(cmd.afl_call()+"\n")
 
-	# add one dict instance
+	# add a dict instance
 	# print master.afl_dict_call()
 	# f.write(master.afl_dict_call()+"\n")
 	#f.write("sleep 1200\nkillall afl-fuzz\n")

@@ -1,0 +1,349 @@
+<html>
+<head>
+  <script src="sorttable.js"></script>
+  <script src="sourceview.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <title>zcov: /home/vagrant/workspace/proj_libjpeg/cov/jfdctint.c</title>
+</head>
+<body>
+<center><h1> zcov: <a href="index.html">/home/vagrant/workspace/proj_libjpeg/cov</a>/<a href="jfdctint.c.html">jfdctint.c</a> </h1></center>
+<hr>
+
+
+<center>
+<table id="headertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Files:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Taken:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>100.0%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 4&nbsp;/&nbsp;4 </td>
+  </tr>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Generated:</b> </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;18:20 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>100.0%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 4&nbsp;/&nbsp;4 </td>
+  </tr>
+  <tr>
+    <td colspan=2> </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Line&nbsp;Coverage:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>100.0%</b> </td>
+    <td bgcolor=#F0F0FF align=right> 80&nbsp;/&nbsp;80 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<center>
+<table id="fileheadertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Programs:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Runs</b> </td>
+    <td bgcolor=#F0F0FF align=right> 6326 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<pre>
+<span class="lineNum">       1 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">       2 </span>                :  * jfdctint.c
+<span class="lineNum">       3 </span>                :  *
+<span class="lineNum">       4 </span>                :  * Copyright (C) 1991-1996, Thomas G. Lane.
+<span class="lineNum">       5 </span>                :  * This file is part of the Independent JPEG Group's software.
+<span class="lineNum">       6 </span>                :  * For conditions of distribution and use, see the accompanying README file.
+<span class="lineNum">       7 </span>                :  *
+<span class="lineNum">       8 </span>                :  * This file contains a slow-but-accurate integer implementation of the
+<span class="lineNum">       9 </span>                :  * forward DCT (Discrete Cosine Transform).
+<span class="lineNum">      10 </span>                :  *
+<span class="lineNum">      11 </span>                :  * A 2-D DCT can be done by 1-D DCT on each row followed by 1-D DCT
+<span class="lineNum">      12 </span>                :  * on each column.  Direct algorithms are also available, but they are
+<span class="lineNum">      13 </span>                :  * much more complex and seem not to be any faster when reduced to code.
+<span class="lineNum">      14 </span>                :  *
+<span class="lineNum">      15 </span>                :  * This implementation is based on an algorithm described in
+<span class="lineNum">      16 </span>                :  *   C. Loeffler, A. Ligtenberg and G. Moschytz, &quot;Practical Fast 1-D DCT
+<span class="lineNum">      17 </span>                :  *   Algorithms with 11 Multiplications&quot;, Proc. Int'l. Conf. on Acoustics,
+<span class="lineNum">      18 </span>                :  *   Speech, and Signal Processing 1989 (ICASSP '89), pp. 988-991.
+<span class="lineNum">      19 </span>                :  * The primary algorithm described there uses 11 multiplies and 29 adds.
+<span class="lineNum">      20 </span>                :  * We use their alternate method with 12 multiplies and 32 adds.
+<span class="lineNum">      21 </span>                :  * The advantage of this method is that no data path contains more than one
+<span class="lineNum">      22 </span>                :  * multiplication; this allows a very simple and accurate implementation in
+<span class="lineNum">      23 </span>                :  * scaled fixed-point arithmetic, with a minimal number of shifts.
+<span class="lineNum">      24 </span>                :  */</FONT></I>
+<span class="lineNum">      25 </span>                : 
+<span class="lineNum">      26 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">JPEG_INTERNALS</FONT>
+<span class="lineNum">      27 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jinclude.h&quot;</FONT></B>
+<span class="lineNum">      28 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jpeglib.h&quot;</FONT></B>
+<span class="lineNum">      29 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jdct.h&quot;</FONT></B>		<I><FONT COLOR="#B22222">/* Private declarations for DCT subsystem */</FONT></I>
+<span class="lineNum">      30 </span>                : 
+<span class="lineNum">      31 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">DCT_ISLOW_SUPPORTED</FONT>
+<span class="lineNum">      32 </span>                : 
+<span class="lineNum">      33 </span>                : 
+<span class="lineNum">      34 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      35 </span>                :  * This module is specialized to the case DCTSIZE = 8.
+<span class="lineNum">      36 </span>                :  */</FONT></I>
+<span class="lineNum">      37 </span>                : 
+<span class="lineNum">      38 </span>                : #<B><FONT COLOR="#5F9EA0">if</FONT></B> <FONT COLOR="#B8860B">DCTSIZE</FONT> != 8
+<span class="lineNum">      39 </span>                :   Sorry, this code only copes with 8x8 DCTs. <I><FONT COLOR="#B22222">/* deliberate syntax err */</FONT></I>
+<span class="lineNum">      40 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      41 </span>                : 
+<span class="lineNum">      42 </span>                : 
+<span class="lineNum">      43 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      44 </span>                :  * The poop on this scaling stuff is as follows:
+<span class="lineNum">      45 </span>                :  *
+<span class="lineNum">      46 </span>                :  * Each 1-D DCT step produces outputs which are a factor of sqrt(N)
+<span class="lineNum">      47 </span>                :  * larger than the true DCT outputs.  The final outputs are therefore
+<span class="lineNum">      48 </span>                :  * a factor of N larger than desired; since N=8 this can be cured by
+<span class="lineNum">      49 </span>                :  * a simple right shift at the end of the algorithm.  The advantage of
+<span class="lineNum">      50 </span>                :  * this arrangement is that we save two multiplications per 1-D DCT,
+<span class="lineNum">      51 </span>                :  * because the y0 and y4 outputs need not be divided by sqrt(N).
+<span class="lineNum">      52 </span>                :  * In the IJG code, this factor of 8 is removed by the quantization step
+<span class="lineNum">      53 </span>                :  * (in jcdctmgr.c), NOT in this module.
+<span class="lineNum">      54 </span>                :  *
+<span class="lineNum">      55 </span>                :  * We have to do addition and subtraction of the integer inputs, which
+<span class="lineNum">      56 </span>                :  * is no problem, and multiplication by fractional constants, which is
+<span class="lineNum">      57 </span>                :  * a problem to do in integer arithmetic.  We multiply all the constants
+<span class="lineNum">      58 </span>                :  * by CONST_SCALE and convert them to integer constants (thus retaining
+<span class="lineNum">      59 </span>                :  * CONST_BITS bits of precision in the constants).  After doing a
+<span class="lineNum">      60 </span>                :  * multiplication we have to divide the product by CONST_SCALE, with proper
+<span class="lineNum">      61 </span>                :  * rounding, to produce the correct output.  This division can be done
+<span class="lineNum">      62 </span>                :  * cheaply as a right shift of CONST_BITS bits.  We postpone shifting
+<span class="lineNum">      63 </span>                :  * as long as possible so that partial sums can be added together with
+<span class="lineNum">      64 </span>                :  * full fractional precision.
+<span class="lineNum">      65 </span>                :  *
+<span class="lineNum">      66 </span>                :  * The outputs of the first pass are scaled up by PASS1_BITS bits so that
+<span class="lineNum">      67 </span>                :  * they are represented to better-than-integral precision.  These outputs
+<span class="lineNum">      68 </span>                :  * require BITS_IN_JSAMPLE + PASS1_BITS + 3 bits; this fits in a 16-bit word
+<span class="lineNum">      69 </span>                :  * with the recommended scaling.  (For 12-bit sample data, the intermediate
+<span class="lineNum">      70 </span>                :  * array is INT32 anyway.)
+<span class="lineNum">      71 </span>                :  *
+<span class="lineNum">      72 </span>                :  * To avoid overflow of the 32-bit intermediate results in pass 2, we must
+<span class="lineNum">      73 </span>                :  * have BITS_IN_JSAMPLE + CONST_BITS + PASS1_BITS &lt;= 26.  Error analysis
+<span class="lineNum">      74 </span>                :  * shows that the values given below are the most effective.
+<span class="lineNum">      75 </span>                :  */</FONT></I>
+<span class="lineNum">      76 </span>                : 
+<span class="lineNum">      77 </span>                : #<B><FONT COLOR="#5F9EA0">if</FONT></B> <FONT COLOR="#B8860B">BITS_IN_JSAMPLE</FONT> == 8
+<span class="lineNum">      78 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">CONST_BITS</FONT>  13
+<span class="lineNum">      79 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">PASS1_BITS</FONT>  2
+<span class="lineNum">      80 </span>                : #<B><FONT COLOR="#5F9EA0">else</FONT></B>
+<span class="lineNum">      81 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">CONST_BITS</FONT>  13
+<span class="lineNum">      82 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">PASS1_BITS</FONT>  1		<I><FONT COLOR="#B22222">/* lose a little precision to avoid overflow */</FONT></I>
+<span class="lineNum">      83 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      84 </span>                : 
+<span class="lineNum">      85 </span>                : <I><FONT COLOR="#B22222">/* Some C compilers fail to reduce &quot;FIX(constant)&quot; at compile time, thus
+<span class="lineNum">      86 </span>                :  * causing a lot of useless floating-point operations at run time.
+<span class="lineNum">      87 </span>                :  * To get around this we use the following pre-calculated constants.
+<span class="lineNum">      88 </span>                :  * If you change CONST_BITS you may want to add appropriate values.
+<span class="lineNum">      89 </span>                :  * (With a reasonable C compiler, you can just rely on the FIX() macro...)
+<span class="lineNum">      90 </span>                :  */</FONT></I>
+<span class="lineNum">      91 </span>                : 
+<span class="lineNum">      92 </span>                : #<B><FONT COLOR="#5F9EA0">if</FONT></B> <FONT COLOR="#B8860B">CONST_BITS</FONT> == 13
+<span class="lineNum">      93 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_0_298631336</FONT>  ((INT32)  2446)	<I><FONT COLOR="#B22222">/* FIX(0.298631336) */</FONT></I>
+<span class="lineNum">      94 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_0_390180644</FONT>  ((INT32)  3196)	<I><FONT COLOR="#B22222">/* FIX(0.390180644) */</FONT></I>
+<span class="lineNum">      95 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_0_541196100</FONT>  ((INT32)  4433)	<I><FONT COLOR="#B22222">/* FIX(0.541196100) */</FONT></I>
+<span class="lineNum">      96 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_0_765366865</FONT>  ((INT32)  6270)	<I><FONT COLOR="#B22222">/* FIX(0.765366865) */</FONT></I>
+<span class="lineNum">      97 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_0_899976223</FONT>  ((INT32)  7373)	<I><FONT COLOR="#B22222">/* FIX(0.899976223) */</FONT></I>
+<span class="lineNum">      98 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_1_175875602</FONT>  ((INT32)  9633)	<I><FONT COLOR="#B22222">/* FIX(1.175875602) */</FONT></I>
+<span class="lineNum">      99 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_1_501321110</FONT>  ((INT32)  12299)	<I><FONT COLOR="#B22222">/* FIX(1.501321110) */</FONT></I>
+<span class="lineNum">     100 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_1_847759065</FONT>  ((INT32)  15137)	<I><FONT COLOR="#B22222">/* FIX(1.847759065) */</FONT></I>
+<span class="lineNum">     101 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_1_961570560</FONT>  ((INT32)  16069)	<I><FONT COLOR="#B22222">/* FIX(1.961570560) */</FONT></I>
+<span class="lineNum">     102 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_2_053119869</FONT>  ((INT32)  16819)	<I><FONT COLOR="#B22222">/* FIX(2.053119869) */</FONT></I>
+<span class="lineNum">     103 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_2_562915447</FONT>  ((INT32)  20995)	<I><FONT COLOR="#B22222">/* FIX(2.562915447) */</FONT></I>
+<span class="lineNum">     104 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_3_072711026</FONT>  ((INT32)  25172)	<I><FONT COLOR="#B22222">/* FIX(3.072711026) */</FONT></I>
+<span class="lineNum">     105 </span>                : #<B><FONT COLOR="#5F9EA0">else</FONT></B>
+<span class="lineNum">     106 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_0_298631336</FONT>  FIX(0.298631336)
+<span class="lineNum">     107 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_0_390180644</FONT>  FIX(0.390180644)
+<span class="lineNum">     108 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_0_541196100</FONT>  FIX(0.541196100)
+<span class="lineNum">     109 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_0_765366865</FONT>  FIX(0.765366865)
+<span class="lineNum">     110 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_0_899976223</FONT>  FIX(0.899976223)
+<span class="lineNum">     111 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_1_175875602</FONT>  FIX(1.175875602)
+<span class="lineNum">     112 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_1_501321110</FONT>  FIX(1.501321110)
+<span class="lineNum">     113 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_1_847759065</FONT>  FIX(1.847759065)
+<span class="lineNum">     114 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_1_961570560</FONT>  FIX(1.961570560)
+<span class="lineNum">     115 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_2_053119869</FONT>  FIX(2.053119869)
+<span class="lineNum">     116 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_2_562915447</FONT>  FIX(2.562915447)
+<span class="lineNum">     117 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">FIX_3_072711026</FONT>  FIX(3.072711026)
+<span class="lineNum">     118 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     119 </span>                : 
+<span class="lineNum">     120 </span>                : 
+<span class="lineNum">     121 </span>                : <I><FONT COLOR="#B22222">/* Multiply an INT32 variable by an INT32 constant to yield an INT32 result.
+<span class="lineNum">     122 </span>                :  * For 8-bit samples with the recommended scaling, all the variable
+<span class="lineNum">     123 </span>                :  * and constant values involved are no more than 16 bits wide, so a
+<span class="lineNum">     124 </span>                :  * 16x16-&gt;32 bit multiply can be used instead of a full 32x32 multiply.
+<span class="lineNum">     125 </span>                :  * For 12-bit samples, a full 32-bit multiplication will be needed.
+<span class="lineNum">     126 </span>                :  */</FONT></I>
+<span class="lineNum">     127 </span>                : 
+<span class="lineNum">     128 </span>                : #<B><FONT COLOR="#5F9EA0">if</FONT></B> <FONT COLOR="#B8860B">BITS_IN_JSAMPLE</FONT> == 8
+<span class="lineNum">     129 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <B><FONT COLOR="#0000FF">MULTIPLY</FONT></B>(var,const)  MULTIPLY16C16(var,const)
+<span class="lineNum">     130 </span>                : #<B><FONT COLOR="#5F9EA0">else</FONT></B>
+<span class="lineNum">     131 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <B><FONT COLOR="#0000FF">MULTIPLY</FONT></B>(var,const)  ((var) * (const))
+<span class="lineNum">     132 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     133 </span>                : 
+<span class="lineNum">     134 </span>                : 
+<span class="lineNum">     135 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     136 </span>                :  * Perform the forward DCT on one block of samples.
+<span class="lineNum">     137 </span>                :  */</FONT></I>
+<span class="lineNum">     138 </span>                : 
+<span class="lineNum">     139 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     140 </span><span class="lineCov">          174635: <B><FONT COLOR="#0000FF">jpeg_fdct_islow</FONT></B> (DCTELEM * data)</span>
+<span class="lineNum">     141 </span>                : {
+<span class="lineNum">     142 </span>                :   INT32 tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7;
+<span class="lineNum">     143 </span>                :   INT32 tmp10, tmp11, tmp12, tmp13;
+<span class="lineNum">     144 </span>                :   INT32 z1, z2, z3, z4, z5;
+<span class="lineNum">     145 </span>                :   DCTELEM *dataptr;
+<span class="lineNum">     146 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> ctr;
+<span class="lineNum">     147 </span>                :   SHIFT_TEMPS
+<span class="lineNum">     148 </span>                : 
+<span class="lineNum">     149 </span>                :   <I><FONT COLOR="#B22222">/* Pass 1: process rows. */</FONT></I>
+<span class="lineNum">     150 </span>                :   <I><FONT COLOR="#B22222">/* Note results are scaled up by sqrt(8) compared to a true DCT; */</FONT></I>
+<span class="lineNum">     151 </span>                :   <I><FONT COLOR="#B22222">/* furthermore, we scale the results by 2**PASS1_BITS. */</FONT></I>
+<span class="lineNum">     152 </span>                : 
+<span class="lineNum">     153 </span><span class="lineCov">          174635:   dataptr = data;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">         1397080: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          174635: branch 1 taken</span>
+</span><span class="lineNum">     154 </span><span class="lineCov">         1571715:   <B><FONT COLOR="#A020F0">for</FONT></B> (ctr = DCTSIZE-1; ctr &gt;= 0; ctr--) {</span>
+<span class="lineNum">     155 </span><span class="lineCov">         1397080:     tmp0 = dataptr[0] + dataptr[7];</span>
+<span class="lineNum">     156 </span><span class="lineCov">         1397080:     tmp7 = dataptr[0] - dataptr[7];</span>
+<span class="lineNum">     157 </span><span class="lineCov">         1397080:     tmp1 = dataptr[1] + dataptr[6];</span>
+<span class="lineNum">     158 </span><span class="lineCov">         1397080:     tmp6 = dataptr[1] - dataptr[6];</span>
+<span class="lineNum">     159 </span><span class="lineCov">         1397080:     tmp2 = dataptr[2] + dataptr[5];</span>
+<span class="lineNum">     160 </span><span class="lineCov">         1397080:     tmp5 = dataptr[2] - dataptr[5];</span>
+<span class="lineNum">     161 </span><span class="lineCov">         1397080:     tmp3 = dataptr[3] + dataptr[4];</span>
+<span class="lineNum">     162 </span><span class="lineCov">         1397080:     tmp4 = dataptr[3] - dataptr[4];</span>
+<span class="lineNum">     163 </span>                :     
+<span class="lineNum">     164 </span>                :     <I><FONT COLOR="#B22222">/* Even part per LL&amp;M figure 1 --- note that published figure is faulty;
+<span class="lineNum">     165 </span>                :      * rotator &quot;sqrt(2)*c1&quot; should be &quot;sqrt(2)*c6&quot;.
+<span class="lineNum">     166 </span>                :      */</FONT></I>
+<span class="lineNum">     167 </span>                :     
+<span class="lineNum">     168 </span><span class="lineCov">         1397080:     tmp10 = tmp0 + tmp3;</span>
+<span class="lineNum">     169 </span><span class="lineCov">         1397080:     tmp13 = tmp0 - tmp3;</span>
+<span class="lineNum">     170 </span><span class="lineCov">         1397080:     tmp11 = tmp1 + tmp2;</span>
+<span class="lineNum">     171 </span><span class="lineCov">         1397080:     tmp12 = tmp1 - tmp2;</span>
+<span class="lineNum">     172 </span>                :     
+<span class="lineNum">     173 </span><span class="lineCov">         1397080:     dataptr[0] = (DCTELEM) ((tmp10 + tmp11) &lt;&lt; PASS1_BITS);</span>
+<span class="lineNum">     174 </span><span class="lineCov">         1397080:     dataptr[4] = (DCTELEM) ((tmp10 - tmp11) &lt;&lt; PASS1_BITS);</span>
+<span class="lineNum">     175 </span>                :     
+<span class="lineNum">     176 </span><span class="lineCov">         1397080:     z1 = MULTIPLY(tmp12 + tmp13, FIX_0_541196100);</span>
+<span class="lineNum">     177 </span><span class="lineCov">         1397080:     dataptr[2] = (DCTELEM) DESCALE(z1 + MULTIPLY(tmp13, FIX_0_765366865),</span>
+<span class="lineNum">     178 </span>                : 				   CONST_BITS-PASS1_BITS);
+<span class="lineNum">     179 </span><span class="lineCov">         1397080:     dataptr[6] = (DCTELEM) DESCALE(z1 + MULTIPLY(tmp12, - FIX_1_847759065),</span>
+<span class="lineNum">     180 </span>                : 				   CONST_BITS-PASS1_BITS);
+<span class="lineNum">     181 </span>                :     
+<span class="lineNum">     182 </span>                :     <I><FONT COLOR="#B22222">/* Odd part per figure 8 --- note paper omits factor of sqrt(2).
+<span class="lineNum">     183 </span>                :      * cK represents cos(K*pi/16).
+<span class="lineNum">     184 </span>                :      * i0..i3 in the paper are tmp4..tmp7 here.
+<span class="lineNum">     185 </span>                :      */</FONT></I>
+<span class="lineNum">     186 </span>                :     
+<span class="lineNum">     187 </span><span class="lineCov">         1397080:     z1 = tmp4 + tmp7;</span>
+<span class="lineNum">     188 </span><span class="lineCov">         1397080:     z2 = tmp5 + tmp6;</span>
+<span class="lineNum">     189 </span><span class="lineCov">         1397080:     z3 = tmp4 + tmp6;</span>
+<span class="lineNum">     190 </span><span class="lineCov">         1397080:     z4 = tmp5 + tmp7;</span>
+<span class="lineNum">     191 </span><span class="lineCov">         1397080:     z5 = MULTIPLY(z3 + z4, FIX_1_175875602); <I><FONT COLOR="#B22222">/* sqrt(2) * c3 */</FONT></I></span>
+<span class="lineNum">     192 </span>                :     
+<span class="lineNum">     193 </span><span class="lineCov">         1397080:     tmp4 = MULTIPLY(tmp4, FIX_0_298631336); <I><FONT COLOR="#B22222">/* sqrt(2) * (-c1+c3+c5-c7) */</FONT></I></span>
+<span class="lineNum">     194 </span><span class="lineCov">         1397080:     tmp5 = MULTIPLY(tmp5, FIX_2_053119869); <I><FONT COLOR="#B22222">/* sqrt(2) * ( c1+c3-c5+c7) */</FONT></I></span>
+<span class="lineNum">     195 </span><span class="lineCov">         1397080:     tmp6 = MULTIPLY(tmp6, FIX_3_072711026); <I><FONT COLOR="#B22222">/* sqrt(2) * ( c1+c3+c5-c7) */</FONT></I></span>
+<span class="lineNum">     196 </span><span class="lineCov">         1397080:     tmp7 = MULTIPLY(tmp7, FIX_1_501321110); <I><FONT COLOR="#B22222">/* sqrt(2) * ( c1+c3-c5-c7) */</FONT></I></span>
+<span class="lineNum">     197 </span><span class="lineCov">         1397080:     z1 = MULTIPLY(z1, - FIX_0_899976223); <I><FONT COLOR="#B22222">/* sqrt(2) * (c7-c3) */</FONT></I></span>
+<span class="lineNum">     198 </span><span class="lineCov">         1397080:     z2 = MULTIPLY(z2, - FIX_2_562915447); <I><FONT COLOR="#B22222">/* sqrt(2) * (-c1-c3) */</FONT></I></span>
+<span class="lineNum">     199 </span><span class="lineCov">         1397080:     z3 = MULTIPLY(z3, - FIX_1_961570560); <I><FONT COLOR="#B22222">/* sqrt(2) * (-c3-c5) */</FONT></I></span>
+<span class="lineNum">     200 </span><span class="lineCov">         1397080:     z4 = MULTIPLY(z4, - FIX_0_390180644); <I><FONT COLOR="#B22222">/* sqrt(2) * (c5-c3) */</FONT></I></span>
+<span class="lineNum">     201 </span>                :     
+<span class="lineNum">     202 </span><span class="lineCov">         1397080:     z3 += z5;</span>
+<span class="lineNum">     203 </span><span class="lineCov">         1397080:     z4 += z5;</span>
+<span class="lineNum">     204 </span>                :     
+<span class="lineNum">     205 </span><span class="lineCov">         1397080:     dataptr[7] = (DCTELEM) DESCALE(tmp4 + z1 + z3, CONST_BITS-PASS1_BITS);</span>
+<span class="lineNum">     206 </span><span class="lineCov">         1397080:     dataptr[5] = (DCTELEM) DESCALE(tmp5 + z2 + z4, CONST_BITS-PASS1_BITS);</span>
+<span class="lineNum">     207 </span><span class="lineCov">         1397080:     dataptr[3] = (DCTELEM) DESCALE(tmp6 + z2 + z3, CONST_BITS-PASS1_BITS);</span>
+<span class="lineNum">     208 </span><span class="lineCov">         1397080:     dataptr[1] = (DCTELEM) DESCALE(tmp7 + z1 + z4, CONST_BITS-PASS1_BITS);</span>
+<span class="lineNum">     209 </span>                :     
+<span class="lineNum">     210 </span><span class="lineCov">         1397080:     dataptr += DCTSIZE;		<I><FONT COLOR="#B22222">/* advance pointer to next row */</FONT></I></span>
+<span class="lineNum">     211 </span>                :   }
+<span class="lineNum">     212 </span>                : 
+<span class="lineNum">     213 </span>                :   <I><FONT COLOR="#B22222">/* Pass 2: process columns.
+<span class="lineNum">     214 </span>                :    * We remove the PASS1_BITS scaling, but leave the results scaled up
+<span class="lineNum">     215 </span>                :    * by an overall factor of 8.
+<span class="lineNum">     216 </span>                :    */</FONT></I>
+<span class="lineNum">     217 </span>                : 
+<span class="lineNum">     218 </span><span class="lineCov">          174635:   dataptr = data;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">         1397080: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          174635: branch 1 taken</span>
+</span><span class="lineNum">     219 </span><span class="lineCov">         1571715:   <B><FONT COLOR="#A020F0">for</FONT></B> (ctr = DCTSIZE-1; ctr &gt;= 0; ctr--) {</span>
+<span class="lineNum">     220 </span><span class="lineCov">         1397080:     tmp0 = dataptr[DCTSIZE*0] + dataptr[DCTSIZE*7];</span>
+<span class="lineNum">     221 </span><span class="lineCov">         1397080:     tmp7 = dataptr[DCTSIZE*0] - dataptr[DCTSIZE*7];</span>
+<span class="lineNum">     222 </span><span class="lineCov">         1397080:     tmp1 = dataptr[DCTSIZE*1] + dataptr[DCTSIZE*6];</span>
+<span class="lineNum">     223 </span><span class="lineCov">         1397080:     tmp6 = dataptr[DCTSIZE*1] - dataptr[DCTSIZE*6];</span>
+<span class="lineNum">     224 </span><span class="lineCov">         1397080:     tmp2 = dataptr[DCTSIZE*2] + dataptr[DCTSIZE*5];</span>
+<span class="lineNum">     225 </span><span class="lineCov">         1397080:     tmp5 = dataptr[DCTSIZE*2] - dataptr[DCTSIZE*5];</span>
+<span class="lineNum">     226 </span><span class="lineCov">         1397080:     tmp3 = dataptr[DCTSIZE*3] + dataptr[DCTSIZE*4];</span>
+<span class="lineNum">     227 </span><span class="lineCov">         1397080:     tmp4 = dataptr[DCTSIZE*3] - dataptr[DCTSIZE*4];</span>
+<span class="lineNum">     228 </span>                :     
+<span class="lineNum">     229 </span>                :     <I><FONT COLOR="#B22222">/* Even part per LL&amp;M figure 1 --- note that published figure is faulty;
+<span class="lineNum">     230 </span>                :      * rotator &quot;sqrt(2)*c1&quot; should be &quot;sqrt(2)*c6&quot;.
+<span class="lineNum">     231 </span>                :      */</FONT></I>
+<span class="lineNum">     232 </span>                :     
+<span class="lineNum">     233 </span><span class="lineCov">         1397080:     tmp10 = tmp0 + tmp3;</span>
+<span class="lineNum">     234 </span><span class="lineCov">         1397080:     tmp13 = tmp0 - tmp3;</span>
+<span class="lineNum">     235 </span><span class="lineCov">         1397080:     tmp11 = tmp1 + tmp2;</span>
+<span class="lineNum">     236 </span><span class="lineCov">         1397080:     tmp12 = tmp1 - tmp2;</span>
+<span class="lineNum">     237 </span>                :     
+<span class="lineNum">     238 </span><span class="lineCov">         1397080:     dataptr[DCTSIZE*0] = (DCTELEM) DESCALE(tmp10 + tmp11, PASS1_BITS);</span>
+<span class="lineNum">     239 </span><span class="lineCov">         1397080:     dataptr[DCTSIZE*4] = (DCTELEM) DESCALE(tmp10 - tmp11, PASS1_BITS);</span>
+<span class="lineNum">     240 </span>                :     
+<span class="lineNum">     241 </span><span class="lineCov">         1397080:     z1 = MULTIPLY(tmp12 + tmp13, FIX_0_541196100);</span>
+<span class="lineNum">     242 </span><span class="lineCov">         1397080:     dataptr[DCTSIZE*2] = (DCTELEM) DESCALE(z1 + MULTIPLY(tmp13, FIX_0_765366865),</span>
+<span class="lineNum">     243 </span>                : 					   CONST_BITS+PASS1_BITS);
+<span class="lineNum">     244 </span><span class="lineCov">         1397080:     dataptr[DCTSIZE*6] = (DCTELEM) DESCALE(z1 + MULTIPLY(tmp12, - FIX_1_847759065),</span>
+<span class="lineNum">     245 </span>                : 					   CONST_BITS+PASS1_BITS);
+<span class="lineNum">     246 </span>                :     
+<span class="lineNum">     247 </span>                :     <I><FONT COLOR="#B22222">/* Odd part per figure 8 --- note paper omits factor of sqrt(2).
+<span class="lineNum">     248 </span>                :      * cK represents cos(K*pi/16).
+<span class="lineNum">     249 </span>                :      * i0..i3 in the paper are tmp4..tmp7 here.
+<span class="lineNum">     250 </span>                :      */</FONT></I>
+<span class="lineNum">     251 </span>                :     
+<span class="lineNum">     252 </span><span class="lineCov">         1397080:     z1 = tmp4 + tmp7;</span>
+<span class="lineNum">     253 </span><span class="lineCov">         1397080:     z2 = tmp5 + tmp6;</span>
+<span class="lineNum">     254 </span><span class="lineCov">         1397080:     z3 = tmp4 + tmp6;</span>
+<span class="lineNum">     255 </span><span class="lineCov">         1397080:     z4 = tmp5 + tmp7;</span>
+<span class="lineNum">     256 </span><span class="lineCov">         1397080:     z5 = MULTIPLY(z3 + z4, FIX_1_175875602); <I><FONT COLOR="#B22222">/* sqrt(2) * c3 */</FONT></I></span>
+<span class="lineNum">     257 </span>                :     
+<span class="lineNum">     258 </span><span class="lineCov">         1397080:     tmp4 = MULTIPLY(tmp4, FIX_0_298631336); <I><FONT COLOR="#B22222">/* sqrt(2) * (-c1+c3+c5-c7) */</FONT></I></span>
+<span class="lineNum">     259 </span><span class="lineCov">         1397080:     tmp5 = MULTIPLY(tmp5, FIX_2_053119869); <I><FONT COLOR="#B22222">/* sqrt(2) * ( c1+c3-c5+c7) */</FONT></I></span>
+<span class="lineNum">     260 </span><span class="lineCov">         1397080:     tmp6 = MULTIPLY(tmp6, FIX_3_072711026); <I><FONT COLOR="#B22222">/* sqrt(2) * ( c1+c3+c5-c7) */</FONT></I></span>
+<span class="lineNum">     261 </span><span class="lineCov">         1397080:     tmp7 = MULTIPLY(tmp7, FIX_1_501321110); <I><FONT COLOR="#B22222">/* sqrt(2) * ( c1+c3-c5-c7) */</FONT></I></span>
+<span class="lineNum">     262 </span><span class="lineCov">         1397080:     z1 = MULTIPLY(z1, - FIX_0_899976223); <I><FONT COLOR="#B22222">/* sqrt(2) * (c7-c3) */</FONT></I></span>
+<span class="lineNum">     263 </span><span class="lineCov">         1397080:     z2 = MULTIPLY(z2, - FIX_2_562915447); <I><FONT COLOR="#B22222">/* sqrt(2) * (-c1-c3) */</FONT></I></span>
+<span class="lineNum">     264 </span><span class="lineCov">         1397080:     z3 = MULTIPLY(z3, - FIX_1_961570560); <I><FONT COLOR="#B22222">/* sqrt(2) * (-c3-c5) */</FONT></I></span>
+<span class="lineNum">     265 </span><span class="lineCov">         1397080:     z4 = MULTIPLY(z4, - FIX_0_390180644); <I><FONT COLOR="#B22222">/* sqrt(2) * (c5-c3) */</FONT></I></span>
+<span class="lineNum">     266 </span>                :     
+<span class="lineNum">     267 </span><span class="lineCov">         1397080:     z3 += z5;</span>
+<span class="lineNum">     268 </span><span class="lineCov">         1397080:     z4 += z5;</span>
+<span class="lineNum">     269 </span>                :     
+<span class="lineNum">     270 </span><span class="lineCov">         1397080:     dataptr[DCTSIZE*7] = (DCTELEM) DESCALE(tmp4 + z1 + z3,</span>
+<span class="lineNum">     271 </span>                : 					   CONST_BITS+PASS1_BITS);
+<span class="lineNum">     272 </span><span class="lineCov">         1397080:     dataptr[DCTSIZE*5] = (DCTELEM) DESCALE(tmp5 + z2 + z4,</span>
+<span class="lineNum">     273 </span>                : 					   CONST_BITS+PASS1_BITS);
+<span class="lineNum">     274 </span><span class="lineCov">         1397080:     dataptr[DCTSIZE*3] = (DCTELEM) DESCALE(tmp6 + z2 + z3,</span>
+<span class="lineNum">     275 </span>                : 					   CONST_BITS+PASS1_BITS);
+<span class="lineNum">     276 </span><span class="lineCov">         1397080:     dataptr[DCTSIZE*1] = (DCTELEM) DESCALE(tmp7 + z1 + z4,</span>
+<span class="lineNum">     277 </span>                : 					   CONST_BITS+PASS1_BITS);
+<span class="lineNum">     278 </span>                :     
+<span class="lineNum">     279 </span><span class="lineCov">         1397080:     dataptr++;			<I><FONT COLOR="#B22222">/* advance pointer to next column */</FONT></I></span>
+<span class="lineNum">     280 </span>                :   }
+<span class="lineNum">     281 </span><span class="lineCov">          174635: }</span>
+<span class="lineNum">     282 </span>                : 
+<span class="lineNum">     283 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B> <I><FONT COLOR="#B22222">/* DCT_ISLOW_SUPPORTED */</FONT></I>
+</pre>
+<hr>
+Generated: 2016-04-07&nbsp;18:20 by <a href="http://minormatter.com/zcov">zcov</a><br>
+</body>
+</html>

@@ -1,0 +1,842 @@
+<html>
+<head>
+  <script src="sorttable.js"></script>
+  <script src="sourceview.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <title>zcov: /home/vagrant/workspace/proj_libjpeg/cov/jcmaster.c</title>
+</head>
+<body>
+<center><h1> zcov: <a href="index.html">/home/vagrant/workspace/proj_libjpeg/cov</a>/<a href="jcmaster.c.html">jcmaster.c</a> </h1></center>
+<hr>
+
+
+<center>
+<table id="headertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Files:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Taken:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>63.2%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 120&nbsp;/&nbsp;190 </td>
+  </tr>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Generated:</b> </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;12:37 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>88.4%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 168&nbsp;/&nbsp;190 </td>
+  </tr>
+  <tr>
+    <td colspan=2> </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Line&nbsp;Coverage:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>84.5%</b> </td>
+    <td bgcolor=#F0F0FF align=right> 223&nbsp;/&nbsp;264 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<center>
+<table id="fileheadertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Programs:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Runs</b> </td>
+    <td bgcolor=#F0F0FF align=right> 13686 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<pre>
+<span class="lineNum">       1 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">       2 </span>                :  * jcmaster.c
+<span class="lineNum">       3 </span>                :  *
+<span class="lineNum">       4 </span>                :  * Copyright (C) 1991-1997, Thomas G. Lane.
+<span class="lineNum">       5 </span>                :  * This file is part of the Independent JPEG Group's software.
+<span class="lineNum">       6 </span>                :  * For conditions of distribution and use, see the accompanying README file.
+<span class="lineNum">       7 </span>                :  *
+<span class="lineNum">       8 </span>                :  * This file contains master control logic for the JPEG compressor.
+<span class="lineNum">       9 </span>                :  * These routines are concerned with parameter validation, initial setup,
+<span class="lineNum">      10 </span>                :  * and inter-pass control (determining the number of passes and the work 
+<span class="lineNum">      11 </span>                :  * to be done in each pass).
+<span class="lineNum">      12 </span>                :  */</FONT></I>
+<span class="lineNum">      13 </span>                : 
+<span class="lineNum">      14 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">JPEG_INTERNALS</FONT>
+<span class="lineNum">      15 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jinclude.h&quot;</FONT></B>
+<span class="lineNum">      16 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jpeglib.h&quot;</FONT></B>
+<span class="lineNum">      17 </span>                : 
+<span class="lineNum">      18 </span>                : 
+<span class="lineNum">      19 </span>                : <I><FONT COLOR="#B22222">/* Private state */</FONT></I>
+<span class="lineNum">      20 </span>                : 
+<span class="lineNum">      21 </span>                : <B><FONT COLOR="#228B22">typedef</FONT></B> <B><FONT COLOR="#228B22">enum</FONT></B> {
+<span class="lineNum">      22 </span>                : 	main_pass,		<I><FONT COLOR="#B22222">/* input data, also do first output step */</FONT></I>
+<span class="lineNum">      23 </span>                : 	huff_opt_pass,		<I><FONT COLOR="#B22222">/* Huffman code optimization pass */</FONT></I>
+<span class="lineNum">      24 </span>                : 	output_pass		<I><FONT COLOR="#B22222">/* data output pass */</FONT></I>
+<span class="lineNum">      25 </span>                : } c_pass_type;
+<span class="lineNum">      26 </span>                : 
+<span class="lineNum">      27 </span>                : <B><FONT COLOR="#228B22">typedef</FONT></B> <B><FONT COLOR="#228B22">struct</FONT></B> {
+<span class="lineNum">      28 </span>                :   <B><FONT COLOR="#228B22">struct</FONT></B> jpeg_comp_master pub;	<I><FONT COLOR="#B22222">/* public fields */</FONT></I>
+<span class="lineNum">      29 </span>                : 
+<span class="lineNum">      30 </span>                :   c_pass_type pass_type;	<I><FONT COLOR="#B22222">/* the type of the current pass */</FONT></I>
+<span class="lineNum">      31 </span>                : 
+<span class="lineNum">      32 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> pass_number;		<I><FONT COLOR="#B22222">/* # of passes completed */</FONT></I>
+<span class="lineNum">      33 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> total_passes;		<I><FONT COLOR="#B22222">/* total # of passes needed */</FONT></I>
+<span class="lineNum">      34 </span>                : 
+<span class="lineNum">      35 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> scan_number;		<I><FONT COLOR="#B22222">/* current index in scan_info[] */</FONT></I>
+<span class="lineNum">      36 </span>                : } my_comp_master;
+<span class="lineNum">      37 </span>                : 
+<span class="lineNum">      38 </span>                : <B><FONT COLOR="#228B22">typedef</FONT></B> my_comp_master * my_master_ptr;
+<span class="lineNum">      39 </span>                : 
+<span class="lineNum">      40 </span>                : 
+<span class="lineNum">      41 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      42 </span>                :  * Support routines that do various essential calculations.
+<span class="lineNum">      43 </span>                :  */</FONT></I>
+<span class="lineNum">      44 </span>                : 
+<span class="lineNum">      45 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">      46 </span><span class="lineCov">            9300: <B><FONT COLOR="#0000FF">initial_setup</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">      47 </span>                : <I><FONT COLOR="#B22222">/* Do computations that are needed before master selection phase */</FONT></I>
+<span class="lineNum">      48 </span>                : {
+<span class="lineNum">      49 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> ci;
+<span class="lineNum">      50 </span>                :   jpeg_component_info *compptr;
+<span class="lineNum">      51 </span>                :   <B><FONT COLOR="#228B22">long</FONT></B> samplesperrow;
+<span class="lineNum">      52 </span>                :   JDIMENSION jd_samplesperrow;
+<span class="lineNum">      53 </span>                : 
+<span class="lineNum">      54 </span>                :   <I><FONT COLOR="#B22222">/* Sanity check on image dimensions */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            9254: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">              46: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9205: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">              49: branch 3 taken</span>
+</span><span class="lineNum">      55 </span><span class="lineCov">            9300:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;image_height &lt;= 0 || cinfo-&gt;image_width &lt;= 0</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            9205: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9205: branch 3 taken</span>
+</span><span class="lineNum">      56 </span><span class="lineCov">            9205:       || cinfo-&gt;num_components &lt;= 0 || cinfo-&gt;input_components &lt;= 0)</span>
+<span class="lineNum">      57 </span><span class="lineCov">              95:     ERREXIT(cinfo, JERR_EMPTY_IMAGE);</span>
+<span class="lineNum">      58 </span>                : 
+<span class="lineNum">      59 </span>                :   <I><FONT COLOR="#B22222">/* Make sure image isn't bigger than I can handle */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            9148: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">              57: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">              83: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9065: branch 3 taken</span>
+</span><span class="lineNum">      60 </span><span class="lineCov">           18353:   <B><FONT COLOR="#A020F0">if</FONT></B> ((<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;image_height &gt; (<B><FONT COLOR="#228B22">long</FONT></B>) JPEG_MAX_DIMENSION ||</span>
+<span class="lineNum">      61 </span><span class="lineCov">            9148:       (<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;image_width &gt; (<B><FONT COLOR="#228B22">long</FONT></B>) JPEG_MAX_DIMENSION)</span>
+<span class="lineNum">      62 </span><span class="lineCov">             140:     ERREXIT1(cinfo, JERR_IMAGE_TOO_BIG, (<B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B>) JPEG_MAX_DIMENSION);</span>
+<span class="lineNum">      63 </span>                : 
+<span class="lineNum">      64 </span>                :   <I><FONT COLOR="#B22222">/* Width of an input scanline must be representable as JDIMENSION. */</FONT></I>
+<span class="lineNum">      65 </span><span class="lineCov">            9065:   samplesperrow = (<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;image_width * (<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;input_components;</span>
+<span class="lineNum">      66 </span><span class="lineCov">            9065:   jd_samplesperrow = (JDIMENSION) samplesperrow;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9065: branch 1 taken</span>
+</span><span class="lineNum">      67 </span><span class="lineCov">            9065:   <B><FONT COLOR="#A020F0">if</FONT></B> ((<B><FONT COLOR="#228B22">long</FONT></B>) jd_samplesperrow != samplesperrow)</span>
+<span class="lineNum">      68 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_WIDTH_OVERFLOW);</span>
+<span class="lineNum">      69 </span>                : 
+<span class="lineNum">      70 </span>                :   <I><FONT COLOR="#B22222">/* For now, precision must match compiled-in value... */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9065: branch 1 taken</span>
+</span><span class="lineNum">      71 </span><span class="lineCov">            9065:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;data_precision != BITS_IN_JSAMPLE)</span>
+<span class="lineNum">      72 </span><span class="lineNoCov">               0:     ERREXIT1(cinfo, JERR_BAD_PRECISION, cinfo-&gt;data_precision);</span>
+<span class="lineNum">      73 </span>                : 
+<span class="lineNum">      74 </span>                :   <I><FONT COLOR="#B22222">/* Check that number of components won't exceed internal array sizes */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9065: branch 1 taken</span>
+</span><span class="lineNum">      75 </span><span class="lineCov">            9065:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;num_components &gt; MAX_COMPONENTS)</span>
+<span class="lineNum">      76 </span><span class="lineNoCov">               0:     ERREXIT2(cinfo, JERR_COMPONENT_COUNT, cinfo-&gt;num_components,</span>
+<span class="lineNum">      77 </span>                : 	     MAX_COMPONENTS);
+<span class="lineNum">      78 </span>                : 
+<span class="lineNum">      79 </span>                :   <I><FONT COLOR="#B22222">/* Compute maximum sampling factors; check factor validity */</FONT></I>
+<span class="lineNum">      80 </span><span class="lineCov">            9065:   cinfo-&gt;max_h_samp_factor = 1;</span>
+<span class="lineNum">      81 </span><span class="lineCov">            9065:   cinfo-&gt;max_v_samp_factor = 1;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           17275: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9065: branch 1 taken</span>
+</span><span class="lineNum">      82 </span><span class="lineCov">           35405:   <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0, compptr = cinfo-&gt;comp_info; ci &lt; cinfo-&gt;num_components;</span>
+<span class="lineNum">      83 </span><span class="lineCov">           17275:        ci++, compptr++) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           17275: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           17275: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           17275: branch 4 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 5 not taken</span>
+</span><span class="lineNum">      84 </span><span class="lineCov">           34550:     <B><FONT COLOR="#A020F0">if</FONT></B> (compptr-&gt;h_samp_factor&lt;=0 || compptr-&gt;h_samp_factor&gt;MAX_SAMP_FACTOR ||</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           17275: branch 1 taken</span>
+</span><span class="lineNum">      85 </span><span class="lineCov">           34550: 	compptr-&gt;v_samp_factor&lt;=0 || compptr-&gt;v_samp_factor&gt;MAX_SAMP_FACTOR)</span>
+<span class="lineNum">      86 </span><span class="lineNoCov">               0:       ERREXIT(cinfo, JERR_BAD_SAMPLING);</span>
+<span class="lineNum">      87 </span><span class="lineCov">           17275:     cinfo-&gt;max_h_samp_factor = MAX(cinfo-&gt;max_h_samp_factor,</span>
+<span class="lineNum">      88 </span>                : 				   compptr-&gt;h_samp_factor);
+<span class="lineNum">      89 </span><span class="lineCov">           17275:     cinfo-&gt;max_v_samp_factor = MAX(cinfo-&gt;max_v_samp_factor,</span>
+<span class="lineNum">      90 </span>                : 				   compptr-&gt;v_samp_factor);
+<span class="lineNum">      91 </span>                :   }
+<span class="lineNum">      92 </span>                : 
+<span class="lineNum">      93 </span>                :   <I><FONT COLOR="#B22222">/* Compute dimensions of components */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           17275: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9065: branch 1 taken</span>
+</span><span class="lineNum">      94 </span><span class="lineCov">           35405:   <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0, compptr = cinfo-&gt;comp_info; ci &lt; cinfo-&gt;num_components;</span>
+<span class="lineNum">      95 </span><span class="lineCov">           17275:        ci++, compptr++) {</span>
+<span class="lineNum">      96 </span>                :     <I><FONT COLOR="#B22222">/* Fill in the correct component_index value; don't rely on application */</FONT></I>
+<span class="lineNum">      97 </span><span class="lineCov">           17275:     compptr-&gt;component_index = ci;</span>
+<span class="lineNum">      98 </span>                :     <I><FONT COLOR="#B22222">/* For compression, we never do DCT scaling. */</FONT></I>
+<span class="lineNum">      99 </span><span class="lineCov">           17275:     compptr-&gt;DCT_scaled_size = DCTSIZE;</span>
+<span class="lineNum">     100 </span>                :     <I><FONT COLOR="#B22222">/* Size in DCT blocks */</FONT></I>
+<span class="lineNum">     101 </span><span class="lineCov">           17275:     compptr-&gt;width_in_blocks = (JDIMENSION)</span>
+<span class="lineNum">     102 </span><span class="lineCov">           17275:       jdiv_round_up((<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;image_width * (<B><FONT COLOR="#228B22">long</FONT></B>) compptr-&gt;h_samp_factor,</span>
+<span class="lineNum">     103 </span><span class="lineCov">           17275: 		    (<B><FONT COLOR="#228B22">long</FONT></B>) (cinfo-&gt;max_h_samp_factor * DCTSIZE));</span>
+<span class="lineNum">     104 </span><span class="lineCov">           17275:     compptr-&gt;height_in_blocks = (JDIMENSION)</span>
+<span class="lineNum">     105 </span><span class="lineCov">           17275:       jdiv_round_up((<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;image_height * (<B><FONT COLOR="#228B22">long</FONT></B>) compptr-&gt;v_samp_factor,</span>
+<span class="lineNum">     106 </span><span class="lineCov">           17275: 		    (<B><FONT COLOR="#228B22">long</FONT></B>) (cinfo-&gt;max_v_samp_factor * DCTSIZE));</span>
+<span class="lineNum">     107 </span>                :     <I><FONT COLOR="#B22222">/* Size in samples */</FONT></I>
+<span class="lineNum">     108 </span><span class="lineCov">           17275:     compptr-&gt;downsampled_width = (JDIMENSION)</span>
+<span class="lineNum">     109 </span><span class="lineCov">           17275:       jdiv_round_up((<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;image_width * (<B><FONT COLOR="#228B22">long</FONT></B>) compptr-&gt;h_samp_factor,</span>
+<span class="lineNum">     110 </span><span class="lineCov">           17275: 		    (<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;max_h_samp_factor);</span>
+<span class="lineNum">     111 </span><span class="lineCov">           17275:     compptr-&gt;downsampled_height = (JDIMENSION)</span>
+<span class="lineNum">     112 </span><span class="lineCov">           17275:       jdiv_round_up((<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;image_height * (<B><FONT COLOR="#228B22">long</FONT></B>) compptr-&gt;v_samp_factor,</span>
+<span class="lineNum">     113 </span><span class="lineCov">           17275: 		    (<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;max_v_samp_factor);</span>
+<span class="lineNum">     114 </span>                :     <I><FONT COLOR="#B22222">/* Mark component needed (this flag isn't actually used for compression) */</FONT></I>
+<span class="lineNum">     115 </span><span class="lineCov">           17275:     compptr-&gt;component_needed = TRUE;</span>
+<span class="lineNum">     116 </span>                :   }
+<span class="lineNum">     117 </span>                : 
+<span class="lineNum">     118 </span>                :   <I><FONT COLOR="#B22222">/* Compute number of fully interleaved MCU rows (number of times that
+<span class="lineNum">     119 </span>                :    * main controller will call coefficient controller).
+<span class="lineNum">     120 </span>                :    */</FONT></I>
+<span class="lineNum">     121 </span><span class="lineCov">            9065:   cinfo-&gt;total_iMCU_rows = (JDIMENSION)</span>
+<span class="lineNum">     122 </span><span class="lineCov">            9065:     jdiv_round_up((<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;image_height,</span>
+<span class="lineNum">     123 </span><span class="lineCov">            9065: 		  (<B><FONT COLOR="#228B22">long</FONT></B>) (cinfo-&gt;max_v_samp_factor*DCTSIZE));</span>
+<span class="lineNum">     124 </span><span class="lineCov">            9065: }</span>
+<span class="lineNum">     125 </span>                : 
+<span class="lineNum">     126 </span>                : 
+<span class="lineNum">     127 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">C_MULTISCAN_FILES_SUPPORTED</FONT>
+<span class="lineNum">     128 </span>                : 
+<span class="lineNum">     129 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     130 </span><span class="lineCov">             942: <B><FONT COLOR="#0000FF">validate_script</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     131 </span>                : <I><FONT COLOR="#B22222">/* Verify that the scan script in cinfo-&gt;scan_info[] is valid; also
+<span class="lineNum">     132 </span>                :  * determine whether it uses progressive JPEG, and set cinfo-&gt;progressive_mode.
+<span class="lineNum">     133 </span>                :  */</FONT></I>
+<span class="lineNum">     134 </span>                : {
+<span class="lineNum">     135 </span>                :   <B><FONT COLOR="#228B22">const</FONT></B> jpeg_scan_info * scanptr;
+<span class="lineNum">     136 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> scanno, ncomps, ci, coefi, thisi;
+<span class="lineNum">     137 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> Ss, Se, Ah, Al;
+<span class="lineNum">     138 </span>                :   boolean component_sent[MAX_COMPONENTS];
+<span class="lineNum">     139 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">C_PROGRESSIVE_SUPPORTED</FONT>
+<span class="lineNum">     140 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> * last_bitpos_ptr;
+<span class="lineNum">     141 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> last_bitpos[MAX_COMPONENTS][DCTSIZE2];
+<span class="lineNum">     142 </span>                :   <I><FONT COLOR="#B22222">/* -1 until that coefficient has been seen; then last Al for it */</FONT></I>
+<span class="lineNum">     143 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     144 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             942: branch 1 taken</span>
+</span><span class="lineNum">     145 </span><span class="lineCov">             942:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;num_scans &lt;= 0)</span>
+<span class="lineNum">     146 </span><span class="lineNoCov">               0:     ERREXIT1(cinfo, JERR_BAD_SCAN_SCRIPT, 0);</span>
+<span class="lineNum">     147 </span>                : 
+<span class="lineNum">     148 </span>                :   <I><FONT COLOR="#B22222">/* For sequential JPEG, all scans must have Ss=0, Se=DCTSIZE2-1;
+<span class="lineNum">     149 </span>                :    * for progressive JPEG, no scan can have this.
+<span class="lineNum">     150 </span>                :    */</FONT></I>
+<span class="lineNum">     151 </span><span class="lineCov">             942:   scanptr = cinfo-&gt;scan_info;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             942: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             942: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
+</span><span class="lineNum">     152 </span><span class="lineCov">            1884:   <B><FONT COLOR="#A020F0">if</FONT></B> (scanptr-&gt;Ss != 0 || scanptr-&gt;Se != DCTSIZE2-1) {</span>
+<span class="lineNum">     153 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">C_PROGRESSIVE_SUPPORTED</FONT>
+<span class="lineNum">     154 </span><span class="lineCov">             942:     cinfo-&gt;progressive_mode = TRUE;</span>
+<span class="lineNum">     155 </span><span class="lineCov">             942:     last_bitpos_ptr = &amp; last_bitpos[0][0];</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1866: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             942: branch 1 taken</span>
+</span><span class="lineNum">     156 </span><span class="lineCov">            2808:     <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0; ci &lt; cinfo-&gt;num_components; ci++) </span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          119424: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1866: branch 1 taken</span>
+</span><span class="lineNum">     157 </span><span class="lineCov">          121290:       <B><FONT COLOR="#A020F0">for</FONT></B> (coefi = 0; coefi &lt; DCTSIZE2; coefi++)</span>
+<span class="lineNum">     158 </span><span class="lineCov">          119424: 	*last_bitpos_ptr++ = -1;</span>
+<span class="lineNum">     159 </span>                : #<B><FONT COLOR="#5F9EA0">else</FONT></B>
+<span class="lineNum">     160 </span>                :     ERREXIT(cinfo, JERR_NOT_COMPILED);
+<span class="lineNum">     161 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     162 </span>                :   } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     163 </span><span class="lineNoCov">               0:     cinfo-&gt;progressive_mode = FALSE;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     164 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0; ci &lt; cinfo-&gt;num_components; ci++) </span>
+<span class="lineNum">     165 </span><span class="lineNoCov">               0:       component_sent[ci] = FALSE;</span>
+<span class="lineNum">     166 </span>                :   }
+<span class="lineNum">     167 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            7500: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             942: branch 1 taken</span>
+</span><span class="lineNum">     168 </span><span class="lineCov">            8442:   <B><FONT COLOR="#A020F0">for</FONT></B> (scanno = 1; scanno &lt;= cinfo-&gt;num_scans; scanptr++, scanno++) {</span>
+<span class="lineNum">     169 </span>                :     <I><FONT COLOR="#B22222">/* Validate component indexes */</FONT></I>
+<span class="lineNum">     170 </span><span class="lineCov">            7500:     ncomps = scanptr-&gt;comps_in_scan;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            7500: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            7500: branch 3 taken</span>
+</span><span class="lineNum">     171 </span><span class="lineCov">            7500:     <B><FONT COLOR="#A020F0">if</FONT></B> (ncomps &lt;= 0 || ncomps &gt; MAX_COMPS_IN_SCAN)</span>
+<span class="lineNum">     172 </span><span class="lineNoCov">               0:       ERREXIT2(cinfo, JERR_COMPONENT_COUNT, ncomps, MAX_COMPS_IN_SCAN);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            9348: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            7500: branch 1 taken</span>
+</span><span class="lineNum">     173 </span><span class="lineCov">           16848:     <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0; ci &lt; ncomps; ci++) {</span>
+<span class="lineNum">     174 </span><span class="lineCov">            9348:       thisi = scanptr-&gt;component_index[ci];</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            9348: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9348: branch 3 taken</span>
+</span><span class="lineNum">     175 </span><span class="lineCov">            9348:       <B><FONT COLOR="#A020F0">if</FONT></B> (thisi &lt; 0 || thisi &gt;= cinfo-&gt;num_components)</span>
+<span class="lineNum">     176 </span><span class="lineNoCov">               0: 	ERREXIT1(cinfo, JERR_BAD_SCAN_SCRIPT, scanno);</span>
+<span class="lineNum">     177 </span>                :       <I><FONT COLOR="#B22222">/* Components must appear in SOF order within each scan */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1848: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            7500: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1848: branch 3 taken</span>
+</span><span class="lineNum">     178 </span><span class="lineCov">            9348:       <B><FONT COLOR="#A020F0">if</FONT></B> (ci &gt; 0 &amp;&amp; thisi &lt;= scanptr-&gt;component_index[ci-1])</span>
+<span class="lineNum">     179 </span><span class="lineNoCov">               0: 	ERREXIT1(cinfo, JERR_BAD_SCAN_SCRIPT, scanno);</span>
+<span class="lineNum">     180 </span>                :     }
+<span class="lineNum">     181 </span>                :     <I><FONT COLOR="#B22222">/* Validate progression parameters */</FONT></I>
+<span class="lineNum">     182 </span><span class="lineCov">            7500:     Ss = scanptr-&gt;Ss;</span>
+<span class="lineNum">     183 </span><span class="lineCov">            7500:     Se = scanptr-&gt;Se;</span>
+<span class="lineNum">     184 </span><span class="lineCov">            7500:     Ah = scanptr-&gt;Ah;</span>
+<span class="lineNum">     185 </span><span class="lineCov">            7500:     Al = scanptr-&gt;Al;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            7500: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     186 </span><span class="lineCov">            7500:     <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;progressive_mode) {</span>
+<span class="lineNum">     187 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">C_PROGRESSIVE_SUPPORTED</FONT>
+<span class="lineNum">     188 </span>                :       <I><FONT COLOR="#B22222">/* The JPEG spec simply gives the ranges 0..13 for Ah and Al, but that
+<span class="lineNum">     189 </span>                :        * seems wrong: the upper bound ought to depend on data precision.
+<span class="lineNum">     190 </span>                :        * Perhaps they really meant 0..N+1 for N-bit precision.
+<span class="lineNum">     191 </span>                :        * Here we allow 0..10 for 8-bit data; Al larger than 10 results in
+<span class="lineNum">     192 </span>                :        * out-of-range reconstructed DC values during the first DC scan,
+<span class="lineNum">     193 </span>                :        * which might cause problems for some decoders.
+<span class="lineNum">     194 </span>                :        */</FONT></I>
+<span class="lineNum">     195 </span>                : #<B><FONT COLOR="#5F9EA0">if</FONT></B> <FONT COLOR="#B8860B">BITS_IN_JSAMPLE</FONT> == 8
+<span class="lineNum">     196 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">MAX_AH_AL</FONT> 10
+<span class="lineNum">     197 </span>                : #<B><FONT COLOR="#5F9EA0">else</FONT></B>
+<span class="lineNum">     198 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">MAX_AH_AL</FONT> 13
+<span class="lineNum">     199 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            7500: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            7500: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            7500: branch 4 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 5 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            7500: branch 6 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 7 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            7500: branch 8 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 9 not taken</span>
+</span><span class="lineNum">     200 </span><span class="lineCov">            7500:       <B><FONT COLOR="#A020F0">if</FONT></B> (Ss &lt; 0 || Ss &gt;= DCTSIZE2 || Se &lt; Ss || Se &gt;= DCTSIZE2 ||</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            7500: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            7500: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 4 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            7500: branch 5 taken</span>
+</span><span class="lineNum">     201 </span><span class="lineCov">            7500: 	  Ah &lt; 0 || Ah &gt; MAX_AH_AL || Al &lt; 0 || Al &gt; MAX_AH_AL)</span>
+<span class="lineNum">     202 </span><span class="lineNoCov">               0: 	ERREXIT1(cinfo, JERR_BAD_PROG_SCRIPT, scanno);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1884: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            5616: branch 1 taken</span>
+</span><span class="lineNum">     203 </span><span class="lineCov">            7500:       <B><FONT COLOR="#A020F0">if</FONT></B> (Ss == 0) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1884: branch 1 taken</span>
+</span><span class="lineNum">     204 </span><span class="lineCov">            1884: 	<B><FONT COLOR="#A020F0">if</FONT></B> (Se != 0)		<I><FONT COLOR="#B22222">/* DC and AC together not OK */</FONT></I></span>
+<span class="lineNum">     205 </span><span class="lineNoCov">               0: 	  ERREXIT1(cinfo, JERR_BAD_PROG_SCRIPT, scanno);</span>
+<span class="lineNum">     206 </span>                :       } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            5616: branch 1 taken</span>
+</span><span class="lineNum">     207 </span><span class="lineCov">            5616: 	<B><FONT COLOR="#A020F0">if</FONT></B> (ncomps != 1)	<I><FONT COLOR="#B22222">/* AC scans must be for only one component */</FONT></I></span>
+<span class="lineNum">     208 </span><span class="lineNoCov">               0: 	  ERREXIT1(cinfo, JERR_BAD_PROG_SCRIPT, scanno);</span>
+<span class="lineNum">     209 </span>                :       }
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            9348: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            7500: branch 1 taken</span>
+</span><span class="lineNum">     210 </span><span class="lineCov">           16848:       <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0; ci &lt; ncomps; ci++) {</span>
+<span class="lineNum">     211 </span><span class="lineCov">            9348: 	last_bitpos_ptr = &amp; last_bitpos[scanptr-&gt;component_index[ci]][0];</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            5616: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3732: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            5616: branch 3 taken</span>
+</span><span class="lineNum">     212 </span><span class="lineCov">            9348: 	<B><FONT COLOR="#A020F0">if</FONT></B> (Ss != 0 &amp;&amp; last_bitpos_ptr[0] &lt; 0) <I><FONT COLOR="#B22222">/* AC without prior DC scan */</FONT></I></span>
+<span class="lineNum">     213 </span><span class="lineNoCov">               0: 	  ERREXIT1(cinfo, JERR_BAD_PROG_SCRIPT, scanno);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          298194: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9348: branch 1 taken</span>
+</span><span class="lineNum">     214 </span><span class="lineCov">          307542: 	<B><FONT COLOR="#A020F0">for</FONT></B> (coefi = Ss; coefi &lt;= Se; coefi++) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          119424: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          178770: branch 1 taken</span>
+</span><span class="lineNum">     215 </span><span class="lineCov">          298194: 	  <B><FONT COLOR="#A020F0">if</FONT></B> (last_bitpos_ptr[coefi] &lt; 0) {</span>
+<span class="lineNum">     216 </span>                : 	    <I><FONT COLOR="#B22222">/* first scan of this coefficient */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          119424: branch 1 taken</span>
+</span><span class="lineNum">     217 </span><span class="lineCov">          119424: 	    <B><FONT COLOR="#A020F0">if</FONT></B> (Ah != 0)</span>
+<span class="lineNum">     218 </span><span class="lineNoCov">               0: 	      ERREXIT1(cinfo, JERR_BAD_PROG_SCRIPT, scanno);</span>
+<span class="lineNum">     219 </span>                : 	  } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     220 </span>                : 	    <I><FONT COLOR="#B22222">/* not first scan */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          178770: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          178770: branch 3 taken</span>
+</span><span class="lineNum">     221 </span><span class="lineCov">          178770: 	    <B><FONT COLOR="#A020F0">if</FONT></B> (Ah != last_bitpos_ptr[coefi] || Al != Ah-1)</span>
+<span class="lineNum">     222 </span><span class="lineNoCov">               0: 	      ERREXIT1(cinfo, JERR_BAD_PROG_SCRIPT, scanno);</span>
+<span class="lineNum">     223 </span>                : 	  }
+<span class="lineNum">     224 </span><span class="lineCov">          298194: 	  last_bitpos_ptr[coefi] = Al;</span>
+<span class="lineNum">     225 </span>                : 	}
+<span class="lineNum">     226 </span>                :       }
+<span class="lineNum">     227 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     228 </span>                :     } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     229 </span>                :       <I><FONT COLOR="#B22222">/* For sequential JPEG, all progression parameters must be these: */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 4 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 5 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 6 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 7 not taken</span>
+</span><span class="lineNum">     230 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#A020F0">if</FONT></B> (Ss != 0 || Se != DCTSIZE2-1 || Ah != 0 || Al != 0)</span>
+<span class="lineNum">     231 </span><span class="lineNoCov">               0: 	ERREXIT1(cinfo, JERR_BAD_PROG_SCRIPT, scanno);</span>
+<span class="lineNum">     232 </span>                :       <I><FONT COLOR="#B22222">/* Make sure components are not sent twice */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     233 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0; ci &lt; ncomps; ci++) {</span>
+<span class="lineNum">     234 </span><span class="lineNoCov">               0: 	thisi = scanptr-&gt;component_index[ci];</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     235 </span><span class="lineNoCov">               0: 	<B><FONT COLOR="#A020F0">if</FONT></B> (component_sent[thisi])</span>
+<span class="lineNum">     236 </span><span class="lineNoCov">               0: 	  ERREXIT1(cinfo, JERR_BAD_SCAN_SCRIPT, scanno);</span>
+<span class="lineNum">     237 </span><span class="lineNoCov">               0: 	component_sent[thisi] = TRUE;</span>
+<span class="lineNum">     238 </span>                :       }
+<span class="lineNum">     239 </span>                :     }
+<span class="lineNum">     240 </span>                :   }
+<span class="lineNum">     241 </span>                : 
+<span class="lineNum">     242 </span>                :   <I><FONT COLOR="#B22222">/* Now verify that everything got sent. */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             942: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     243 </span><span class="lineCov">             942:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;progressive_mode) {</span>
+<span class="lineNum">     244 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">C_PROGRESSIVE_SUPPORTED</FONT>
+<span class="lineNum">     245 </span>                :     <I><FONT COLOR="#B22222">/* For progressive mode, we only check that at least some DC data
+<span class="lineNum">     246 </span>                :      * got sent for each component; the spec does not require that all bits
+<span class="lineNum">     247 </span>                :      * of all coefficients be transmitted.  Would it be wiser to enforce
+<span class="lineNum">     248 </span>                :      * transmission of all coefficient bits??
+<span class="lineNum">     249 </span>                :      */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1866: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             942: branch 1 taken</span>
+</span><span class="lineNum">     250 </span><span class="lineCov">            2808:     <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0; ci &lt; cinfo-&gt;num_components; ci++) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1866: branch 1 taken</span>
+</span><span class="lineNum">     251 </span><span class="lineCov">            1866:       <B><FONT COLOR="#A020F0">if</FONT></B> (last_bitpos[ci][0] &lt; 0)</span>
+<span class="lineNum">     252 </span><span class="lineNoCov">               0: 	ERREXIT(cinfo, JERR_MISSING_DATA);</span>
+<span class="lineNum">     253 </span>                :     }
+<span class="lineNum">     254 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     255 </span>                :   } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     256 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0; ci &lt; cinfo-&gt;num_components; ci++) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     257 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#A020F0">if</FONT></B> (! component_sent[ci])</span>
+<span class="lineNum">     258 </span><span class="lineNoCov">               0: 	ERREXIT(cinfo, JERR_MISSING_DATA);</span>
+<span class="lineNum">     259 </span>                :     }
+<span class="lineNum">     260 </span>                :   }
+<span class="lineNum">     261 </span><span class="lineCov">             942: }</span>
+<span class="lineNum">     262 </span>                : 
+<span class="lineNum">     263 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B> <I><FONT COLOR="#B22222">/* C_MULTISCAN_FILES_SUPPORTED */</FONT></I>
+<span class="lineNum">     264 </span>                : 
+<span class="lineNum">     265 </span>                : 
+<span class="lineNum">     266 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     267 </span><span class="lineCov">           13082: <B><FONT COLOR="#0000FF">select_scan_parameters</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     268 </span>                : <I><FONT COLOR="#B22222">/* Set up the scan parameters for the current scan */</FONT></I>
+<span class="lineNum">     269 </span>                : {
+<span class="lineNum">     270 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> ci;
+<span class="lineNum">     271 </span>                : 
+<span class="lineNum">     272 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">C_MULTISCAN_FILES_SUPPORTED</FONT>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            4959: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            8123: branch 1 taken</span>
+</span><span class="lineNum">     273 </span><span class="lineCov">           13082:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;scan_info != NULL) {</span>
+<span class="lineNum">     274 </span>                :     <I><FONT COLOR="#B22222">/* Prepare for current scan --- the script is already validated */</FONT></I>
+<span class="lineNum">     275 </span><span class="lineCov">            4959:     my_master_ptr master = (my_master_ptr) cinfo-&gt;master;</span>
+<span class="lineNum">     276 </span><span class="lineCov">            4959:     <B><FONT COLOR="#228B22">const</FONT></B> jpeg_scan_info * scanptr = cinfo-&gt;scan_info + master-&gt;scan_number;</span>
+<span class="lineNum">     277 </span>                : 
+<span class="lineNum">     278 </span><span class="lineCov">            4959:     cinfo-&gt;comps_in_scan = scanptr-&gt;comps_in_scan;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            6429: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4959: branch 1 taken</span>
+</span><span class="lineNum">     279 </span><span class="lineCov">           11388:     <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0; ci &lt; scanptr-&gt;comps_in_scan; ci++) {</span>
+<span class="lineNum">     280 </span><span class="lineCov">            6429:       cinfo-&gt;cur_comp_info[ci] =</span>
+<span class="lineNum">     281 </span><span class="lineCov">            6429: 	&amp;cinfo-&gt;comp_info[scanptr-&gt;component_index[ci]];</span>
+<span class="lineNum">     282 </span>                :     }
+<span class="lineNum">     283 </span><span class="lineCov">            4959:     cinfo-&gt;Ss = scanptr-&gt;Ss;</span>
+<span class="lineNum">     284 </span><span class="lineCov">            4959:     cinfo-&gt;Se = scanptr-&gt;Se;</span>
+<span class="lineNum">     285 </span><span class="lineCov">            4959:     cinfo-&gt;Ah = scanptr-&gt;Ah;</span>
+<span class="lineNum">     286 </span><span class="lineCov">            4959:     cinfo-&gt;Al = scanptr-&gt;Al;</span>
+<span class="lineNum">     287 </span>                :   }
+<span class="lineNum">     288 </span>                :   <B><FONT COLOR="#A020F0">else</FONT></B>
+<span class="lineNum">     289 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     290 </span>                :   {
+<span class="lineNum">     291 </span>                :     <I><FONT COLOR="#B22222">/* Prepare for single sequential-JPEG scan containing all components */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            8123: branch 1 taken</span>
+</span><span class="lineNum">     292 </span><span class="lineCov">            8123:     <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;num_components &gt; MAX_COMPS_IN_SCAN)</span>
+<span class="lineNum">     293 </span><span class="lineNoCov">               0:       ERREXIT2(cinfo, JERR_COMPONENT_COUNT, cinfo-&gt;num_components,</span>
+<span class="lineNum">     294 </span>                : 	       MAX_COMPS_IN_SCAN);
+<span class="lineNum">     295 </span><span class="lineCov">            8123:     cinfo-&gt;comps_in_scan = cinfo-&gt;num_components;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           15409: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            8123: branch 1 taken</span>
+</span><span class="lineNum">     296 </span><span class="lineCov">           23532:     <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0; ci &lt; cinfo-&gt;num_components; ci++) {</span>
+<span class="lineNum">     297 </span><span class="lineCov">           15409:       cinfo-&gt;cur_comp_info[ci] = &amp;cinfo-&gt;comp_info[ci];</span>
+<span class="lineNum">     298 </span>                :     }
+<span class="lineNum">     299 </span><span class="lineCov">            8123:     cinfo-&gt;Ss = 0;</span>
+<span class="lineNum">     300 </span><span class="lineCov">            8123:     cinfo-&gt;Se = DCTSIZE2-1;</span>
+<span class="lineNum">     301 </span><span class="lineCov">            8123:     cinfo-&gt;Ah = 0;</span>
+<span class="lineNum">     302 </span><span class="lineCov">            8123:     cinfo-&gt;Al = 0;</span>
+<span class="lineNum">     303 </span>                :   }
+<span class="lineNum">     304 </span><span class="lineCov">           13082: }</span>
+<span class="lineNum">     305 </span>                : 
+<span class="lineNum">     306 </span>                : 
+<span class="lineNum">     307 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     308 </span><span class="lineCov">           13082: <B><FONT COLOR="#0000FF">per_scan_setup</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     309 </span>                : <I><FONT COLOR="#B22222">/* Do computations that are needed before processing a JPEG scan */</FONT></I>
+<span class="lineNum">     310 </span>                : <I><FONT COLOR="#B22222">/* cinfo-&gt;comps_in_scan and cinfo-&gt;cur_comp_info[] are already set */</FONT></I>
+<span class="lineNum">     311 </span>                : {
+<span class="lineNum">     312 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> ci, mcublks, tmp;
+<span class="lineNum">     313 </span>                :   jpeg_component_info *compptr;
+<span class="lineNum">     314 </span>                :   
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            8704: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4378: branch 1 taken</span>
+</span><span class="lineNum">     315 </span><span class="lineCov">           13082:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;comps_in_scan == 1) {</span>
+<span class="lineNum">     316 </span>                :     
+<span class="lineNum">     317 </span>                :     <I><FONT COLOR="#B22222">/* Noninterleaved (single-component) scan */</FONT></I>
+<span class="lineNum">     318 </span><span class="lineCov">            8704:     compptr = cinfo-&gt;cur_comp_info[0];</span>
+<span class="lineNum">     319 </span>                :     
+<span class="lineNum">     320 </span>                :     <I><FONT COLOR="#B22222">/* Overall image size in MCUs */</FONT></I>
+<span class="lineNum">     321 </span><span class="lineCov">            8704:     cinfo-&gt;MCUs_per_row = compptr-&gt;width_in_blocks;</span>
+<span class="lineNum">     322 </span><span class="lineCov">            8704:     cinfo-&gt;MCU_rows_in_scan = compptr-&gt;height_in_blocks;</span>
+<span class="lineNum">     323 </span>                :     
+<span class="lineNum">     324 </span>                :     <I><FONT COLOR="#B22222">/* For noninterleaved scan, always one block per MCU */</FONT></I>
+<span class="lineNum">     325 </span><span class="lineCov">            8704:     compptr-&gt;MCU_width = 1;</span>
+<span class="lineNum">     326 </span><span class="lineCov">            8704:     compptr-&gt;MCU_height = 1;</span>
+<span class="lineNum">     327 </span><span class="lineCov">            8704:     compptr-&gt;MCU_blocks = 1;</span>
+<span class="lineNum">     328 </span><span class="lineCov">            8704:     compptr-&gt;MCU_sample_width = DCTSIZE;</span>
+<span class="lineNum">     329 </span><span class="lineCov">            8704:     compptr-&gt;last_col_width = 1;</span>
+<span class="lineNum">     330 </span>                :     <I><FONT COLOR="#B22222">/* For noninterleaved scans, it is convenient to define last_row_height
+<span class="lineNum">     331 </span>                :      * as the number of block rows present in the last iMCU row.
+<span class="lineNum">     332 </span>                :      */</FONT></I>
+<span class="lineNum">     333 </span><span class="lineCov">            8704:     tmp = (<B><FONT COLOR="#228B22">int</FONT></B>) (compptr-&gt;height_in_blocks % compptr-&gt;v_samp_factor);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            8164: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             540: branch 1 taken</span>
+</span><span class="lineNum">     334 </span><span class="lineCov">            8704:     <B><FONT COLOR="#A020F0">if</FONT></B> (tmp == 0) tmp = compptr-&gt;v_samp_factor;</span>
+<span class="lineNum">     335 </span><span class="lineCov">            8704:     compptr-&gt;last_row_height = tmp;</span>
+<span class="lineNum">     336 </span>                :     
+<span class="lineNum">     337 </span>                :     <I><FONT COLOR="#B22222">/* Prepare array describing MCU composition */</FONT></I>
+<span class="lineNum">     338 </span><span class="lineCov">            8704:     cinfo-&gt;blocks_in_MCU = 1;</span>
+<span class="lineNum">     339 </span><span class="lineCov">            8704:     cinfo-&gt;MCU_membership[0] = 0;</span>
+<span class="lineNum">     340 </span>                :     
+<span class="lineNum">     341 </span>                :   } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     342 </span>                :     
+<span class="lineNum">     343 </span>                :     <I><FONT COLOR="#B22222">/* Interleaved (multi-component) scan */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            4378: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4378: branch 3 taken</span>
+</span><span class="lineNum">     344 </span><span class="lineCov">            4378:     <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;comps_in_scan &lt;= 0 || cinfo-&gt;comps_in_scan &gt; MAX_COMPS_IN_SCAN)</span>
+<span class="lineNum">     345 </span><span class="lineNoCov">               0:       ERREXIT2(cinfo, JERR_COMPONENT_COUNT, cinfo-&gt;comps_in_scan,</span>
+<span class="lineNum">     346 </span>                : 	       MAX_COMPS_IN_SCAN);
+<span class="lineNum">     347 </span>                :     
+<span class="lineNum">     348 </span>                :     <I><FONT COLOR="#B22222">/* Overall image size in MCUs */</FONT></I>
+<span class="lineNum">     349 </span><span class="lineCov">            4378:     cinfo-&gt;MCUs_per_row = (JDIMENSION)</span>
+<span class="lineNum">     350 </span><span class="lineCov">            4378:       jdiv_round_up((<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;image_width,</span>
+<span class="lineNum">     351 </span><span class="lineCov">            4378: 		    (<B><FONT COLOR="#228B22">long</FONT></B>) (cinfo-&gt;max_h_samp_factor*DCTSIZE));</span>
+<span class="lineNum">     352 </span><span class="lineCov">            4378:     cinfo-&gt;MCU_rows_in_scan = (JDIMENSION)</span>
+<span class="lineNum">     353 </span><span class="lineCov">            4378:       jdiv_round_up((<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;image_height,</span>
+<span class="lineNum">     354 </span><span class="lineCov">            4378: 		    (<B><FONT COLOR="#228B22">long</FONT></B>) (cinfo-&gt;max_v_samp_factor*DCTSIZE));</span>
+<span class="lineNum">     355 </span>                :     
+<span class="lineNum">     356 </span><span class="lineCov">            4378:     cinfo-&gt;blocks_in_MCU = 0;</span>
+<span class="lineNum">     357 </span>                :     
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           13134: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4378: branch 1 taken</span>
+</span><span class="lineNum">     358 </span><span class="lineCov">           17512:     <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0; ci &lt; cinfo-&gt;comps_in_scan; ci++) {</span>
+<span class="lineNum">     359 </span><span class="lineCov">           13134:       compptr = cinfo-&gt;cur_comp_info[ci];</span>
+<span class="lineNum">     360 </span>                :       <I><FONT COLOR="#B22222">/* Sampling factors give # of blocks of component in each MCU */</FONT></I>
+<span class="lineNum">     361 </span><span class="lineCov">           13134:       compptr-&gt;MCU_width = compptr-&gt;h_samp_factor;</span>
+<span class="lineNum">     362 </span><span class="lineCov">           13134:       compptr-&gt;MCU_height = compptr-&gt;v_samp_factor;</span>
+<span class="lineNum">     363 </span><span class="lineCov">           13134:       compptr-&gt;MCU_blocks = compptr-&gt;MCU_width * compptr-&gt;MCU_height;</span>
+<span class="lineNum">     364 </span><span class="lineCov">           13134:       compptr-&gt;MCU_sample_width = compptr-&gt;MCU_width * DCTSIZE;</span>
+<span class="lineNum">     365 </span>                :       <I><FONT COLOR="#B22222">/* Figure number of non-dummy blocks in last MCU column &amp; row */</FONT></I>
+<span class="lineNum">     366 </span><span class="lineCov">           13134:       tmp = (<B><FONT COLOR="#228B22">int</FONT></B>) (compptr-&gt;width_in_blocks % compptr-&gt;MCU_width);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           10632: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2502: branch 1 taken</span>
+</span><span class="lineNum">     367 </span><span class="lineCov">           13134:       <B><FONT COLOR="#A020F0">if</FONT></B> (tmp == 0) tmp = compptr-&gt;MCU_width;</span>
+<span class="lineNum">     368 </span><span class="lineCov">           13134:       compptr-&gt;last_col_width = tmp;</span>
+<span class="lineNum">     369 </span><span class="lineCov">           13134:       tmp = (<B><FONT COLOR="#228B22">int</FONT></B>) (compptr-&gt;height_in_blocks % compptr-&gt;MCU_height);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           10668: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2466: branch 1 taken</span>
+</span><span class="lineNum">     370 </span><span class="lineCov">           13134:       <B><FONT COLOR="#A020F0">if</FONT></B> (tmp == 0) tmp = compptr-&gt;MCU_height;</span>
+<span class="lineNum">     371 </span><span class="lineCov">           13134:       compptr-&gt;last_row_height = tmp;</span>
+<span class="lineNum">     372 </span>                :       <I><FONT COLOR="#B22222">/* Prepare array describing MCU composition */</FONT></I>
+<span class="lineNum">     373 </span><span class="lineCov">           13134:       mcublks = compptr-&gt;MCU_blocks;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           13134: branch 1 taken</span>
+</span><span class="lineNum">     374 </span><span class="lineCov">           13134:       <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;blocks_in_MCU + mcublks &gt; C_MAX_BLOCKS_IN_MCU)</span>
+<span class="lineNum">     375 </span><span class="lineNoCov">               0: 	ERREXIT(cinfo, JERR_BAD_MCU_SIZE);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           26268: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           13134: branch 1 taken</span>
+</span><span class="lineNum">     376 </span><span class="lineCov">           52536:       <B><FONT COLOR="#A020F0">while</FONT></B> (mcublks-- &gt; 0) {</span>
+<span class="lineNum">     377 </span><span class="lineCov">           26268: 	cinfo-&gt;MCU_membership[cinfo-&gt;blocks_in_MCU++] = ci;</span>
+<span class="lineNum">     378 </span>                :       }
+<span class="lineNum">     379 </span>                :     }
+<span class="lineNum">     380 </span>                :     
+<span class="lineNum">     381 </span>                :   }
+<span class="lineNum">     382 </span>                : 
+<span class="lineNum">     383 </span>                :   <I><FONT COLOR="#B22222">/* Convert restart specified in rows to actual MCU count. */</FONT></I>
+<span class="lineNum">     384 </span>                :   <I><FONT COLOR="#B22222">/* Note that count must fit in 16 bits, so we provide limiting. */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           13082: branch 1 taken</span>
+</span><span class="lineNum">     385 </span><span class="lineCov">           13082:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;restart_in_rows &gt; 0) {</span>
+<span class="lineNum">     386 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#228B22">long</FONT></B> nominal = (<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;restart_in_rows * (<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;MCUs_per_row;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     387 </span><span class="lineNoCov">               0:     cinfo-&gt;restart_interval = (<B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B>) MIN(nominal, 65535L);</span>
+<span class="lineNum">     388 </span>                :   }
+<span class="lineNum">     389 </span><span class="lineCov">           13082: }</span>
+<span class="lineNum">     390 </span>                : 
+<span class="lineNum">     391 </span>                : 
+<span class="lineNum">     392 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     393 </span>                :  * Per-pass setup.
+<span class="lineNum">     394 </span>                :  * This is called at the beginning of each pass.  We determine which modules
+<span class="lineNum">     395 </span>                :  * will be active during this pass and give them appropriate start_pass calls.
+<span class="lineNum">     396 </span>                :  * We also set is_last_pass to indicate whether any more passes will be
+<span class="lineNum">     397 </span>                :  * required.
+<span class="lineNum">     398 </span>                :  */</FONT></I>
+<span class="lineNum">     399 </span>                : 
+<span class="lineNum">     400 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     401 </span><span class="lineCov">           17315: <B><FONT COLOR="#0000FF">prepare_for_pass</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     402 </span>                : {
+<span class="lineNum">     403 </span><span class="lineCov">           17315:   my_master_ptr master = (my_master_ptr) cinfo-&gt;master;</span>
+<span class="lineNum">     404 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            9065: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4017: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4233: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
+</span><span class="lineNum">     405 </span><span class="lineCov">           17315:   <B><FONT COLOR="#A020F0">switch</FONT></B> (master-&gt;pass_type) {</span>
+<span class="lineNum">     406 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">main_pass</FONT></B>:
+<span class="lineNum">     407 </span>                :     <I><FONT COLOR="#B22222">/* Initial pass: will collect input data, and do either Huffman
+<span class="lineNum">     408 </span>                :      * optimization or data output for the first scan.
+<span class="lineNum">     409 </span>                :      */</FONT></I>
+<span class="lineNum">     410 </span><span class="lineCov">            9065:     select_scan_parameters(cinfo);</span>
+<span class="lineNum">     411 </span><span class="lineCov">            9065:     per_scan_setup(cinfo);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            9065: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     412 </span><span class="lineCov">            9065:     <B><FONT COLOR="#A020F0">if</FONT></B> (! cinfo-&gt;raw_data_in) {</span>
+<span class="lineNum">     413 </span><span class="lineCov">            9065:       (*cinfo-&gt;cconvert-&gt;start_pass) (cinfo);</span>
+<span class="lineNum">     414 </span><span class="lineCov">            9065:       (*cinfo-&gt;downsample-&gt;start_pass) (cinfo);</span>
+<span class="lineNum">     415 </span><span class="lineCov">            9065:       (*cinfo-&gt;prep-&gt;start_pass) (cinfo, JBUF_PASS_THRU);</span>
+<span class="lineNum">     416 </span>                :     }
+<span class="lineNum">     417 </span><span class="lineCov">            9065:     (*cinfo-&gt;fdct-&gt;start_pass) (cinfo);</span>
+<span class="lineNum">     418 </span><span class="lineCov">            9065:     (*cinfo-&gt;entropy-&gt;start_pass) (cinfo, cinfo-&gt;optimize_coding);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1548: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            7517: branch 1 taken</span>
+</span><span class="lineNum">     419 </span><span class="lineCov">           18130:     (*cinfo-&gt;coef-&gt;start_pass) (cinfo,</span>
+<span class="lineNum">     420 </span><span class="lineCov">            9065: 				(master-&gt;total_passes &gt; 1 ?</span>
+<span class="lineNum">     421 </span>                : 				 JBUF_SAVE_AND_PASS : JBUF_PASS_THRU));
+<span class="lineNum">     422 </span><span class="lineCov">            9065:     (*cinfo-&gt;main-&gt;start_pass) (cinfo, JBUF_PASS_THRU);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1548: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            7517: branch 1 taken</span>
+</span><span class="lineNum">     423 </span><span class="lineCov">            9065:     <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;optimize_coding) {</span>
+<span class="lineNum">     424 </span>                :       <I><FONT COLOR="#B22222">/* No immediate data output; postpone writing frame/scan headers */</FONT></I>
+<span class="lineNum">     425 </span><span class="lineCov">            1548:       master-&gt;pub.call_pass_startup = FALSE;</span>
+<span class="lineNum">     426 </span>                :     } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     427 </span>                :       <I><FONT COLOR="#B22222">/* Will write frame/scan headers at first jpeg_write_scanlines call */</FONT></I>
+<span class="lineNum">     428 </span><span class="lineCov">            7517:       master-&gt;pub.call_pass_startup = TRUE;</span>
+<span class="lineNum">     429 </span>                :     }
+<span class="lineNum">     430 </span><span class="lineCov">            9065:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     431 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">ENTROPY_OPT_SUPPORTED</FONT>
+<span class="lineNum">     432 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">huff_opt_pass</FONT></B>:
+<span class="lineNum">     433 </span>                :     <I><FONT COLOR="#B22222">/* Do Huffman optimization for a scan after the first one. */</FONT></I>
+<span class="lineNum">     434 </span><span class="lineCov">            4017:     select_scan_parameters(cinfo);</span>
+<span class="lineNum">     435 </span><span class="lineCov">            4017:     per_scan_setup(cinfo);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             585: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3432: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             585: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 4 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             585: branch 5 taken</span>
+</span><span class="lineNum">     436 </span><span class="lineCov">            4017:     <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;Ss != 0 || cinfo-&gt;Ah == 0 || cinfo-&gt;arith_code) {</span>
+<span class="lineNum">     437 </span><span class="lineCov">            3432:       (*cinfo-&gt;entropy-&gt;start_pass) (cinfo, TRUE);</span>
+<span class="lineNum">     438 </span><span class="lineCov">            3432:       (*cinfo-&gt;coef-&gt;start_pass) (cinfo, JBUF_CRANK_DEST);</span>
+<span class="lineNum">     439 </span><span class="lineCov">            3432:       master-&gt;pub.call_pass_startup = FALSE;</span>
+<span class="lineNum">     440 </span><span class="lineCov">            3432:       <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     441 </span>                :     }
+<span class="lineNum">     442 </span>                :     <I><FONT COLOR="#B22222">/* Special case: Huffman DC refinement scans need no Huffman table
+<span class="lineNum">     443 </span>                :      * and therefore we can skip the optimization pass for them.
+<span class="lineNum">     444 </span>                :      */</FONT></I>
+<span class="lineNum">     445 </span><span class="lineCov">             585:     master-&gt;pass_type = output_pass;</span>
+<span class="lineNum">     446 </span><span class="lineCov">             585:     master-&gt;pass_number++;</span>
+<span class="lineNum">     447 </span>                :     <I><FONT COLOR="#B22222">/*FALLTHROUGH*/</FONT></I>
+<span class="lineNum">     448 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     449 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">output_pass</FONT></B>:
+<span class="lineNum">     450 </span>                :     <I><FONT COLOR="#B22222">/* Do a data-output pass. */</FONT></I>
+<span class="lineNum">     451 </span>                :     <I><FONT COLOR="#B22222">/* We need not repeat per-scan setup if prior optimization pass did it. */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4818: branch 1 taken</span>
+</span><span class="lineNum">     452 </span><span class="lineCov">            4818:     <B><FONT COLOR="#A020F0">if</FONT></B> (! cinfo-&gt;optimize_coding) {</span>
+<span class="lineNum">     453 </span><span class="lineNoCov">               0:       select_scan_parameters(cinfo);</span>
+<span class="lineNum">     454 </span><span class="lineNoCov">               0:       per_scan_setup(cinfo);</span>
+<span class="lineNum">     455 </span>                :     }
+<span class="lineNum">     456 </span><span class="lineCov">            4818:     (*cinfo-&gt;entropy-&gt;start_pass) (cinfo, FALSE);</span>
+<span class="lineNum">     457 </span><span class="lineCov">            4818:     (*cinfo-&gt;coef-&gt;start_pass) (cinfo, JBUF_CRANK_DEST);</span>
+<span class="lineNum">     458 </span>                :     <I><FONT COLOR="#B22222">/* We emit frame/scan headers now */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             801: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4017: branch 1 taken</span>
+</span><span class="lineNum">     459 </span><span class="lineCov">            4818:     <B><FONT COLOR="#A020F0">if</FONT></B> (master-&gt;scan_number == 0)</span>
+<span class="lineNum">     460 </span><span class="lineCov">             801:       (*cinfo-&gt;marker-&gt;write_frame_header) (cinfo);</span>
+<span class="lineNum">     461 </span><span class="lineCov">            4818:     (*cinfo-&gt;marker-&gt;write_scan_header) (cinfo);</span>
+<span class="lineNum">     462 </span><span class="lineCov">            4818:     master-&gt;pub.call_pass_startup = FALSE;</span>
+<span class="lineNum">     463 </span><span class="lineCov">            4818:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     464 </span>                :   <B><FONT COLOR="#5F9EA0">default</FONT></B>:
+<span class="lineNum">     465 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_NOT_COMPILED);</span>
+<span class="lineNum">     466 </span>                :   }
+<span class="lineNum">     467 </span>                : 
+<span class="lineNum">     468 </span><span class="lineCov">           17315:   master-&gt;pub.is_last_pass = (master-&gt;pass_number == master-&gt;total_passes-1);</span>
+<span class="lineNum">     469 </span>                : 
+<span class="lineNum">     470 </span>                :   <I><FONT COLOR="#B22222">/* Set up progress monitor's pass info if present */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           17315: branch 1 taken</span>
+</span><span class="lineNum">     471 </span><span class="lineCov">           17315:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;progress != NULL) {</span>
+<span class="lineNum">     472 </span><span class="lineNoCov">               0:     cinfo-&gt;progress-&gt;completed_passes = master-&gt;pass_number;</span>
+<span class="lineNum">     473 </span><span class="lineNoCov">               0:     cinfo-&gt;progress-&gt;total_passes = master-&gt;total_passes;</span>
+<span class="lineNum">     474 </span>                :   }
+<span class="lineNum">     475 </span><span class="lineCov">           17315: }</span>
+<span class="lineNum">     476 </span>                : 
+<span class="lineNum">     477 </span>                : 
+<span class="lineNum">     478 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     479 </span>                :  * Special start-of-pass hook.
+<span class="lineNum">     480 </span>                :  * This is called by jpeg_write_scanlines if call_pass_startup is TRUE.
+<span class="lineNum">     481 </span>                :  * In single-pass processing, we need this hook because we don't want to
+<span class="lineNum">     482 </span>                :  * write frame/scan headers during jpeg_start_compress; we want to let the
+<span class="lineNum">     483 </span>                :  * application write COM markers etc. between jpeg_start_compress and the
+<span class="lineNum">     484 </span>                :  * jpeg_write_scanlines loop.
+<span class="lineNum">     485 </span>                :  * In multi-pass processing, this routine is not used.
+<span class="lineNum">     486 </span>                :  */</FONT></I>
+<span class="lineNum">     487 </span>                : 
+<span class="lineNum">     488 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     489 </span><span class="lineCov">            5601: <B><FONT COLOR="#0000FF">pass_startup</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     490 </span>                : {
+<span class="lineNum">     491 </span><span class="lineCov">            5601:   cinfo-&gt;master-&gt;call_pass_startup = FALSE; <I><FONT COLOR="#B22222">/* reset flag so call only once */</FONT></I></span>
+<span class="lineNum">     492 </span>                : 
+<span class="lineNum">     493 </span><span class="lineCov">            5601:   (*cinfo-&gt;marker-&gt;write_frame_header) (cinfo);</span>
+<span class="lineNum">     494 </span><span class="lineCov">            5601:   (*cinfo-&gt;marker-&gt;write_scan_header) (cinfo);</span>
+<span class="lineNum">     495 </span><span class="lineCov">            5601: }</span>
+<span class="lineNum">     496 </span>                : 
+<span class="lineNum">     497 </span>                : 
+<span class="lineNum">     498 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     499 </span>                :  * Finish up at end of pass.
+<span class="lineNum">     500 </span>                :  */</FONT></I>
+<span class="lineNum">     501 </span>                : 
+<span class="lineNum">     502 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     503 </span><span class="lineCov">           12268: <B><FONT COLOR="#0000FF">finish_pass_master</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     504 </span>                : {
+<span class="lineNum">     505 </span><span class="lineCov">           12268:   my_master_ptr master = (my_master_ptr) cinfo-&gt;master;</span>
+<span class="lineNum">     506 </span>                : 
+<span class="lineNum">     507 </span>                :   <I><FONT COLOR="#B22222">/* The entropy coder always needs an end-of-pass call,
+<span class="lineNum">     508 </span>                :    * either to analyze statistics or to flush its output buffer.
+<span class="lineNum">     509 </span>                :    */</FONT></I>
+<span class="lineNum">     510 </span><span class="lineCov">           12268:   (*cinfo-&gt;entropy-&gt;finish_pass) (cinfo);</span>
+<span class="lineNum">     511 </span>                : 
+<span class="lineNum">     512 </span>                :   <I><FONT COLOR="#B22222">/* Update state for next pass */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            4018: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3432: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4818: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
+</span><span class="lineNum">     513 </span><span class="lineCov">           12268:   <B><FONT COLOR="#A020F0">switch</FONT></B> (master-&gt;pass_type) {</span>
+<span class="lineNum">     514 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">main_pass</FONT></B>:
+<span class="lineNum">     515 </span>                :     <I><FONT COLOR="#B22222">/* next pass is either output of scan 0 (after optimization)
+<span class="lineNum">     516 </span>                :      * or output of scan 1 (if no optimization).
+<span class="lineNum">     517 </span>                :      */</FONT></I>
+<span class="lineNum">     518 </span><span class="lineCov">            4018:     master-&gt;pass_type = output_pass;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            3217: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             801: branch 1 taken</span>
+</span><span class="lineNum">     519 </span><span class="lineCov">            4018:     <B><FONT COLOR="#A020F0">if</FONT></B> (! cinfo-&gt;optimize_coding)</span>
+<span class="lineNum">     520 </span><span class="lineCov">            3217:       master-&gt;scan_number++;</span>
+<span class="lineNum">     521 </span><span class="lineCov">            4018:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     522 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">huff_opt_pass</FONT></B>:
+<span class="lineNum">     523 </span>                :     <I><FONT COLOR="#B22222">/* next pass is always output of current scan */</FONT></I>
+<span class="lineNum">     524 </span><span class="lineCov">            3432:     master-&gt;pass_type = output_pass;</span>
+<span class="lineNum">     525 </span><span class="lineCov">            3432:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     526 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">output_pass</FONT></B>:
+<span class="lineNum">     527 </span>                :     <I><FONT COLOR="#B22222">/* next pass is either optimization or output of next scan */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            4818: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     528 </span><span class="lineCov">            4818:     <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;optimize_coding)</span>
+<span class="lineNum">     529 </span><span class="lineCov">            4818:       master-&gt;pass_type = huff_opt_pass;</span>
+<span class="lineNum">     530 </span><span class="lineCov">            4818:     master-&gt;scan_number++;</span>
+<span class="lineNum">     531 </span><span class="lineCov">            4818:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     532 </span>                :   }
+<span class="lineNum">     533 </span>                : 
+<span class="lineNum">     534 </span><span class="lineCov">           12268:   master-&gt;pass_number++;</span>
+<span class="lineNum">     535 </span><span class="lineCov">           12268: }</span>
+<span class="lineNum">     536 </span>                : 
+<span class="lineNum">     537 </span>                : 
+<span class="lineNum">     538 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     539 </span>                :  * Initialize master compression control.
+<span class="lineNum">     540 </span>                :  */</FONT></I>
+<span class="lineNum">     541 </span>                : 
+<span class="lineNum">     542 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     543 </span><span class="lineCov">            9300: <B><FONT COLOR="#0000FF">jinit_c_master_control</FONT></B> (j_compress_ptr cinfo, boolean transcode_only)</span>
+<span class="lineNum">     544 </span>                : {
+<span class="lineNum">     545 </span>                :   my_master_ptr master;
+<span class="lineNum">     546 </span>                : 
+<span class="lineNum">     547 </span><span class="lineCov">            9300:   master = (my_master_ptr)</span>
+<span class="lineNum">     548 </span><span class="lineCov">            9300:       (*cinfo-&gt;mem-&gt;alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
+<span class="lineNum">     549 </span>                : 				  SIZEOF(my_comp_master));
+<span class="lineNum">     550 </span><span class="lineCov">            9300:   cinfo-&gt;master = (<B><FONT COLOR="#228B22">struct</FONT></B> jpeg_comp_master *) master;</span>
+<span class="lineNum">     551 </span><span class="lineCov">            9300:   master-&gt;pub.prepare_for_pass = prepare_for_pass;</span>
+<span class="lineNum">     552 </span><span class="lineCov">            9300:   master-&gt;pub.pass_startup = pass_startup;</span>
+<span class="lineNum">     553 </span><span class="lineCov">            9300:   master-&gt;pub.finish_pass = finish_pass_master;</span>
+<span class="lineNum">     554 </span><span class="lineCov">            9300:   master-&gt;pub.is_last_pass = FALSE;</span>
+<span class="lineNum">     555 </span>                : 
+<span class="lineNum">     556 </span>                :   <I><FONT COLOR="#B22222">/* Validate parameters, determine derived values */</FONT></I>
+<span class="lineNum">     557 </span><span class="lineCov">            9300:   initial_setup(cinfo);</span>
+<span class="lineNum">     558 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             942: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            8123: branch 1 taken</span>
+</span><span class="lineNum">     559 </span><span class="lineCov">            9065:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;scan_info != NULL) {</span>
+<span class="lineNum">     560 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">C_MULTISCAN_FILES_SUPPORTED</FONT>
+<span class="lineNum">     561 </span><span class="lineCov">             942:     validate_script(cinfo);</span>
+<span class="lineNum">     562 </span>                : #<B><FONT COLOR="#5F9EA0">else</FONT></B>
+<span class="lineNum">     563 </span>                :     ERREXIT(cinfo, JERR_NOT_COMPILED);
+<span class="lineNum">     564 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     565 </span>                :   } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     566 </span><span class="lineCov">            8123:     cinfo-&gt;progressive_mode = FALSE;</span>
+<span class="lineNum">     567 </span><span class="lineCov">            8123:     cinfo-&gt;num_scans = 1;</span>
+<span class="lineNum">     568 </span>                :   }
+<span class="lineNum">     569 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             942: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            8123: branch 1 taken</span>
+</span><span class="lineNum">     570 </span><span class="lineCov">            9065:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;progressive_mode)	<I><FONT COLOR="#B22222">/*  TEMPORARY HACK ??? */</FONT></I></span>
+<span class="lineNum">     571 </span><span class="lineCov">             942:     cinfo-&gt;optimize_coding = TRUE; <I><FONT COLOR="#B22222">/* assume default tables no good for progressive mode */</FONT></I></span>
+<span class="lineNum">     572 </span>                : 
+<span class="lineNum">     573 </span>                :   <I><FONT COLOR="#B22222">/* Initialize my private state */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9065: branch 1 taken</span>
+</span><span class="lineNum">     574 </span><span class="lineCov">            9065:   <B><FONT COLOR="#A020F0">if</FONT></B> (transcode_only) {</span>
+<span class="lineNum">     575 </span>                :     <I><FONT COLOR="#B22222">/* no main pass in transcoding */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     576 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;optimize_coding)</span>
+<span class="lineNum">     577 </span><span class="lineNoCov">               0:       master-&gt;pass_type = huff_opt_pass;</span>
+<span class="lineNum">     578 </span>                :     <B><FONT COLOR="#A020F0">else</FONT></B>
+<span class="lineNum">     579 </span><span class="lineNoCov">               0:       master-&gt;pass_type = output_pass;</span>
+<span class="lineNum">     580 </span>                :   } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     581 </span>                :     <I><FONT COLOR="#B22222">/* for normal compression, first pass is always this type: */</FONT></I>
+<span class="lineNum">     582 </span><span class="lineCov">            9065:     master-&gt;pass_type = main_pass;</span>
+<span class="lineNum">     583 </span>                :   }
+<span class="lineNum">     584 </span><span class="lineCov">            9065:   master-&gt;scan_number = 0;</span>
+<span class="lineNum">     585 </span><span class="lineCov">            9065:   master-&gt;pass_number = 0;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1548: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            7517: branch 1 taken</span>
+</span><span class="lineNum">     586 </span><span class="lineCov">            9065:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;optimize_coding)</span>
+<span class="lineNum">     587 </span><span class="lineCov">            1548:     master-&gt;total_passes = cinfo-&gt;num_scans * 2;</span>
+<span class="lineNum">     588 </span>                :   <B><FONT COLOR="#A020F0">else</FONT></B>
+<span class="lineNum">     589 </span><span class="lineCov">            7517:     master-&gt;total_passes = cinfo-&gt;num_scans;</span>
+<span class="lineNum">     590 </span><span class="lineCov">            9065: }</span>
+</pre>
+<hr>
+Generated: 2016-04-07&nbsp;12:37 by <a href="http://minormatter.com/zcov">zcov</a><br>
+</body>
+</html>

@@ -1,0 +1,234 @@
+<html>
+<head>
+  <script src="sorttable.js"></script>
+  <script src="sourceview.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <title>zcov: /home/vagrant/workspace/proj_libjpeg/cov/jfdctflt.c</title>
+</head>
+<body>
+<center><h1> zcov: <a href="index.html">/home/vagrant/workspace/proj_libjpeg/cov</a>/<a href="jfdctflt.c.html">jfdctflt.c</a> </h1></center>
+<hr>
+
+
+<center>
+<table id="headertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Files:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Taken:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>0.0%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 0&nbsp;/&nbsp;4 </td>
+  </tr>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Generated:</b> </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;18:20 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>0.0%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 0&nbsp;/&nbsp;4 </td>
+  </tr>
+  <tr>
+    <td colspan=2> </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Line&nbsp;Coverage:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>0.0%</b> </td>
+    <td bgcolor=#F0F0FF align=right> 0&nbsp;/&nbsp;68 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<center>
+<table id="fileheadertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Programs:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Runs</b> </td>
+    <td bgcolor=#F0F0FF align=right> 6326 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<pre>
+<span class="lineNum">       1 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">       2 </span>                :  * jfdctflt.c
+<span class="lineNum">       3 </span>                :  *
+<span class="lineNum">       4 </span>                :  * Copyright (C) 1994-1996, Thomas G. Lane.
+<span class="lineNum">       5 </span>                :  * This file is part of the Independent JPEG Group's software.
+<span class="lineNum">       6 </span>                :  * For conditions of distribution and use, see the accompanying README file.
+<span class="lineNum">       7 </span>                :  *
+<span class="lineNum">       8 </span>                :  * This file contains a floating-point implementation of the
+<span class="lineNum">       9 </span>                :  * forward DCT (Discrete Cosine Transform).
+<span class="lineNum">      10 </span>                :  *
+<span class="lineNum">      11 </span>                :  * This implementation should be more accurate than either of the integer
+<span class="lineNum">      12 </span>                :  * DCT implementations.  However, it may not give the same results on all
+<span class="lineNum">      13 </span>                :  * machines because of differences in roundoff behavior.  Speed will depend
+<span class="lineNum">      14 </span>                :  * on the hardware's floating point capacity.
+<span class="lineNum">      15 </span>                :  *
+<span class="lineNum">      16 </span>                :  * A 2-D DCT can be done by 1-D DCT on each row followed by 1-D DCT
+<span class="lineNum">      17 </span>                :  * on each column.  Direct algorithms are also available, but they are
+<span class="lineNum">      18 </span>                :  * much more complex and seem not to be any faster when reduced to code.
+<span class="lineNum">      19 </span>                :  *
+<span class="lineNum">      20 </span>                :  * This implementation is based on Arai, Agui, and Nakajima's algorithm for
+<span class="lineNum">      21 </span>                :  * scaled DCT.  Their original paper (Trans. IEICE E-71(11):1095) is in
+<span class="lineNum">      22 </span>                :  * Japanese, but the algorithm is described in the Pennebaker &amp; Mitchell
+<span class="lineNum">      23 </span>                :  * JPEG textbook (see REFERENCES section in file README).  The following code
+<span class="lineNum">      24 </span>                :  * is based directly on figure 4-8 in P&amp;M.
+<span class="lineNum">      25 </span>                :  * While an 8-point DCT cannot be done in less than 11 multiplies, it is
+<span class="lineNum">      26 </span>                :  * possible to arrange the computation so that many of the multiplies are
+<span class="lineNum">      27 </span>                :  * simple scalings of the final outputs.  These multiplies can then be
+<span class="lineNum">      28 </span>                :  * folded into the multiplications or divisions by the JPEG quantization
+<span class="lineNum">      29 </span>                :  * table entries.  The AA&amp;N method leaves only 5 multiplies and 29 adds
+<span class="lineNum">      30 </span>                :  * to be done in the DCT itself.
+<span class="lineNum">      31 </span>                :  * The primary disadvantage of this method is that with a fixed-point
+<span class="lineNum">      32 </span>                :  * implementation, accuracy is lost due to imprecise representation of the
+<span class="lineNum">      33 </span>                :  * scaled quantization values.  However, that problem does not arise if
+<span class="lineNum">      34 </span>                :  * we use floating point arithmetic.
+<span class="lineNum">      35 </span>                :  */</FONT></I>
+<span class="lineNum">      36 </span>                : 
+<span class="lineNum">      37 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">JPEG_INTERNALS</FONT>
+<span class="lineNum">      38 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jinclude.h&quot;</FONT></B>
+<span class="lineNum">      39 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jpeglib.h&quot;</FONT></B>
+<span class="lineNum">      40 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jdct.h&quot;</FONT></B>		<I><FONT COLOR="#B22222">/* Private declarations for DCT subsystem */</FONT></I>
+<span class="lineNum">      41 </span>                : 
+<span class="lineNum">      42 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">DCT_FLOAT_SUPPORTED</FONT>
+<span class="lineNum">      43 </span>                : 
+<span class="lineNum">      44 </span>                : 
+<span class="lineNum">      45 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      46 </span>                :  * This module is specialized to the case DCTSIZE = 8.
+<span class="lineNum">      47 </span>                :  */</FONT></I>
+<span class="lineNum">      48 </span>                : 
+<span class="lineNum">      49 </span>                : #<B><FONT COLOR="#5F9EA0">if</FONT></B> <FONT COLOR="#B8860B">DCTSIZE</FONT> != 8
+<span class="lineNum">      50 </span>                :   Sorry, this code only copes with 8x8 DCTs. <I><FONT COLOR="#B22222">/* deliberate syntax err */</FONT></I>
+<span class="lineNum">      51 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      52 </span>                : 
+<span class="lineNum">      53 </span>                : 
+<span class="lineNum">      54 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      55 </span>                :  * Perform the forward DCT on one block of samples.
+<span class="lineNum">      56 </span>                :  */</FONT></I>
+<span class="lineNum">      57 </span>                : 
+<span class="lineNum">      58 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">      59 </span><span class="lineNoCov">               0: <B><FONT COLOR="#0000FF">jpeg_fdct_float</FONT></B> (FAST_FLOAT * data)</span>
+<span class="lineNum">      60 </span>                : {
+<span class="lineNum">      61 </span>                :   FAST_FLOAT tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7;
+<span class="lineNum">      62 </span>                :   FAST_FLOAT tmp10, tmp11, tmp12, tmp13;
+<span class="lineNum">      63 </span>                :   FAST_FLOAT z1, z2, z3, z4, z5, z11, z13;
+<span class="lineNum">      64 </span>                :   FAST_FLOAT *dataptr;
+<span class="lineNum">      65 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> ctr;
+<span class="lineNum">      66 </span>                : 
+<span class="lineNum">      67 </span>                :   <I><FONT COLOR="#B22222">/* Pass 1: process rows. */</FONT></I>
+<span class="lineNum">      68 </span>                : 
+<span class="lineNum">      69 </span><span class="lineNoCov">               0:   dataptr = data;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">      70 </span><span class="lineNoCov">               0:   <B><FONT COLOR="#A020F0">for</FONT></B> (ctr = DCTSIZE-1; ctr &gt;= 0; ctr--) {</span>
+<span class="lineNum">      71 </span><span class="lineNoCov">               0:     tmp0 = dataptr[0] + dataptr[7];</span>
+<span class="lineNum">      72 </span><span class="lineNoCov">               0:     tmp7 = dataptr[0] - dataptr[7];</span>
+<span class="lineNum">      73 </span><span class="lineNoCov">               0:     tmp1 = dataptr[1] + dataptr[6];</span>
+<span class="lineNum">      74 </span><span class="lineNoCov">               0:     tmp6 = dataptr[1] - dataptr[6];</span>
+<span class="lineNum">      75 </span><span class="lineNoCov">               0:     tmp2 = dataptr[2] + dataptr[5];</span>
+<span class="lineNum">      76 </span><span class="lineNoCov">               0:     tmp5 = dataptr[2] - dataptr[5];</span>
+<span class="lineNum">      77 </span><span class="lineNoCov">               0:     tmp3 = dataptr[3] + dataptr[4];</span>
+<span class="lineNum">      78 </span><span class="lineNoCov">               0:     tmp4 = dataptr[3] - dataptr[4];</span>
+<span class="lineNum">      79 </span>                :     
+<span class="lineNum">      80 </span>                :     <I><FONT COLOR="#B22222">/* Even part */</FONT></I>
+<span class="lineNum">      81 </span>                :     
+<span class="lineNum">      82 </span><span class="lineNoCov">               0:     tmp10 = tmp0 + tmp3;	<I><FONT COLOR="#B22222">/* phase 2 */</FONT></I></span>
+<span class="lineNum">      83 </span><span class="lineNoCov">               0:     tmp13 = tmp0 - tmp3;</span>
+<span class="lineNum">      84 </span><span class="lineNoCov">               0:     tmp11 = tmp1 + tmp2;</span>
+<span class="lineNum">      85 </span><span class="lineNoCov">               0:     tmp12 = tmp1 - tmp2;</span>
+<span class="lineNum">      86 </span>                :     
+<span class="lineNum">      87 </span><span class="lineNoCov">               0:     dataptr[0] = tmp10 + tmp11; <I><FONT COLOR="#B22222">/* phase 3 */</FONT></I></span>
+<span class="lineNum">      88 </span><span class="lineNoCov">               0:     dataptr[4] = tmp10 - tmp11;</span>
+<span class="lineNum">      89 </span>                :     
+<span class="lineNum">      90 </span><span class="lineNoCov">               0:     z1 = (tmp12 + tmp13) * ((FAST_FLOAT) 0.707106781); <I><FONT COLOR="#B22222">/* c4 */</FONT></I></span>
+<span class="lineNum">      91 </span><span class="lineNoCov">               0:     dataptr[2] = tmp13 + z1;	<I><FONT COLOR="#B22222">/* phase 5 */</FONT></I></span>
+<span class="lineNum">      92 </span><span class="lineNoCov">               0:     dataptr[6] = tmp13 - z1;</span>
+<span class="lineNum">      93 </span>                :     
+<span class="lineNum">      94 </span>                :     <I><FONT COLOR="#B22222">/* Odd part */</FONT></I>
+<span class="lineNum">      95 </span>                : 
+<span class="lineNum">      96 </span><span class="lineNoCov">               0:     tmp10 = tmp4 + tmp5;	<I><FONT COLOR="#B22222">/* phase 2 */</FONT></I></span>
+<span class="lineNum">      97 </span><span class="lineNoCov">               0:     tmp11 = tmp5 + tmp6;</span>
+<span class="lineNum">      98 </span><span class="lineNoCov">               0:     tmp12 = tmp6 + tmp7;</span>
+<span class="lineNum">      99 </span>                : 
+<span class="lineNum">     100 </span>                :     <I><FONT COLOR="#B22222">/* The rotator is modified from fig 4-8 to avoid extra negations. */</FONT></I>
+<span class="lineNum">     101 </span><span class="lineNoCov">               0:     z5 = (tmp10 - tmp12) * ((FAST_FLOAT) 0.382683433); <I><FONT COLOR="#B22222">/* c6 */</FONT></I></span>
+<span class="lineNum">     102 </span><span class="lineNoCov">               0:     z2 = ((FAST_FLOAT) 0.541196100) * tmp10 + z5; <I><FONT COLOR="#B22222">/* c2-c6 */</FONT></I></span>
+<span class="lineNum">     103 </span><span class="lineNoCov">               0:     z4 = ((FAST_FLOAT) 1.306562965) * tmp12 + z5; <I><FONT COLOR="#B22222">/* c2+c6 */</FONT></I></span>
+<span class="lineNum">     104 </span><span class="lineNoCov">               0:     z3 = tmp11 * ((FAST_FLOAT) 0.707106781); <I><FONT COLOR="#B22222">/* c4 */</FONT></I></span>
+<span class="lineNum">     105 </span>                : 
+<span class="lineNum">     106 </span><span class="lineNoCov">               0:     z11 = tmp7 + z3;		<I><FONT COLOR="#B22222">/* phase 5 */</FONT></I></span>
+<span class="lineNum">     107 </span><span class="lineNoCov">               0:     z13 = tmp7 - z3;</span>
+<span class="lineNum">     108 </span>                : 
+<span class="lineNum">     109 </span><span class="lineNoCov">               0:     dataptr[5] = z13 + z2;	<I><FONT COLOR="#B22222">/* phase 6 */</FONT></I></span>
+<span class="lineNum">     110 </span><span class="lineNoCov">               0:     dataptr[3] = z13 - z2;</span>
+<span class="lineNum">     111 </span><span class="lineNoCov">               0:     dataptr[1] = z11 + z4;</span>
+<span class="lineNum">     112 </span><span class="lineNoCov">               0:     dataptr[7] = z11 - z4;</span>
+<span class="lineNum">     113 </span>                : 
+<span class="lineNum">     114 </span><span class="lineNoCov">               0:     dataptr += DCTSIZE;		<I><FONT COLOR="#B22222">/* advance pointer to next row */</FONT></I></span>
+<span class="lineNum">     115 </span>                :   }
+<span class="lineNum">     116 </span>                : 
+<span class="lineNum">     117 </span>                :   <I><FONT COLOR="#B22222">/* Pass 2: process columns. */</FONT></I>
+<span class="lineNum">     118 </span>                : 
+<span class="lineNum">     119 </span><span class="lineNoCov">               0:   dataptr = data;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     120 </span><span class="lineNoCov">               0:   <B><FONT COLOR="#A020F0">for</FONT></B> (ctr = DCTSIZE-1; ctr &gt;= 0; ctr--) {</span>
+<span class="lineNum">     121 </span><span class="lineNoCov">               0:     tmp0 = dataptr[DCTSIZE*0] + dataptr[DCTSIZE*7];</span>
+<span class="lineNum">     122 </span><span class="lineNoCov">               0:     tmp7 = dataptr[DCTSIZE*0] - dataptr[DCTSIZE*7];</span>
+<span class="lineNum">     123 </span><span class="lineNoCov">               0:     tmp1 = dataptr[DCTSIZE*1] + dataptr[DCTSIZE*6];</span>
+<span class="lineNum">     124 </span><span class="lineNoCov">               0:     tmp6 = dataptr[DCTSIZE*1] - dataptr[DCTSIZE*6];</span>
+<span class="lineNum">     125 </span><span class="lineNoCov">               0:     tmp2 = dataptr[DCTSIZE*2] + dataptr[DCTSIZE*5];</span>
+<span class="lineNum">     126 </span><span class="lineNoCov">               0:     tmp5 = dataptr[DCTSIZE*2] - dataptr[DCTSIZE*5];</span>
+<span class="lineNum">     127 </span><span class="lineNoCov">               0:     tmp3 = dataptr[DCTSIZE*3] + dataptr[DCTSIZE*4];</span>
+<span class="lineNum">     128 </span><span class="lineNoCov">               0:     tmp4 = dataptr[DCTSIZE*3] - dataptr[DCTSIZE*4];</span>
+<span class="lineNum">     129 </span>                :     
+<span class="lineNum">     130 </span>                :     <I><FONT COLOR="#B22222">/* Even part */</FONT></I>
+<span class="lineNum">     131 </span>                :     
+<span class="lineNum">     132 </span><span class="lineNoCov">               0:     tmp10 = tmp0 + tmp3;	<I><FONT COLOR="#B22222">/* phase 2 */</FONT></I></span>
+<span class="lineNum">     133 </span><span class="lineNoCov">               0:     tmp13 = tmp0 - tmp3;</span>
+<span class="lineNum">     134 </span><span class="lineNoCov">               0:     tmp11 = tmp1 + tmp2;</span>
+<span class="lineNum">     135 </span><span class="lineNoCov">               0:     tmp12 = tmp1 - tmp2;</span>
+<span class="lineNum">     136 </span>                :     
+<span class="lineNum">     137 </span><span class="lineNoCov">               0:     dataptr[DCTSIZE*0] = tmp10 + tmp11; <I><FONT COLOR="#B22222">/* phase 3 */</FONT></I></span>
+<span class="lineNum">     138 </span><span class="lineNoCov">               0:     dataptr[DCTSIZE*4] = tmp10 - tmp11;</span>
+<span class="lineNum">     139 </span>                :     
+<span class="lineNum">     140 </span><span class="lineNoCov">               0:     z1 = (tmp12 + tmp13) * ((FAST_FLOAT) 0.707106781); <I><FONT COLOR="#B22222">/* c4 */</FONT></I></span>
+<span class="lineNum">     141 </span><span class="lineNoCov">               0:     dataptr[DCTSIZE*2] = tmp13 + z1; <I><FONT COLOR="#B22222">/* phase 5 */</FONT></I></span>
+<span class="lineNum">     142 </span><span class="lineNoCov">               0:     dataptr[DCTSIZE*6] = tmp13 - z1;</span>
+<span class="lineNum">     143 </span>                :     
+<span class="lineNum">     144 </span>                :     <I><FONT COLOR="#B22222">/* Odd part */</FONT></I>
+<span class="lineNum">     145 </span>                : 
+<span class="lineNum">     146 </span><span class="lineNoCov">               0:     tmp10 = tmp4 + tmp5;	<I><FONT COLOR="#B22222">/* phase 2 */</FONT></I></span>
+<span class="lineNum">     147 </span><span class="lineNoCov">               0:     tmp11 = tmp5 + tmp6;</span>
+<span class="lineNum">     148 </span><span class="lineNoCov">               0:     tmp12 = tmp6 + tmp7;</span>
+<span class="lineNum">     149 </span>                : 
+<span class="lineNum">     150 </span>                :     <I><FONT COLOR="#B22222">/* The rotator is modified from fig 4-8 to avoid extra negations. */</FONT></I>
+<span class="lineNum">     151 </span><span class="lineNoCov">               0:     z5 = (tmp10 - tmp12) * ((FAST_FLOAT) 0.382683433); <I><FONT COLOR="#B22222">/* c6 */</FONT></I></span>
+<span class="lineNum">     152 </span><span class="lineNoCov">               0:     z2 = ((FAST_FLOAT) 0.541196100) * tmp10 + z5; <I><FONT COLOR="#B22222">/* c2-c6 */</FONT></I></span>
+<span class="lineNum">     153 </span><span class="lineNoCov">               0:     z4 = ((FAST_FLOAT) 1.306562965) * tmp12 + z5; <I><FONT COLOR="#B22222">/* c2+c6 */</FONT></I></span>
+<span class="lineNum">     154 </span><span class="lineNoCov">               0:     z3 = tmp11 * ((FAST_FLOAT) 0.707106781); <I><FONT COLOR="#B22222">/* c4 */</FONT></I></span>
+<span class="lineNum">     155 </span>                : 
+<span class="lineNum">     156 </span><span class="lineNoCov">               0:     z11 = tmp7 + z3;		<I><FONT COLOR="#B22222">/* phase 5 */</FONT></I></span>
+<span class="lineNum">     157 </span><span class="lineNoCov">               0:     z13 = tmp7 - z3;</span>
+<span class="lineNum">     158 </span>                : 
+<span class="lineNum">     159 </span><span class="lineNoCov">               0:     dataptr[DCTSIZE*5] = z13 + z2; <I><FONT COLOR="#B22222">/* phase 6 */</FONT></I></span>
+<span class="lineNum">     160 </span><span class="lineNoCov">               0:     dataptr[DCTSIZE*3] = z13 - z2;</span>
+<span class="lineNum">     161 </span><span class="lineNoCov">               0:     dataptr[DCTSIZE*1] = z11 + z4;</span>
+<span class="lineNum">     162 </span><span class="lineNoCov">               0:     dataptr[DCTSIZE*7] = z11 - z4;</span>
+<span class="lineNum">     163 </span>                : 
+<span class="lineNum">     164 </span><span class="lineNoCov">               0:     dataptr++;			<I><FONT COLOR="#B22222">/* advance pointer to next column */</FONT></I></span>
+<span class="lineNum">     165 </span>                :   }
+<span class="lineNum">     166 </span><span class="lineNoCov">               0: }</span>
+<span class="lineNum">     167 </span>                : 
+<span class="lineNum">     168 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B> <I><FONT COLOR="#B22222">/* DCT_FLOAT_SUPPORTED */</FONT></I>
+</pre>
+<hr>
+Generated: 2016-04-07&nbsp;18:20 by <a href="http://minormatter.com/zcov">zcov</a><br>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<html>
+<head>
+  <script src="sorttable.js"></script>
+  <script src="sourceview.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <title>zcov: /home/vagrant/workspace/proj_libjpeg/cov/jcapistd.c</title>
+</head>
+<body>
+<center><h1> zcov: <a href="index.html">/home/vagrant/workspace/proj_libjpeg/cov</a>/<a href="jcapistd.c.html">jcapistd.c</a> </h1></center>
+<hr>
+
+
+<center>
+<table id="headertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Files:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Taken:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>32.1%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 9&nbsp;/&nbsp;28 </td>
+  </tr>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Generated:</b> </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;12:37 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>57.1%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 16&nbsp;/&nbsp;28 </td>
+  </tr>
+  <tr>
+    <td colspan=2> </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Line&nbsp;Coverage:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>46.9%</b> </td>
+    <td bgcolor=#F0F0FF align=right> 23&nbsp;/&nbsp;49 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<center>
+<table id="fileheadertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Programs:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Runs</b> </td>
+    <td bgcolor=#F0F0FF align=right> 13686 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<pre>
+<span class="lineNum">       1 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">       2 </span>                :  * jcapistd.c
+<span class="lineNum">       3 </span>                :  *
+<span class="lineNum">       4 </span>                :  * Copyright (C) 1994-1996, Thomas G. Lane.
+<span class="lineNum">       5 </span>                :  * This file is part of the Independent JPEG Group's software.
+<span class="lineNum">       6 </span>                :  * For conditions of distribution and use, see the accompanying README file.
+<span class="lineNum">       7 </span>                :  *
+<span class="lineNum">       8 </span>                :  * This file contains application interface code for the compression half
+<span class="lineNum">       9 </span>                :  * of the JPEG library.  These are the &quot;standard&quot; API routines that are
+<span class="lineNum">      10 </span>                :  * used in the normal full-compression case.  They are not used by a
+<span class="lineNum">      11 </span>                :  * transcoding-only application.  Note that if an application links in
+<span class="lineNum">      12 </span>                :  * jpeg_start_compress, it will end up linking in the entire compressor.
+<span class="lineNum">      13 </span>                :  * We thus must separate this file from jcapimin.c to avoid linking the
+<span class="lineNum">      14 </span>                :  * whole compression library into a transcoder.
+<span class="lineNum">      15 </span>                :  */</FONT></I>
+<span class="lineNum">      16 </span>                : 
+<span class="lineNum">      17 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">JPEG_INTERNALS</FONT>
+<span class="lineNum">      18 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jinclude.h&quot;</FONT></B>
+<span class="lineNum">      19 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jpeglib.h&quot;</FONT></B>
+<span class="lineNum">      20 </span>                : 
+<span class="lineNum">      21 </span>                : 
+<span class="lineNum">      22 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      23 </span>                :  * Compression initialization.
+<span class="lineNum">      24 </span>                :  * Before calling this, all parameters and a data destination must be set up.
+<span class="lineNum">      25 </span>                :  *
+<span class="lineNum">      26 </span>                :  * We require a write_all_tables parameter as a failsafe check when writing
+<span class="lineNum">      27 </span>                :  * multiple datastreams from the same compression object.  Since prior runs
+<span class="lineNum">      28 </span>                :  * will have left all the tables marked sent_table=TRUE, a subsequent run
+<span class="lineNum">      29 </span>                :  * would emit an abbreviated stream (no tables) by default.  This may be what
+<span class="lineNum">      30 </span>                :  * is wanted, but for safety's sake it should not be the default behavior:
+<span class="lineNum">      31 </span>                :  * programmers should have to make a deliberate choice to emit abbreviated
+<span class="lineNum">      32 </span>                :  * images.  Therefore the documentation and examples should encourage people
+<span class="lineNum">      33 </span>                :  * to pass write_all_tables=TRUE; then it will take active thought to do the
+<span class="lineNum">      34 </span>                :  * wrong thing.
+<span class="lineNum">      35 </span>                :  */</FONT></I>
+<span class="lineNum">      36 </span>                : 
+<span class="lineNum">      37 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">      38 </span><span class="lineCov">            9300: <B><FONT COLOR="#0000FF">jpeg_start_compress</FONT></B> (j_compress_ptr cinfo, boolean write_all_tables)</span>
+<span class="lineNum">      39 </span>                : {
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9300: branch 1 taken</span>
+</span><span class="lineNum">      40 </span><span class="lineCov">            9300:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;global_state != CSTATE_START)</span>
+<span class="lineNum">      41 </span><span class="lineNoCov">               0:     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo-&gt;global_state);</span>
+<span class="lineNum">      42 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            9300: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">      43 </span><span class="lineCov">            9300:   <B><FONT COLOR="#A020F0">if</FONT></B> (write_all_tables)</span>
+<span class="lineNum">      44 </span><span class="lineCov">            9300:     jpeg_suppress_tables(cinfo, FALSE);	<I><FONT COLOR="#B22222">/* mark all tables to be written */</FONT></I></span>
+<span class="lineNum">      45 </span>                : 
+<span class="lineNum">      46 </span>                :   <I><FONT COLOR="#B22222">/* (Re)initialize error mgr and destination modules */</FONT></I>
+<span class="lineNum">      47 </span><span class="lineCov">            9300:   (*cinfo-&gt;err-&gt;reset_error_mgr) ((j_common_ptr) cinfo);</span>
+<span class="lineNum">      48 </span><span class="lineCov">            9300:   (*cinfo-&gt;dest-&gt;init_destination) (cinfo);</span>
+<span class="lineNum">      49 </span>                :   <I><FONT COLOR="#B22222">/* Perform master selection of active modules */</FONT></I>
+<span class="lineNum">      50 </span><span class="lineCov">            9300:   jinit_compress_master(cinfo);</span>
+<span class="lineNum">      51 </span>                :   <I><FONT COLOR="#B22222">/* Set up for the first pass */</FONT></I>
+<span class="lineNum">      52 </span><span class="lineCov">            9065:   (*cinfo-&gt;master-&gt;prepare_for_pass) (cinfo);</span>
+<span class="lineNum">      53 </span>                :   <I><FONT COLOR="#B22222">/* Ready for application to drive first pass through jpeg_write_scanlines
+<span class="lineNum">      54 </span>                :    * or jpeg_write_raw_data.
+<span class="lineNum">      55 </span>                :    */</FONT></I>
+<span class="lineNum">      56 </span><span class="lineCov">            9065:   cinfo-&gt;next_scanline = 0;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9065: branch 1 taken</span>
+</span><span class="lineNum">      57 </span><span class="lineCov">            9065:   cinfo-&gt;global_state = (cinfo-&gt;raw_data_in ? CSTATE_RAW_OK : CSTATE_SCANNING);</span>
+<span class="lineNum">      58 </span><span class="lineCov">            9065: }</span>
+<span class="lineNum">      59 </span>                : 
+<span class="lineNum">      60 </span>                : 
+<span class="lineNum">      61 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      62 </span>                :  * Write some scanlines of data to the JPEG compressor.
+<span class="lineNum">      63 </span>                :  *
+<span class="lineNum">      64 </span>                :  * The return value will be the number of lines actually written.
+<span class="lineNum">      65 </span>                :  * This should be less than the supplied num_lines only in case that
+<span class="lineNum">      66 </span>                :  * the data destination module has requested suspension of the compressor,
+<span class="lineNum">      67 </span>                :  * or if more than image_height scanlines are passed in.
+<span class="lineNum">      68 </span>                :  *
+<span class="lineNum">      69 </span>                :  * Note: we warn about excess calls to jpeg_write_scanlines() since
+<span class="lineNum">      70 </span>                :  * this likely signals an application programmer error.  However,
+<span class="lineNum">      71 </span>                :  * excess scanlines passed in the last valid call are *silently* ignored,
+<span class="lineNum">      72 </span>                :  * so that the application need not adjust num_lines for end-of-image
+<span class="lineNum">      73 </span>                :  * when using a multiple-scanline buffer.
+<span class="lineNum">      74 </span>                :  */</FONT></I>
+<span class="lineNum">      75 </span>                : 
+<span class="lineNum">      76 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(JDIMENSION)
+<span class="lineNum">      77 </span><span class="lineCov">          430872: <B><FONT COLOR="#0000FF">jpeg_write_scanlines</FONT></B> (j_compress_ptr cinfo, JSAMPARRAY scanlines,</span>
+<span class="lineNum">      78 </span>                : 		      JDIMENSION num_lines)
+<span class="lineNum">      79 </span>                : {
+<span class="lineNum">      80 </span>                :   JDIMENSION row_ctr, rows_left;
+<span class="lineNum">      81 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          430872: branch 1 taken</span>
+</span><span class="lineNum">      82 </span><span class="lineCov">          430872:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;global_state != CSTATE_SCANNING)</span>
+<span class="lineNum">      83 </span><span class="lineNoCov">               0:     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo-&gt;global_state);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          430872: branch 1 taken</span>
+</span><span class="lineNum">      84 </span><span class="lineCov">          430872:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;next_scanline &gt;= cinfo-&gt;image_height)</span>
+<span class="lineNum">      85 </span><span class="lineNoCov">               0:     WARNMS(cinfo, JWRN_TOO_MUCH_DATA);</span>
+<span class="lineNum">      86 </span>                : 
+<span class="lineNum">      87 </span>                :   <I><FONT COLOR="#B22222">/* Call progress monitor hook if present */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          430872: branch 1 taken</span>
+</span><span class="lineNum">      88 </span><span class="lineCov">          430872:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;progress != NULL) {</span>
+<span class="lineNum">      89 </span><span class="lineNoCov">               0:     cinfo-&gt;progress-&gt;pass_counter = (<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;next_scanline;</span>
+<span class="lineNum">      90 </span><span class="lineNoCov">               0:     cinfo-&gt;progress-&gt;pass_limit = (<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;image_height;</span>
+<span class="lineNum">      91 </span><span class="lineNoCov">               0:     (*cinfo-&gt;progress-&gt;progress_monitor) ((j_common_ptr) cinfo);</span>
+<span class="lineNum">      92 </span>                :   }
+<span class="lineNum">      93 </span>                : 
+<span class="lineNum">      94 </span>                :   <I><FONT COLOR="#B22222">/* Give master control module another chance if this is first call to
+<span class="lineNum">      95 </span>                :    * jpeg_write_scanlines.  This lets output of the frame/scan headers be
+<span class="lineNum">      96 </span>                :    * delayed so that application can write COM, etc, markers between
+<span class="lineNum">      97 </span>                :    * jpeg_start_compress and jpeg_write_scanlines.
+<span class="lineNum">      98 </span>                :    */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            5601: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          425271: branch 1 taken</span>
+</span><span class="lineNum">      99 </span><span class="lineCov">          430872:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;master-&gt;call_pass_startup)</span>
+<span class="lineNum">     100 </span><span class="lineCov">            5601:     (*cinfo-&gt;master-&gt;pass_startup) (cinfo);</span>
+<span class="lineNum">     101 </span>                : 
+<span class="lineNum">     102 </span>                :   <I><FONT COLOR="#B22222">/* Ignore any extra scanlines at bottom of image. */</FONT></I>
+<span class="lineNum">     103 </span><span class="lineCov">          430872:   rows_left = cinfo-&gt;image_height - cinfo-&gt;next_scanline;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          430872: branch 1 taken</span>
+</span><span class="lineNum">     104 </span><span class="lineCov">          430872:   <B><FONT COLOR="#A020F0">if</FONT></B> (num_lines &gt; rows_left)</span>
+<span class="lineNum">     105 </span><span class="lineNoCov">               0:     num_lines = rows_left;</span>
+<span class="lineNum">     106 </span>                : 
+<span class="lineNum">     107 </span><span class="lineCov">          430872:   row_ctr = 0;</span>
+<span class="lineNum">     108 </span><span class="lineCov">          430872:   (*cinfo-&gt;main-&gt;process_data) (cinfo, scanlines, &amp;row_ctr, num_lines);</span>
+<span class="lineNum">     109 </span><span class="lineCov">          430872:   cinfo-&gt;next_scanline += row_ctr;</span>
+<span class="lineNum">     110 </span><span class="lineCov">          430872:   <B><FONT COLOR="#A020F0">return</FONT></B> row_ctr;</span>
+<span class="lineNum">     111 </span>                : }
+<span class="lineNum">     112 </span>                : 
+<span class="lineNum">     113 </span>                : 
+<span class="lineNum">     114 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     115 </span>                :  * Alternate entry point to write raw data.
+<span class="lineNum">     116 </span>                :  * Processes exactly one iMCU row per call, unless suspended.
+<span class="lineNum">     117 </span>                :  */</FONT></I>
+<span class="lineNum">     118 </span>                : 
+<span class="lineNum">     119 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(JDIMENSION)
+<span class="lineNum">     120 </span><span class="lineNoCov">               0: <B><FONT COLOR="#0000FF">jpeg_write_raw_data</FONT></B> (j_compress_ptr cinfo, JSAMPIMAGE data,</span>
+<span class="lineNum">     121 </span>                : 		     JDIMENSION num_lines)
+<span class="lineNum">     122 </span>                : {
+<span class="lineNum">     123 </span>                :   JDIMENSION lines_per_iMCU_row;
+<span class="lineNum">     124 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     125 </span><span class="lineNoCov">               0:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;global_state != CSTATE_RAW_OK)</span>
+<span class="lineNum">     126 </span><span class="lineNoCov">               0:     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo-&gt;global_state);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     127 </span><span class="lineNoCov">               0:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;next_scanline &gt;= cinfo-&gt;image_height) {</span>
+<span class="lineNum">     128 </span><span class="lineNoCov">               0:     WARNMS(cinfo, JWRN_TOO_MUCH_DATA);</span>
+<span class="lineNum">     129 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">return</FONT></B> 0;</span>
+<span class="lineNum">     130 </span>                :   }
+<span class="lineNum">     131 </span>                : 
+<span class="lineNum">     132 </span>                :   <I><FONT COLOR="#B22222">/* Call progress monitor hook if present */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     133 </span><span class="lineNoCov">               0:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;progress != NULL) {</span>
+<span class="lineNum">     134 </span><span class="lineNoCov">               0:     cinfo-&gt;progress-&gt;pass_counter = (<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;next_scanline;</span>
+<span class="lineNum">     135 </span><span class="lineNoCov">               0:     cinfo-&gt;progress-&gt;pass_limit = (<B><FONT COLOR="#228B22">long</FONT></B>) cinfo-&gt;image_height;</span>
+<span class="lineNum">     136 </span><span class="lineNoCov">               0:     (*cinfo-&gt;progress-&gt;progress_monitor) ((j_common_ptr) cinfo);</span>
+<span class="lineNum">     137 </span>                :   }
+<span class="lineNum">     138 </span>                : 
+<span class="lineNum">     139 </span>                :   <I><FONT COLOR="#B22222">/* Give master control module another chance if this is first call to
+<span class="lineNum">     140 </span>                :    * jpeg_write_raw_data.  This lets output of the frame/scan headers be
+<span class="lineNum">     141 </span>                :    * delayed so that application can write COM, etc, markers between
+<span class="lineNum">     142 </span>                :    * jpeg_start_compress and jpeg_write_raw_data.
+<span class="lineNum">     143 </span>                :    */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     144 </span><span class="lineNoCov">               0:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;master-&gt;call_pass_startup)</span>
+<span class="lineNum">     145 </span><span class="lineNoCov">               0:     (*cinfo-&gt;master-&gt;pass_startup) (cinfo);</span>
+<span class="lineNum">     146 </span>                : 
+<span class="lineNum">     147 </span>                :   <I><FONT COLOR="#B22222">/* Verify that at least one iMCU row has been passed. */</FONT></I>
+<span class="lineNum">     148 </span><span class="lineNoCov">               0:   lines_per_iMCU_row = cinfo-&gt;max_v_samp_factor * DCTSIZE;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     149 </span><span class="lineNoCov">               0:   <B><FONT COLOR="#A020F0">if</FONT></B> (num_lines &lt; lines_per_iMCU_row)</span>
+<span class="lineNum">     150 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_BUFFER_SIZE);</span>
+<span class="lineNum">     151 </span>                : 
+<span class="lineNum">     152 </span>                :   <I><FONT COLOR="#B22222">/* Directly compress the row. */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+</span><span class="lineNum">     153 </span><span class="lineNoCov">               0:   <B><FONT COLOR="#A020F0">if</FONT></B> (! (*cinfo-&gt;coef-&gt;compress_data) (cinfo, data)) {</span>
+<span class="lineNum">     154 </span>                :     <I><FONT COLOR="#B22222">/* If compressor did not consume the whole row, suspend processing. */</FONT></I>
+<span class="lineNum">     155 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">return</FONT></B> 0;</span>
+<span class="lineNum">     156 </span>                :   }
+<span class="lineNum">     157 </span>                : 
+<span class="lineNum">     158 </span>                :   <I><FONT COLOR="#B22222">/* OK, we processed one iMCU row. */</FONT></I>
+<span class="lineNum">     159 </span><span class="lineNoCov">               0:   cinfo-&gt;next_scanline += lines_per_iMCU_row;</span>
+<span class="lineNum">     160 </span><span class="lineNoCov">               0:   <B><FONT COLOR="#A020F0">return</FONT></B> lines_per_iMCU_row;</span>
+<span class="lineNum">     161 </span>                : }
+</pre>
+<hr>
+Generated: 2016-04-07&nbsp;12:37 by <a href="http://minormatter.com/zcov">zcov</a><br>
+</body>
+</html>

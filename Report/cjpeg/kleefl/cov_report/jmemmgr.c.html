@@ -1,0 +1,1374 @@
+<html>
+<head>
+  <script src="sorttable.js"></script>
+  <script src="sourceview.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <title>zcov: /home/vagrant/workspace/proj_libjpeg/cov/jmemmgr.c</title>
+</head>
+<body>
+<center><h1> zcov: <a href="index.html">/home/vagrant/workspace/proj_libjpeg/cov</a>/<a href="jmemmgr.c.html">jmemmgr.c</a> </h1></center>
+<hr>
+
+
+<center>
+<table id="headertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Files:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Taken:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>53.6%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 104&nbsp;/&nbsp;194 </td>
+  </tr>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Generated:</b> </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;12:37 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>76.3%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 148&nbsp;/&nbsp;194 </td>
+  </tr>
+  <tr>
+    <td colspan=2> </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Line&nbsp;Coverage:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>67.6%</b> </td>
+    <td bgcolor=#F0F0FF align=right> 255&nbsp;/&nbsp;377 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<center>
+<table id="fileheadertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Programs:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Runs</b> </td>
+    <td bgcolor=#F0F0FF align=right> 13688 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<pre>
+<span class="lineNum">       1 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">       2 </span>                :  * jmemmgr.c
+<span class="lineNum">       3 </span>                :  *
+<span class="lineNum">       4 </span>                :  * Copyright (C) 1991-1997, Thomas G. Lane.
+<span class="lineNum">       5 </span>                :  * This file is part of the Independent JPEG Group's software.
+<span class="lineNum">       6 </span>                :  * For conditions of distribution and use, see the accompanying README file.
+<span class="lineNum">       7 </span>                :  *
+<span class="lineNum">       8 </span>                :  * This file contains the JPEG system-independent memory management
+<span class="lineNum">       9 </span>                :  * routines.  This code is usable across a wide variety of machines; most
+<span class="lineNum">      10 </span>                :  * of the system dependencies have been isolated in a separate file.
+<span class="lineNum">      11 </span>                :  * The major functions provided here are:
+<span class="lineNum">      12 </span>                :  *   * pool-based allocation and freeing of memory;
+<span class="lineNum">      13 </span>                :  *   * policy decisions about how to divide available memory among the
+<span class="lineNum">      14 </span>                :  *     virtual arrays;
+<span class="lineNum">      15 </span>                :  *   * control logic for swapping virtual arrays between main memory and
+<span class="lineNum">      16 </span>                :  *     backing storage.
+<span class="lineNum">      17 </span>                :  * The separate system-dependent file provides the actual backing-storage
+<span class="lineNum">      18 </span>                :  * access code, and it contains the policy decision about how much total
+<span class="lineNum">      19 </span>                :  * main memory to use.
+<span class="lineNum">      20 </span>                :  * This file is system-dependent in the sense that some of its functions
+<span class="lineNum">      21 </span>                :  * are unnecessary in some systems.  For example, if there is enough virtual
+<span class="lineNum">      22 </span>                :  * memory so that backing storage will never be used, much of the virtual
+<span class="lineNum">      23 </span>                :  * array control logic could be removed.  (Of course, if you have that much
+<span class="lineNum">      24 </span>                :  * memory then you shouldn't care about a little bit of unused code...)
+<span class="lineNum">      25 </span>                :  */</FONT></I>
+<span class="lineNum">      26 </span>                : 
+<span class="lineNum">      27 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">JPEG_INTERNALS</FONT>
+<span class="lineNum">      28 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">AM_MEMORY_MANAGER</FONT>	<I><FONT COLOR="#B22222">/* we define jvirt_Xarray_control structs */</FONT></I>
+<span class="lineNum">      29 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jinclude.h&quot;</FONT></B>
+<span class="lineNum">      30 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jpeglib.h&quot;</FONT></B>
+<span class="lineNum">      31 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jmemsys.h&quot;</FONT></B>		<I><FONT COLOR="#B22222">/* import the system-dependent declarations */</FONT></I>
+<span class="lineNum">      32 </span>                : 
+<span class="lineNum">      33 </span>                : #<B><FONT COLOR="#5F9EA0">ifndef</FONT></B> <FONT COLOR="#B8860B">NO_GETENV</FONT>
+<span class="lineNum">      34 </span>                : #<B><FONT COLOR="#5F9EA0">ifndef</FONT></B> <FONT COLOR="#B8860B">HAVE_STDLIB_H</FONT>		<I><FONT COLOR="#B22222">/* &lt;stdlib.h&gt; should declare getenv() */</FONT></I>
+<span class="lineNum">      35 </span>                : <B><FONT COLOR="#228B22">extern</FONT></B> <B><FONT COLOR="#228B22">char</FONT></B> * getenv <B><FONT COLOR="#0000FF">JPP</FONT></B>((<B><FONT COLOR="#228B22">const</FONT></B> <B><FONT COLOR="#228B22">char</FONT></B> * name));
+<span class="lineNum">      36 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      37 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      38 </span>                : 
+<span class="lineNum">      39 </span>                : 
+<span class="lineNum">      40 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      41 </span>                :  * Some important notes:
+<span class="lineNum">      42 </span>                :  *   The allocation routines provided here must never return NULL.
+<span class="lineNum">      43 </span>                :  *   They should exit to error_exit if unsuccessful.
+<span class="lineNum">      44 </span>                :  *
+<span class="lineNum">      45 </span>                :  *   It's not a good idea to try to merge the sarray and barray routines,
+<span class="lineNum">      46 </span>                :  *   even though they are textually almost the same, because samples are
+<span class="lineNum">      47 </span>                :  *   usually stored as bytes while coefficients are shorts or ints.  Thus,
+<span class="lineNum">      48 </span>                :  *   in machines where byte pointers have a different representation from
+<span class="lineNum">      49 </span>                :  *   word pointers, the resulting machine code could not be the same.
+<span class="lineNum">      50 </span>                :  */</FONT></I>
+<span class="lineNum">      51 </span>                : 
+<span class="lineNum">      52 </span>                : 
+<span class="lineNum">      53 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      54 </span>                :  * Many machines require storage alignment: longs must start on 4-byte
+<span class="lineNum">      55 </span>                :  * boundaries, doubles on 8-byte boundaries, etc.  On such machines, malloc()
+<span class="lineNum">      56 </span>                :  * always returns pointers that are multiples of the worst-case alignment
+<span class="lineNum">      57 </span>                :  * requirement, and we had better do so too.
+<span class="lineNum">      58 </span>                :  * There isn't any really portable way to determine the worst-case alignment
+<span class="lineNum">      59 </span>                :  * requirement.  This module assumes that the alignment requirement is
+<span class="lineNum">      60 </span>                :  * multiples of sizeof(ALIGN_TYPE).
+<span class="lineNum">      61 </span>                :  * By default, we define ALIGN_TYPE as double.  This is necessary on some
+<span class="lineNum">      62 </span>                :  * workstations (where doubles really do need 8-byte alignment) and will work
+<span class="lineNum">      63 </span>                :  * fine on nearly everything.  If your machine has lesser alignment needs,
+<span class="lineNum">      64 </span>                :  * you can save a few bytes by making ALIGN_TYPE smaller.
+<span class="lineNum">      65 </span>                :  * The only place I know of where this will NOT work is certain Macintosh
+<span class="lineNum">      66 </span>                :  * 680x0 compilers that define double as a 10-byte IEEE extended float.
+<span class="lineNum">      67 </span>                :  * Doing 10-byte alignment is counterproductive because longwords won't be
+<span class="lineNum">      68 </span>                :  * aligned well.  Put &quot;#define ALIGN_TYPE long&quot; in jconfig.h if you have
+<span class="lineNum">      69 </span>                :  * such a compiler.
+<span class="lineNum">      70 </span>                :  */</FONT></I>
+<span class="lineNum">      71 </span>                : 
+<span class="lineNum">      72 </span>                : #<B><FONT COLOR="#5F9EA0">ifndef</FONT></B> <FONT COLOR="#B8860B">ALIGN_TYPE</FONT>		<I><FONT COLOR="#B22222">/* so can override from jconfig.h */</FONT></I>
+<span class="lineNum">      73 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">ALIGN_TYPE</FONT>  double
+<span class="lineNum">      74 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      75 </span>                : 
+<span class="lineNum">      76 </span>                : 
+<span class="lineNum">      77 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      78 </span>                :  * We allocate objects from &quot;pools&quot;, where each pool is gotten with a single
+<span class="lineNum">      79 </span>                :  * request to jpeg_get_small() or jpeg_get_large().  There is no per-object
+<span class="lineNum">      80 </span>                :  * overhead within a pool, except for alignment padding.  Each pool has a
+<span class="lineNum">      81 </span>                :  * header with a link to the next pool of the same class.
+<span class="lineNum">      82 </span>                :  * Small and large pool headers are identical except that the latter's
+<span class="lineNum">      83 </span>                :  * link pointer must be FAR on 80x86 machines.
+<span class="lineNum">      84 </span>                :  * Notice that the &quot;real&quot; header fields are union'ed with a dummy ALIGN_TYPE
+<span class="lineNum">      85 </span>                :  * field.  This forces the compiler to make SIZEOF(small_pool_hdr) a multiple
+<span class="lineNum">      86 </span>                :  * of the alignment requirement of ALIGN_TYPE.
+<span class="lineNum">      87 </span>                :  */</FONT></I>
+<span class="lineNum">      88 </span>                : 
+<span class="lineNum">      89 </span>                : <B><FONT COLOR="#228B22">typedef</FONT></B> <B><FONT COLOR="#228B22">union</FONT></B> small_pool_struct * small_pool_ptr;
+<span class="lineNum">      90 </span>                : 
+<span class="lineNum">      91 </span>                : <B><FONT COLOR="#228B22">typedef</FONT></B> <B><FONT COLOR="#228B22">union</FONT></B> small_pool_struct {
+<span class="lineNum">      92 </span>                :   <B><FONT COLOR="#228B22">struct</FONT></B> {
+<span class="lineNum">      93 </span>                :     small_pool_ptr next;	<I><FONT COLOR="#B22222">/* next in list of pools */</FONT></I>
+<span class="lineNum">      94 </span>                :     size_t bytes_used;		<I><FONT COLOR="#B22222">/* how many bytes already used within pool */</FONT></I>
+<span class="lineNum">      95 </span>                :     size_t bytes_left;		<I><FONT COLOR="#B22222">/* bytes still available in this pool */</FONT></I>
+<span class="lineNum">      96 </span>                :   } hdr;
+<span class="lineNum">      97 </span>                :   ALIGN_TYPE dummy;		<I><FONT COLOR="#B22222">/* included in union to ensure alignment */</FONT></I>
+<span class="lineNum">      98 </span>                : } small_pool_hdr;
+<span class="lineNum">      99 </span>                : 
+<span class="lineNum">     100 </span>                : <B><FONT COLOR="#228B22">typedef</FONT></B> <B><FONT COLOR="#228B22">union</FONT></B> large_pool_struct FAR * large_pool_ptr;
+<span class="lineNum">     101 </span>                : 
+<span class="lineNum">     102 </span>                : <B><FONT COLOR="#228B22">typedef</FONT></B> <B><FONT COLOR="#228B22">union</FONT></B> large_pool_struct {
+<span class="lineNum">     103 </span>                :   <B><FONT COLOR="#228B22">struct</FONT></B> {
+<span class="lineNum">     104 </span>                :     large_pool_ptr next;	<I><FONT COLOR="#B22222">/* next in list of pools */</FONT></I>
+<span class="lineNum">     105 </span>                :     size_t bytes_used;		<I><FONT COLOR="#B22222">/* how many bytes already used within pool */</FONT></I>
+<span class="lineNum">     106 </span>                :     size_t bytes_left;		<I><FONT COLOR="#B22222">/* bytes still available in this pool */</FONT></I>
+<span class="lineNum">     107 </span>                :   } hdr;
+<span class="lineNum">     108 </span>                :   ALIGN_TYPE dummy;		<I><FONT COLOR="#B22222">/* included in union to ensure alignment */</FONT></I>
+<span class="lineNum">     109 </span>                : } large_pool_hdr;
+<span class="lineNum">     110 </span>                : 
+<span class="lineNum">     111 </span>                : 
+<span class="lineNum">     112 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     113 </span>                :  * Here is the full definition of a memory manager object.
+<span class="lineNum">     114 </span>                :  */</FONT></I>
+<span class="lineNum">     115 </span>                : 
+<span class="lineNum">     116 </span>                : <B><FONT COLOR="#228B22">typedef</FONT></B> <B><FONT COLOR="#228B22">struct</FONT></B> {
+<span class="lineNum">     117 </span>                :   <B><FONT COLOR="#228B22">struct</FONT></B> jpeg_memory_mgr pub;	<I><FONT COLOR="#B22222">/* public fields */</FONT></I>
+<span class="lineNum">     118 </span>                : 
+<span class="lineNum">     119 </span>                :   <I><FONT COLOR="#B22222">/* Each pool identifier (lifetime class) names a linked list of pools. */</FONT></I>
+<span class="lineNum">     120 </span>                :   small_pool_ptr small_list[JPOOL_NUMPOOLS];
+<span class="lineNum">     121 </span>                :   large_pool_ptr large_list[JPOOL_NUMPOOLS];
+<span class="lineNum">     122 </span>                : 
+<span class="lineNum">     123 </span>                :   <I><FONT COLOR="#B22222">/* Since we only have one lifetime class of virtual arrays, only one
+<span class="lineNum">     124 </span>                :    * linked list is necessary (for each datatype).  Note that the virtual
+<span class="lineNum">     125 </span>                :    * array control blocks being linked together are actually stored somewhere
+<span class="lineNum">     126 </span>                :    * in the small-pool list.
+<span class="lineNum">     127 </span>                :    */</FONT></I>
+<span class="lineNum">     128 </span>                :   jvirt_sarray_ptr virt_sarray_list;
+<span class="lineNum">     129 </span>                :   jvirt_barray_ptr virt_barray_list;
+<span class="lineNum">     130 </span>                : 
+<span class="lineNum">     131 </span>                :   <I><FONT COLOR="#B22222">/* This counts total space obtained from jpeg_get_small/large */</FONT></I>
+<span class="lineNum">     132 </span>                :   <B><FONT COLOR="#228B22">long</FONT></B> total_space_allocated;
+<span class="lineNum">     133 </span>                : 
+<span class="lineNum">     134 </span>                :   <I><FONT COLOR="#B22222">/* alloc_sarray and alloc_barray set this value for use by virtual
+<span class="lineNum">     135 </span>                :    * array routines.
+<span class="lineNum">     136 </span>                :    */</FONT></I>
+<span class="lineNum">     137 </span>                :   JDIMENSION last_rowsperchunk;	<I><FONT COLOR="#B22222">/* from most recent alloc_sarray/barray */</FONT></I>
+<span class="lineNum">     138 </span>                : } my_memory_mgr;
+<span class="lineNum">     139 </span>                : 
+<span class="lineNum">     140 </span>                : <B><FONT COLOR="#228B22">typedef</FONT></B> my_memory_mgr * my_mem_ptr;
+<span class="lineNum">     141 </span>                : 
+<span class="lineNum">     142 </span>                : 
+<span class="lineNum">     143 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     144 </span>                :  * The control blocks for virtual arrays.
+<span class="lineNum">     145 </span>                :  * Note that these blocks are allocated in the &quot;small&quot; pool area.
+<span class="lineNum">     146 </span>                :  * System-dependent info for the associated backing store (if any) is hidden
+<span class="lineNum">     147 </span>                :  * inside the backing_store_info struct.
+<span class="lineNum">     148 </span>                :  */</FONT></I>
+<span class="lineNum">     149 </span>                : 
+<span class="lineNum">     150 </span>                : <B><FONT COLOR="#228B22">struct</FONT></B> jvirt_sarray_control {
+<span class="lineNum">     151 </span>                :   JSAMPARRAY mem_buffer;	<I><FONT COLOR="#B22222">/* =&gt; the in-memory buffer */</FONT></I>
+<span class="lineNum">     152 </span>                :   JDIMENSION rows_in_array;	<I><FONT COLOR="#B22222">/* total virtual array height */</FONT></I>
+<span class="lineNum">     153 </span>                :   JDIMENSION samplesperrow;	<I><FONT COLOR="#B22222">/* width of array (and of memory buffer) */</FONT></I>
+<span class="lineNum">     154 </span>                :   JDIMENSION maxaccess;		<I><FONT COLOR="#B22222">/* max rows accessed by access_virt_sarray */</FONT></I>
+<span class="lineNum">     155 </span>                :   JDIMENSION rows_in_mem;	<I><FONT COLOR="#B22222">/* height of memory buffer */</FONT></I>
+<span class="lineNum">     156 </span>                :   JDIMENSION rowsperchunk;	<I><FONT COLOR="#B22222">/* allocation chunk size in mem_buffer */</FONT></I>
+<span class="lineNum">     157 </span>                :   JDIMENSION cur_start_row;	<I><FONT COLOR="#B22222">/* first logical row # in the buffer */</FONT></I>
+<span class="lineNum">     158 </span>                :   JDIMENSION first_undef_row;	<I><FONT COLOR="#B22222">/* row # of first uninitialized row */</FONT></I>
+<span class="lineNum">     159 </span>                :   boolean pre_zero;		<I><FONT COLOR="#B22222">/* pre-zero mode requested? */</FONT></I>
+<span class="lineNum">     160 </span>                :   boolean dirty;		<I><FONT COLOR="#B22222">/* do current buffer contents need written? */</FONT></I>
+<span class="lineNum">     161 </span>                :   boolean b_s_open;		<I><FONT COLOR="#B22222">/* is backing-store data valid? */</FONT></I>
+<span class="lineNum">     162 </span>                :   jvirt_sarray_ptr next;	<I><FONT COLOR="#B22222">/* link to next virtual sarray control block */</FONT></I>
+<span class="lineNum">     163 </span>                :   backing_store_info b_s_info;	<I><FONT COLOR="#B22222">/* System-dependent control info */</FONT></I>
+<span class="lineNum">     164 </span>                : };
+<span class="lineNum">     165 </span>                : 
+<span class="lineNum">     166 </span>                : <B><FONT COLOR="#228B22">struct</FONT></B> jvirt_barray_control {
+<span class="lineNum">     167 </span>                :   JBLOCKARRAY mem_buffer;	<I><FONT COLOR="#B22222">/* =&gt; the in-memory buffer */</FONT></I>
+<span class="lineNum">     168 </span>                :   JDIMENSION rows_in_array;	<I><FONT COLOR="#B22222">/* total virtual array height */</FONT></I>
+<span class="lineNum">     169 </span>                :   JDIMENSION blocksperrow;	<I><FONT COLOR="#B22222">/* width of array (and of memory buffer) */</FONT></I>
+<span class="lineNum">     170 </span>                :   JDIMENSION maxaccess;		<I><FONT COLOR="#B22222">/* max rows accessed by access_virt_barray */</FONT></I>
+<span class="lineNum">     171 </span>                :   JDIMENSION rows_in_mem;	<I><FONT COLOR="#B22222">/* height of memory buffer */</FONT></I>
+<span class="lineNum">     172 </span>                :   JDIMENSION rowsperchunk;	<I><FONT COLOR="#B22222">/* allocation chunk size in mem_buffer */</FONT></I>
+<span class="lineNum">     173 </span>                :   JDIMENSION cur_start_row;	<I><FONT COLOR="#B22222">/* first logical row # in the buffer */</FONT></I>
+<span class="lineNum">     174 </span>                :   JDIMENSION first_undef_row;	<I><FONT COLOR="#B22222">/* row # of first uninitialized row */</FONT></I>
+<span class="lineNum">     175 </span>                :   boolean pre_zero;		<I><FONT COLOR="#B22222">/* pre-zero mode requested? */</FONT></I>
+<span class="lineNum">     176 </span>                :   boolean dirty;		<I><FONT COLOR="#B22222">/* do current buffer contents need written? */</FONT></I>
+<span class="lineNum">     177 </span>                :   boolean b_s_open;		<I><FONT COLOR="#B22222">/* is backing-store data valid? */</FONT></I>
+<span class="lineNum">     178 </span>                :   jvirt_barray_ptr next;	<I><FONT COLOR="#B22222">/* link to next virtual barray control block */</FONT></I>
+<span class="lineNum">     179 </span>                :   backing_store_info b_s_info;	<I><FONT COLOR="#B22222">/* System-dependent control info */</FONT></I>
+<span class="lineNum">     180 </span>                : };
+<span class="lineNum">     181 </span>                : 
+<span class="lineNum">     182 </span>                : 
+<span class="lineNum">     183 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">MEM_STATS</FONT>		<I><FONT COLOR="#B22222">/* optional extra stuff for statistics */</FONT></I>
+<span class="lineNum">     184 </span>                : 
+<span class="lineNum">     185 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     186 </span>                : <B><FONT COLOR="#0000FF">print_mem_stats</FONT></B> (j_common_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> pool_id)
+<span class="lineNum">     187 </span>                : {
+<span class="lineNum">     188 </span>                :   my_mem_ptr mem = (my_mem_ptr) cinfo-&gt;mem;
+<span class="lineNum">     189 </span>                :   small_pool_ptr shdr_ptr;
+<span class="lineNum">     190 </span>                :   large_pool_ptr lhdr_ptr;
+<span class="lineNum">     191 </span>                : 
+<span class="lineNum">     192 </span>                :   <I><FONT COLOR="#B22222">/* Since this is only a debugging stub, we can cheat a little by using
+<span class="lineNum">     193 </span>                :    * fprintf directly rather than going through the trace message code.
+<span class="lineNum">     194 </span>                :    * This is helpful because message parm array can't handle longs.
+<span class="lineNum">     195 </span>                :    */</FONT></I>
+<span class="lineNum">     196 </span>                :   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;Freeing pool %d, total space = %ld\n&quot;</FONT></B>,
+<span class="lineNum">     197 </span>                : 	  pool_id, mem-&gt;total_space_allocated);
+<span class="lineNum">     198 </span>                : 
+<span class="lineNum">     199 </span>                :   <B><FONT COLOR="#A020F0">for</FONT></B> (lhdr_ptr = mem-&gt;large_list[pool_id]; lhdr_ptr != NULL;
+<span class="lineNum">     200 </span>                :        lhdr_ptr = lhdr_ptr-&gt;hdr.next) {
+<span class="lineNum">     201 </span>                :     fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  Large chunk used %ld\n&quot;</FONT></B>,
+<span class="lineNum">     202 </span>                : 	    (<B><FONT COLOR="#228B22">long</FONT></B>) lhdr_ptr-&gt;hdr.bytes_used);
+<span class="lineNum">     203 </span>                :   }
+<span class="lineNum">     204 </span>                : 
+<span class="lineNum">     205 </span>                :   <B><FONT COLOR="#A020F0">for</FONT></B> (shdr_ptr = mem-&gt;small_list[pool_id]; shdr_ptr != NULL;
+<span class="lineNum">     206 </span>                :        shdr_ptr = shdr_ptr-&gt;hdr.next) {
+<span class="lineNum">     207 </span>                :     fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;  Small chunk used %ld free %ld\n&quot;</FONT></B>,
+<span class="lineNum">     208 </span>                : 	    (<B><FONT COLOR="#228B22">long</FONT></B>) shdr_ptr-&gt;hdr.bytes_used,
+<span class="lineNum">     209 </span>                : 	    (<B><FONT COLOR="#228B22">long</FONT></B>) shdr_ptr-&gt;hdr.bytes_left);
+<span class="lineNum">     210 </span>                :   }
+<span class="lineNum">     211 </span>                : }
+<span class="lineNum">     212 </span>                : 
+<span class="lineNum">     213 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B> <I><FONT COLOR="#B22222">/* MEM_STATS */</FONT></I>
+<span class="lineNum">     214 </span>                : 
+<span class="lineNum">     215 </span>                : 
+<span class="lineNum">     216 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     217 </span><span class="lineCov">              39: <B><FONT COLOR="#0000FF">out_of_memory</FONT></B> (j_common_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> which)</span>
+<span class="lineNum">     218 </span>                : <I><FONT COLOR="#B22222">/* Report an out-of-memory error and stop execution */</FONT></I>
+<span class="lineNum">     219 </span>                : <I><FONT COLOR="#B22222">/* If we compiled MEM_STATS support, report alloc requests before dying */</FONT></I>
+<span class="lineNum">     220 </span>                : {
+<span class="lineNum">     221 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">MEM_STATS</FONT>
+<span class="lineNum">     222 </span>                :   cinfo-&gt;err-&gt;trace_level = 2;	<I><FONT COLOR="#B22222">/* force self_destruct to report stats */</FONT></I>
+<span class="lineNum">     223 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     224 </span><span class="lineCov">              39:   ERREXIT1(cinfo, JERR_OUT_OF_MEMORY, which);</span>
+<span class="lineNum">     225 </span><span class="lineNoCov">               0: }</span>
+<span class="lineNum">     226 </span>                : 
+<span class="lineNum">     227 </span>                : 
+<span class="lineNum">     228 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     229 </span>                :  * Allocation of &quot;small&quot; objects.
+<span class="lineNum">     230 </span>                :  *
+<span class="lineNum">     231 </span>                :  * For these, we use pooled storage.  When a new pool must be created,
+<span class="lineNum">     232 </span>                :  * we try to get enough space for the current request plus a &quot;slop&quot; factor,
+<span class="lineNum">     233 </span>                :  * where the slop will be the amount of leftover space in the new pool.
+<span class="lineNum">     234 </span>                :  * The speed vs. space tradeoff is largely determined by the slop values.
+<span class="lineNum">     235 </span>                :  * A different slop value is provided for each pool class (lifetime),
+<span class="lineNum">     236 </span>                :  * and we also distinguish the first pool of a class from later ones.
+<span class="lineNum">     237 </span>                :  * NOTE: the values given work fairly well on both 16- and 32-bit-int
+<span class="lineNum">     238 </span>                :  * machines, but may be too small if longs are 64 bits or more.
+<span class="lineNum">     239 </span>                :  */</FONT></I>
+<span class="lineNum">     240 </span>                : 
+<span class="lineNum">     241 </span>                : <B><FONT COLOR="#228B22">static</FONT></B> <B><FONT COLOR="#228B22">const</FONT></B> size_t first_pool_slop[JPOOL_NUMPOOLS] = 
+<span class="lineNum">     242 </span>                : {
+<span class="lineNum">     243 </span>                : 	1600,			<I><FONT COLOR="#B22222">/* first PERMANENT pool */</FONT></I>
+<span class="lineNum">     244 </span>                : 	16000			<I><FONT COLOR="#B22222">/* first IMAGE pool */</FONT></I>
+<span class="lineNum">     245 </span>                : };
+<span class="lineNum">     246 </span>                : 
+<span class="lineNum">     247 </span>                : <B><FONT COLOR="#228B22">static</FONT></B> <B><FONT COLOR="#228B22">const</FONT></B> size_t extra_pool_slop[JPOOL_NUMPOOLS] = 
+<span class="lineNum">     248 </span>                : {
+<span class="lineNum">     249 </span>                : 	0,			<I><FONT COLOR="#B22222">/* additional PERMANENT pools */</FONT></I>
+<span class="lineNum">     250 </span>                : 	5000			<I><FONT COLOR="#B22222">/* additional IMAGE pools */</FONT></I>
+<span class="lineNum">     251 </span>                : };
+<span class="lineNum">     252 </span>                : 
+<span class="lineNum">     253 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">MIN_SLOP</FONT>  50		<I><FONT COLOR="#B22222">/* greater than 0 to avoid futile looping */</FONT></I>
+<span class="lineNum">     254 </span>                : 
+<span class="lineNum">     255 </span>                : 
+<span class="lineNum">     256 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B> *)
+<span class="lineNum">     257 </span><span class="lineCov">          319548: <B><FONT COLOR="#0000FF">alloc_small</FONT></B> (j_common_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> pool_id, size_t sizeofobject)</span>
+<span class="lineNum">     258 </span>                : <I><FONT COLOR="#B22222">/* Allocate a &quot;small&quot; object */</FONT></I>
+<span class="lineNum">     259 </span>                : {
+<span class="lineNum">     260 </span><span class="lineCov">          319548:   my_mem_ptr mem = (my_mem_ptr) cinfo-&gt;mem;</span>
+<span class="lineNum">     261 </span>                :   small_pool_ptr hdr_ptr, prev_hdr_ptr;
+<span class="lineNum">     262 </span>                :   <B><FONT COLOR="#228B22">char</FONT></B> * data_ptr;
+<span class="lineNum">     263 </span>                :   size_t odd_bytes, min_request, slop;
+<span class="lineNum">     264 </span>                : 
+<span class="lineNum">     265 </span>                :   <I><FONT COLOR="#B22222">/* Check for unsatisfiable request (do now to ensure no overflow below) */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">              39: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          319509: branch 1 taken</span>
+</span><span class="lineNum">     266 </span><span class="lineCov">          319548:   <B><FONT COLOR="#A020F0">if</FONT></B> (sizeofobject &gt; (size_t) (MAX_ALLOC_CHUNK-SIZEOF(small_pool_hdr)))</span>
+<span class="lineNum">     267 </span><span class="lineCov">              39:     out_of_memory(cinfo, 1);	<I><FONT COLOR="#B22222">/* request exceeds malloc's ability */</FONT></I></span>
+<span class="lineNum">     268 </span>                : 
+<span class="lineNum">     269 </span>                :   <I><FONT COLOR="#B22222">/* Round up the requested size to a multiple of SIZEOF(ALIGN_TYPE) */</FONT></I>
+<span class="lineNum">     270 </span><span class="lineCov">          319509:   odd_bytes = sizeofobject % SIZEOF(ALIGN_TYPE);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           38646: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          280863: branch 1 taken</span>
+</span><span class="lineNum">     271 </span><span class="lineCov">          319509:   <B><FONT COLOR="#A020F0">if</FONT></B> (odd_bytes &gt; 0)</span>
+<span class="lineNum">     272 </span><span class="lineCov">           38646:     sizeofobject += SIZEOF(ALIGN_TYPE) - odd_bytes;</span>
+<span class="lineNum">     273 </span>                : 
+<span class="lineNum">     274 </span>                :   <I><FONT COLOR="#B22222">/* See if space is available in any existing pool */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          319509: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          319509: branch 3 taken</span>
+</span><span class="lineNum">     275 </span><span class="lineCov">          319509:   <B><FONT COLOR="#A020F0">if</FONT></B> (pool_id &lt; 0 || pool_id &gt;= JPOOL_NUMPOOLS)</span>
+<span class="lineNum">     276 </span><span class="lineNoCov">               0:     ERREXIT1(cinfo, JERR_BAD_POOL_ID, pool_id);	<I><FONT COLOR="#B22222">/* safety check */</FONT></I></span>
+<span class="lineNum">     277 </span><span class="lineCov">          319509:   prev_hdr_ptr = NULL;</span>
+<span class="lineNum">     278 </span><span class="lineCov">          319509:   hdr_ptr = mem-&gt;small_list[pool_id];</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          335137: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           73901: branch 1 taken</span>
+</span><span class="lineNum">     279 </span><span class="lineCov">          728547:   <B><FONT COLOR="#A020F0">while</FONT></B> (hdr_ptr != NULL) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          245608: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           89529: branch 1 taken</span>
+</span><span class="lineNum">     280 </span><span class="lineCov">          335137:     <B><FONT COLOR="#A020F0">if</FONT></B> (hdr_ptr-&gt;hdr.bytes_left &gt;= sizeofobject)</span>
+<span class="lineNum">     281 </span><span class="lineCov">          245608:       <B><FONT COLOR="#A020F0">break</FONT></B>;			<I><FONT COLOR="#B22222">/* found pool with enough space */</FONT></I></span>
+<span class="lineNum">     282 </span><span class="lineCov">           89529:     prev_hdr_ptr = hdr_ptr;</span>
+<span class="lineNum">     283 </span><span class="lineCov">           89529:     hdr_ptr = hdr_ptr-&gt;hdr.next;</span>
+<span class="lineNum">     284 </span>                :   }
+<span class="lineNum">     285 </span>                : 
+<span class="lineNum">     286 </span>                :   <I><FONT COLOR="#B22222">/* Time to make a new pool? */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           73901: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          245608: branch 1 taken</span>
+</span><span class="lineNum">     287 </span><span class="lineCov">          319509:   <B><FONT COLOR="#A020F0">if</FONT></B> (hdr_ptr == NULL) {</span>
+<span class="lineNum">     288 </span>                :     <I><FONT COLOR="#B22222">/* min_request is what we need now, slop is what will be leftover */</FONT></I>
+<span class="lineNum">     289 </span><span class="lineCov">           73901:     min_request = sizeofobject + SIZEOF(small_pool_hdr);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           27247: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           46654: branch 1 taken</span>
+</span><span class="lineNum">     290 </span><span class="lineCov">           73901:     <B><FONT COLOR="#A020F0">if</FONT></B> (prev_hdr_ptr == NULL)	<I><FONT COLOR="#B22222">/* first pool in class? */</FONT></I></span>
+<span class="lineNum">     291 </span><span class="lineCov">           27247:       slop = first_pool_slop[pool_id];</span>
+<span class="lineNum">     292 </span>                :     <B><FONT COLOR="#A020F0">else</FONT></B>
+<span class="lineNum">     293 </span><span class="lineCov">           46654:       slop = extra_pool_slop[pool_id];</span>
+<span class="lineNum">     294 </span>                :     <I><FONT COLOR="#B22222">/* Don't ask for more than MAX_ALLOC_CHUNK */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           73901: branch 1 taken</span>
+</span><span class="lineNum">     295 </span><span class="lineCov">           73901:     <B><FONT COLOR="#A020F0">if</FONT></B> (slop &gt; (size_t) (MAX_ALLOC_CHUNK-min_request))</span>
+<span class="lineNum">     296 </span><span class="lineNoCov">               0:       slop = (size_t) (MAX_ALLOC_CHUNK-min_request);</span>
+<span class="lineNum">     297 </span>                :     <I><FONT COLOR="#B22222">/* Try to get space, if fail reduce slop and try again */</FONT></I>
+<span class="lineNum">     298 </span>                :     <B><FONT COLOR="#A020F0">for</FONT></B> (;;) {
+<span class="lineNum">     299 </span><span class="lineCov">           73901:       hdr_ptr = (small_pool_ptr) jpeg_get_small(cinfo, min_request + slop);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           73901: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     300 </span><span class="lineCov">           73901:       <B><FONT COLOR="#A020F0">if</FONT></B> (hdr_ptr != NULL)</span>
+<span class="lineNum">     301 </span><span class="lineCov">           73901: 	<B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     302 </span><span class="lineNoCov">               0:       slop /= 2;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     303 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#A020F0">if</FONT></B> (slop &lt; MIN_SLOP)	<I><FONT COLOR="#B22222">/* give up when it gets real small */</FONT></I></span>
+<span class="lineNum">     304 </span><span class="lineNoCov">               0: 	out_of_memory(cinfo, 2); <I><FONT COLOR="#B22222">/* jpeg_get_small failed */</FONT></I></span>
+<span class="lineNum">     305 </span><span class="lineNoCov">               0:     }</span>
+<span class="lineNum">     306 </span><span class="lineCov">           73901:     mem-&gt;total_space_allocated += min_request + slop;</span>
+<span class="lineNum">     307 </span>                :     <I><FONT COLOR="#B22222">/* Success, initialize the new pool header and add to end of list */</FONT></I>
+<span class="lineNum">     308 </span><span class="lineCov">           73901:     hdr_ptr-&gt;hdr.next = NULL;</span>
+<span class="lineNum">     309 </span><span class="lineCov">           73901:     hdr_ptr-&gt;hdr.bytes_used = 0;</span>
+<span class="lineNum">     310 </span><span class="lineCov">           73901:     hdr_ptr-&gt;hdr.bytes_left = sizeofobject + slop;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           27247: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           46654: branch 1 taken</span>
+</span><span class="lineNum">     311 </span><span class="lineCov">           73901:     <B><FONT COLOR="#A020F0">if</FONT></B> (prev_hdr_ptr == NULL)	<I><FONT COLOR="#B22222">/* first pool in class? */</FONT></I></span>
+<span class="lineNum">     312 </span><span class="lineCov">           27247:       mem-&gt;small_list[pool_id] = hdr_ptr;</span>
+<span class="lineNum">     313 </span>                :     <B><FONT COLOR="#A020F0">else</FONT></B>
+<span class="lineNum">     314 </span><span class="lineCov">           46654:       prev_hdr_ptr-&gt;hdr.next = hdr_ptr;</span>
+<span class="lineNum">     315 </span>                :   }
+<span class="lineNum">     316 </span>                : 
+<span class="lineNum">     317 </span>                :   <I><FONT COLOR="#B22222">/* OK, allocate the object from the current pool */</FONT></I>
+<span class="lineNum">     318 </span><span class="lineCov">          319509:   data_ptr = (<B><FONT COLOR="#228B22">char</FONT></B> *) (hdr_ptr + 1); <I><FONT COLOR="#B22222">/* point to first data byte in pool */</FONT></I></span>
+<span class="lineNum">     319 </span><span class="lineCov">          319509:   data_ptr += hdr_ptr-&gt;hdr.bytes_used; <I><FONT COLOR="#B22222">/* point to place for object */</FONT></I></span>
+<span class="lineNum">     320 </span><span class="lineCov">          319509:   hdr_ptr-&gt;hdr.bytes_used += sizeofobject;</span>
+<span class="lineNum">     321 </span><span class="lineCov">          319509:   hdr_ptr-&gt;hdr.bytes_left -= sizeofobject;</span>
+<span class="lineNum">     322 </span>                : 
+<span class="lineNum">     323 </span><span class="lineCov">          319509:   <B><FONT COLOR="#A020F0">return</FONT></B> (<B><FONT COLOR="#228B22">void</FONT></B> *) data_ptr;</span>
+<span class="lineNum">     324 </span>                : }
+<span class="lineNum">     325 </span>                : 
+<span class="lineNum">     326 </span>                : 
+<span class="lineNum">     327 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     328 </span>                :  * Allocation of &quot;large&quot; objects.
+<span class="lineNum">     329 </span>                :  *
+<span class="lineNum">     330 </span>                :  * The external semantics of these are the same as &quot;small&quot; objects,
+<span class="lineNum">     331 </span>                :  * except that FAR pointers are used on 80x86.  However the pool
+<span class="lineNum">     332 </span>                :  * management heuristics are quite different.  We assume that each
+<span class="lineNum">     333 </span>                :  * request is large enough that it may as well be passed directly to
+<span class="lineNum">     334 </span>                :  * jpeg_get_large; the pool management just links everything together
+<span class="lineNum">     335 </span>                :  * so that we can free it all on demand.
+<span class="lineNum">     336 </span>                :  * Note: the major use of &quot;large&quot; objects is in JSAMPARRAY and JBLOCKARRAY
+<span class="lineNum">     337 </span>                :  * structures.  The routines that create these structures (see below)
+<span class="lineNum">     338 </span>                :  * deliberately bunch rows together to ensure a large request size.
+<span class="lineNum">     339 </span>                :  */</FONT></I>
+<span class="lineNum">     340 </span>                : 
+<span class="lineNum">     341 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B> FAR *)
+<span class="lineNum">     342 </span><span class="lineCov">           54299: <B><FONT COLOR="#0000FF">alloc_large</FONT></B> (j_common_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> pool_id, size_t sizeofobject)</span>
+<span class="lineNum">     343 </span>                : <I><FONT COLOR="#B22222">/* Allocate a &quot;large&quot; object */</FONT></I>
+<span class="lineNum">     344 </span>                : {
+<span class="lineNum">     345 </span><span class="lineCov">           54299:   my_mem_ptr mem = (my_mem_ptr) cinfo-&gt;mem;</span>
+<span class="lineNum">     346 </span>                :   large_pool_ptr hdr_ptr;
+<span class="lineNum">     347 </span>                :   size_t odd_bytes;
+<span class="lineNum">     348 </span>                : 
+<span class="lineNum">     349 </span>                :   <I><FONT COLOR="#B22222">/* Check for unsatisfiable request (do now to ensure no overflow below) */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           54299: branch 1 taken</span>
+</span><span class="lineNum">     350 </span><span class="lineCov">           54299:   <B><FONT COLOR="#A020F0">if</FONT></B> (sizeofobject &gt; (size_t) (MAX_ALLOC_CHUNK-SIZEOF(large_pool_hdr)))</span>
+<span class="lineNum">     351 </span><span class="lineNoCov">               0:     out_of_memory(cinfo, 3);	<I><FONT COLOR="#B22222">/* request exceeds malloc's ability */</FONT></I></span>
+<span class="lineNum">     352 </span>                : 
+<span class="lineNum">     353 </span>                :   <I><FONT COLOR="#B22222">/* Round up the requested size to a multiple of SIZEOF(ALIGN_TYPE) */</FONT></I>
+<span class="lineNum">     354 </span><span class="lineCov">           54299:   odd_bytes = sizeofobject % SIZEOF(ALIGN_TYPE);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            6955: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           47344: branch 1 taken</span>
+</span><span class="lineNum">     355 </span><span class="lineCov">           54299:   <B><FONT COLOR="#A020F0">if</FONT></B> (odd_bytes &gt; 0)</span>
+<span class="lineNum">     356 </span><span class="lineCov">            6955:     sizeofobject += SIZEOF(ALIGN_TYPE) - odd_bytes;</span>
+<span class="lineNum">     357 </span>                : 
+<span class="lineNum">     358 </span>                :   <I><FONT COLOR="#B22222">/* Always make a new pool */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           54299: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           54299: branch 3 taken</span>
+</span><span class="lineNum">     359 </span><span class="lineCov">           54299:   <B><FONT COLOR="#A020F0">if</FONT></B> (pool_id &lt; 0 || pool_id &gt;= JPOOL_NUMPOOLS)</span>
+<span class="lineNum">     360 </span><span class="lineNoCov">               0:     ERREXIT1(cinfo, JERR_BAD_POOL_ID, pool_id);	<I><FONT COLOR="#B22222">/* safety check */</FONT></I></span>
+<span class="lineNum">     361 </span>                : 
+<span class="lineNum">     362 </span><span class="lineCov">           54299:   hdr_ptr = (large_pool_ptr) jpeg_get_large(cinfo, sizeofobject +</span>
+<span class="lineNum">     363 </span>                : 					    SIZEOF(large_pool_hdr));
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           54299: branch 1 taken</span>
+</span><span class="lineNum">     364 </span><span class="lineCov">           54299:   <B><FONT COLOR="#A020F0">if</FONT></B> (hdr_ptr == NULL)</span>
+<span class="lineNum">     365 </span><span class="lineNoCov">               0:     out_of_memory(cinfo, 4);	<I><FONT COLOR="#B22222">/* jpeg_get_large failed */</FONT></I></span>
+<span class="lineNum">     366 </span><span class="lineCov">           54299:   mem-&gt;total_space_allocated += sizeofobject + SIZEOF(large_pool_hdr);</span>
+<span class="lineNum">     367 </span>                : 
+<span class="lineNum">     368 </span>                :   <I><FONT COLOR="#B22222">/* Success, initialize the new pool header and add to list */</FONT></I>
+<span class="lineNum">     369 </span><span class="lineCov">           54299:   hdr_ptr-&gt;hdr.next = mem-&gt;large_list[pool_id];</span>
+<span class="lineNum">     370 </span>                :   <I><FONT COLOR="#B22222">/* We maintain space counts in each pool header for statistical purposes,
+<span class="lineNum">     371 </span>                :    * even though they are not needed for allocation.
+<span class="lineNum">     372 </span>                :    */</FONT></I>
+<span class="lineNum">     373 </span><span class="lineCov">           54299:   hdr_ptr-&gt;hdr.bytes_used = sizeofobject;</span>
+<span class="lineNum">     374 </span><span class="lineCov">           54299:   hdr_ptr-&gt;hdr.bytes_left = 0;</span>
+<span class="lineNum">     375 </span><span class="lineCov">           54299:   mem-&gt;large_list[pool_id] = hdr_ptr;</span>
+<span class="lineNum">     376 </span>                : 
+<span class="lineNum">     377 </span><span class="lineCov">           54299:   <B><FONT COLOR="#A020F0">return</FONT></B> (<B><FONT COLOR="#228B22">void</FONT></B> FAR *) (hdr_ptr + 1); <I><FONT COLOR="#B22222">/* point to first data byte in pool */</FONT></I></span>
+<span class="lineNum">     378 </span>                : }
+<span class="lineNum">     379 </span>                : 
+<span class="lineNum">     380 </span>                : 
+<span class="lineNum">     381 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     382 </span>                :  * Creation of 2-D sample arrays.
+<span class="lineNum">     383 </span>                :  * The pointers are in near heap, the samples themselves in FAR heap.
+<span class="lineNum">     384 </span>                :  *
+<span class="lineNum">     385 </span>                :  * To minimize allocation overhead and to allow I/O of large contiguous
+<span class="lineNum">     386 </span>                :  * blocks, we allocate the sample rows in groups of as many rows as possible
+<span class="lineNum">     387 </span>                :  * without exceeding MAX_ALLOC_CHUNK total bytes per allocation request.
+<span class="lineNum">     388 </span>                :  * NB: the virtual array control routines, later in this file, know about
+<span class="lineNum">     389 </span>                :  * this chunking of rows.  The rowsperchunk value is left in the mem manager
+<span class="lineNum">     390 </span>                :  * object so that it can be saved away if this sarray is the workspace for
+<span class="lineNum">     391 </span>                :  * a virtual array.
+<span class="lineNum">     392 </span>                :  */</FONT></I>
+<span class="lineNum">     393 </span>                : 
+<span class="lineNum">     394 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(JSAMPARRAY)
+<span class="lineNum">     395 </span><span class="lineCov">           43890: <B><FONT COLOR="#0000FF">alloc_sarray</FONT></B> (j_common_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> pool_id,</span>
+<span class="lineNum">     396 </span>                : 	      JDIMENSION samplesperrow, JDIMENSION numrows)
+<span class="lineNum">     397 </span>                : <I><FONT COLOR="#B22222">/* Allocate a 2-D sample array */</FONT></I>
+<span class="lineNum">     398 </span>                : {
+<span class="lineNum">     399 </span><span class="lineCov">           43890:   my_mem_ptr mem = (my_mem_ptr) cinfo-&gt;mem;</span>
+<span class="lineNum">     400 </span>                :   JSAMPARRAY result;
+<span class="lineNum">     401 </span>                :   JSAMPROW workspace;
+<span class="lineNum">     402 </span>                :   JDIMENSION rowsperchunk, currow, i;
+<span class="lineNum">     403 </span>                :   <B><FONT COLOR="#228B22">long</FONT></B> ltemp;
+<span class="lineNum">     404 </span>                : 
+<span class="lineNum">     405 </span>                :   <I><FONT COLOR="#B22222">/* Calculate max # of rows allowed in one allocation chunk */</FONT></I>
+<span class="lineNum">     406 </span><span class="lineCov">           43890:   ltemp = (MAX_ALLOC_CHUNK-SIZEOF(large_pool_hdr)) /</span>
+<span class="lineNum">     407 </span><span class="lineCov">           43890: 	  ((<B><FONT COLOR="#228B22">long</FONT></B>) samplesperrow * SIZEOF(JSAMPLE));</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">              29: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           43861: branch 1 taken</span>
+</span><span class="lineNum">     408 </span><span class="lineCov">           43890:   <B><FONT COLOR="#A020F0">if</FONT></B> (ltemp &lt;= 0)</span>
+<span class="lineNum">     409 </span><span class="lineCov">              29:     ERREXIT(cinfo, JERR_WIDTH_OVERFLOW);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">               3: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           43858: branch 1 taken</span>
+</span><span class="lineNum">     410 </span><span class="lineCov">           43861:   <B><FONT COLOR="#A020F0">if</FONT></B> (ltemp &lt; (<B><FONT COLOR="#228B22">long</FONT></B>) numrows)</span>
+<span class="lineNum">     411 </span><span class="lineCov">               3:     rowsperchunk = (JDIMENSION) ltemp;</span>
+<span class="lineNum">     412 </span>                :   <B><FONT COLOR="#A020F0">else</FONT></B>
+<span class="lineNum">     413 </span><span class="lineCov">           43858:     rowsperchunk = numrows;</span>
+<span class="lineNum">     414 </span><span class="lineCov">           43861:   mem-&gt;last_rowsperchunk = rowsperchunk;</span>
+<span class="lineNum">     415 </span>                : 
+<span class="lineNum">     416 </span>                :   <I><FONT COLOR="#B22222">/* Get space for row pointers (small object) */</FONT></I>
+<span class="lineNum">     417 </span><span class="lineCov">           43861:   result = (JSAMPARRAY) alloc_small(cinfo, pool_id,</span>
+<span class="lineNum">     418 </span>                : 				    (size_t) (numrows * SIZEOF(JSAMPROW)));
+<span class="lineNum">     419 </span>                : 
+<span class="lineNum">     420 </span>                :   <I><FONT COLOR="#B22222">/* Get the rows themselves (large objects) */</FONT></I>
+<span class="lineNum">     421 </span><span class="lineCov">           43861:   currow = 0;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           43870: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           43861: branch 1 taken</span>
+</span><span class="lineNum">     422 </span><span class="lineCov">          131592:   <B><FONT COLOR="#A020F0">while</FONT></B> (currow &lt; numrows) {</span>
+<span class="lineNum">     423 </span><span class="lineCov">           43870:     rowsperchunk = MIN(rowsperchunk, numrows - currow);</span>
+<span class="lineNum">     424 </span><span class="lineCov">           43870:     workspace = (JSAMPROW) alloc_large(cinfo, pool_id,</span>
+<span class="lineNum">     425 </span><span class="lineCov">           43870: 	(size_t) ((size_t) rowsperchunk * (size_t) samplesperrow</span>
+<span class="lineNum">     426 </span>                : 		  * SIZEOF(JSAMPLE)));
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">         6415090: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           43870: branch 1 taken</span>
+</span><span class="lineNum">     427 </span><span class="lineCov">         6458960:     <B><FONT COLOR="#A020F0">for</FONT></B> (i = rowsperchunk; i &gt; 0; i--) {</span>
+<span class="lineNum">     428 </span><span class="lineCov">         6415090:       result[currow++] = workspace;</span>
+<span class="lineNum">     429 </span><span class="lineCov">         6415090:       workspace += samplesperrow;</span>
+<span class="lineNum">     430 </span>                :     }
+<span class="lineNum">     431 </span>                :   }
+<span class="lineNum">     432 </span>                : 
+<span class="lineNum">     433 </span><span class="lineCov">           43861:   <B><FONT COLOR="#A020F0">return</FONT></B> result;</span>
+<span class="lineNum">     434 </span>                : }
+<span class="lineNum">     435 </span>                : 
+<span class="lineNum">     436 </span>                : 
+<span class="lineNum">     437 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     438 </span>                :  * Creation of 2-D coefficient-block arrays.
+<span class="lineNum">     439 </span>                :  * This is essentially the same as the code for sample arrays, above.
+<span class="lineNum">     440 </span>                :  */</FONT></I>
+<span class="lineNum">     441 </span>                : 
+<span class="lineNum">     442 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(JBLOCKARRAY)
+<span class="lineNum">     443 </span><span class="lineCov">            2910: <B><FONT COLOR="#0000FF">alloc_barray</FONT></B> (j_common_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> pool_id,</span>
+<span class="lineNum">     444 </span>                : 	      JDIMENSION blocksperrow, JDIMENSION numrows)
+<span class="lineNum">     445 </span>                : <I><FONT COLOR="#B22222">/* Allocate a 2-D coefficient-block array */</FONT></I>
+<span class="lineNum">     446 </span>                : {
+<span class="lineNum">     447 </span><span class="lineCov">            2910:   my_mem_ptr mem = (my_mem_ptr) cinfo-&gt;mem;</span>
+<span class="lineNum">     448 </span>                :   JBLOCKARRAY result;
+<span class="lineNum">     449 </span>                :   JBLOCKROW workspace;
+<span class="lineNum">     450 </span>                :   JDIMENSION rowsperchunk, currow, i;
+<span class="lineNum">     451 </span>                :   <B><FONT COLOR="#228B22">long</FONT></B> ltemp;
+<span class="lineNum">     452 </span>                : 
+<span class="lineNum">     453 </span>                :   <I><FONT COLOR="#B22222">/* Calculate max # of rows allowed in one allocation chunk */</FONT></I>
+<span class="lineNum">     454 </span><span class="lineCov">            2910:   ltemp = (MAX_ALLOC_CHUNK-SIZEOF(large_pool_hdr)) /</span>
+<span class="lineNum">     455 </span><span class="lineCov">            2910: 	  ((<B><FONT COLOR="#228B22">long</FONT></B>) blocksperrow * SIZEOF(JBLOCK));</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2910: branch 1 taken</span>
+</span><span class="lineNum">     456 </span><span class="lineCov">            2910:   <B><FONT COLOR="#A020F0">if</FONT></B> (ltemp &lt;= 0)</span>
+<span class="lineNum">     457 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_WIDTH_OVERFLOW);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2910: branch 1 taken</span>
+</span><span class="lineNum">     458 </span><span class="lineCov">            2910:   <B><FONT COLOR="#A020F0">if</FONT></B> (ltemp &lt; (<B><FONT COLOR="#228B22">long</FONT></B>) numrows)</span>
+<span class="lineNum">     459 </span><span class="lineNoCov">               0:     rowsperchunk = (JDIMENSION) ltemp;</span>
+<span class="lineNum">     460 </span>                :   <B><FONT COLOR="#A020F0">else</FONT></B>
+<span class="lineNum">     461 </span><span class="lineCov">            2910:     rowsperchunk = numrows;</span>
+<span class="lineNum">     462 </span><span class="lineCov">            2910:   mem-&gt;last_rowsperchunk = rowsperchunk;</span>
+<span class="lineNum">     463 </span>                : 
+<span class="lineNum">     464 </span>                :   <I><FONT COLOR="#B22222">/* Get space for row pointers (small object) */</FONT></I>
+<span class="lineNum">     465 </span><span class="lineCov">            2910:   result = (JBLOCKARRAY) alloc_small(cinfo, pool_id,</span>
+<span class="lineNum">     466 </span>                : 				     (size_t) (numrows * SIZEOF(JBLOCKROW)));
+<span class="lineNum">     467 </span>                : 
+<span class="lineNum">     468 </span>                :   <I><FONT COLOR="#B22222">/* Get the rows themselves (large objects) */</FONT></I>
+<span class="lineNum">     469 </span><span class="lineCov">            2910:   currow = 0;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            2910: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2910: branch 1 taken</span>
+</span><span class="lineNum">     470 </span><span class="lineCov">            8730:   <B><FONT COLOR="#A020F0">while</FONT></B> (currow &lt; numrows) {</span>
+<span class="lineNum">     471 </span><span class="lineCov">            2910:     rowsperchunk = MIN(rowsperchunk, numrows - currow);</span>
+<span class="lineNum">     472 </span><span class="lineCov">            2910:     workspace = (JBLOCKROW) alloc_large(cinfo, pool_id,</span>
+<span class="lineNum">     473 </span><span class="lineCov">            2910: 	(size_t) ((size_t) rowsperchunk * (size_t) blocksperrow</span>
+<span class="lineNum">     474 </span>                : 		  * SIZEOF(JBLOCK)));
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          355851: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2910: branch 1 taken</span>
+</span><span class="lineNum">     475 </span><span class="lineCov">          358761:     <B><FONT COLOR="#A020F0">for</FONT></B> (i = rowsperchunk; i &gt; 0; i--) {</span>
+<span class="lineNum">     476 </span><span class="lineCov">          355851:       result[currow++] = workspace;</span>
+<span class="lineNum">     477 </span><span class="lineCov">          355851:       workspace += blocksperrow;</span>
+<span class="lineNum">     478 </span>                :     }
+<span class="lineNum">     479 </span>                :   }
+<span class="lineNum">     480 </span>                : 
+<span class="lineNum">     481 </span><span class="lineCov">            2910:   <B><FONT COLOR="#A020F0">return</FONT></B> result;</span>
+<span class="lineNum">     482 </span>                : }
+<span class="lineNum">     483 </span>                : 
+<span class="lineNum">     484 </span>                : 
+<span class="lineNum">     485 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     486 </span>                :  * About virtual array management:
+<span class="lineNum">     487 </span>                :  *
+<span class="lineNum">     488 </span>                :  * The above &quot;normal&quot; array routines are only used to allocate strip buffers
+<span class="lineNum">     489 </span>                :  * (as wide as the image, but just a few rows high).  Full-image-sized buffers
+<span class="lineNum">     490 </span>                :  * are handled as &quot;virtual&quot; arrays.  The array is still accessed a strip at a
+<span class="lineNum">     491 </span>                :  * time, but the memory manager must save the whole array for repeated
+<span class="lineNum">     492 </span>                :  * accesses.  The intended implementation is that there is a strip buffer in
+<span class="lineNum">     493 </span>                :  * memory (as high as is possible given the desired memory limit), plus a
+<span class="lineNum">     494 </span>                :  * backing file that holds the rest of the array.
+<span class="lineNum">     495 </span>                :  *
+<span class="lineNum">     496 </span>                :  * The request_virt_array routines are told the total size of the image and
+<span class="lineNum">     497 </span>                :  * the maximum number of rows that will be accessed at once.  The in-memory
+<span class="lineNum">     498 </span>                :  * buffer must be at least as large as the maxaccess value.
+<span class="lineNum">     499 </span>                :  *
+<span class="lineNum">     500 </span>                :  * The request routines create control blocks but not the in-memory buffers.
+<span class="lineNum">     501 </span>                :  * That is postponed until realize_virt_arrays is called.  At that time the
+<span class="lineNum">     502 </span>                :  * total amount of space needed is known (approximately, anyway), so free
+<span class="lineNum">     503 </span>                :  * memory can be divided up fairly.
+<span class="lineNum">     504 </span>                :  *
+<span class="lineNum">     505 </span>                :  * The access_virt_array routines are responsible for making a specific strip
+<span class="lineNum">     506 </span>                :  * area accessible (after reading or writing the backing file, if necessary).
+<span class="lineNum">     507 </span>                :  * Note that the access routines are told whether the caller intends to modify
+<span class="lineNum">     508 </span>                :  * the accessed strip; during a read-only pass this saves having to rewrite
+<span class="lineNum">     509 </span>                :  * data to disk.  The access routines are also responsible for pre-zeroing
+<span class="lineNum">     510 </span>                :  * any newly accessed rows, if pre-zeroing was requested.
+<span class="lineNum">     511 </span>                :  *
+<span class="lineNum">     512 </span>                :  * In current usage, the access requests are usually for nonoverlapping
+<span class="lineNum">     513 </span>                :  * strips; that is, successive access start_row numbers differ by exactly
+<span class="lineNum">     514 </span>                :  * num_rows = maxaccess.  This means we can get good performance with simple
+<span class="lineNum">     515 </span>                :  * buffer dump/reload logic, by making the in-memory buffer be a multiple
+<span class="lineNum">     516 </span>                :  * of the access height; then there will never be accesses across bufferload
+<span class="lineNum">     517 </span>                :  * boundaries.  The code will still work with overlapping access requests,
+<span class="lineNum">     518 </span>                :  * but it doesn't handle bufferload overlaps very efficiently.
+<span class="lineNum">     519 </span>                :  */</FONT></I>
+<span class="lineNum">     520 </span>                : 
+<span class="lineNum">     521 </span>                : 
+<span class="lineNum">     522 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(jvirt_sarray_ptr)
+<span class="lineNum">     523 </span><span class="lineCov">            2221: <B><FONT COLOR="#0000FF">request_virt_sarray</FONT></B> (j_common_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> pool_id, boolean pre_zero,</span>
+<span class="lineNum">     524 </span>                : 		     JDIMENSION samplesperrow, JDIMENSION numrows,
+<span class="lineNum">     525 </span>                : 		     JDIMENSION maxaccess)
+<span class="lineNum">     526 </span>                : <I><FONT COLOR="#B22222">/* Request a virtual 2-D sample array */</FONT></I>
+<span class="lineNum">     527 </span>                : {
+<span class="lineNum">     528 </span><span class="lineCov">            2221:   my_mem_ptr mem = (my_mem_ptr) cinfo-&gt;mem;</span>
+<span class="lineNum">     529 </span>                :   jvirt_sarray_ptr result;
+<span class="lineNum">     530 </span>                : 
+<span class="lineNum">     531 </span>                :   <I><FONT COLOR="#B22222">/* Only IMAGE-lifetime virtual arrays are currently supported */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2221: branch 1 taken</span>
+</span><span class="lineNum">     532 </span><span class="lineCov">            2221:   <B><FONT COLOR="#A020F0">if</FONT></B> (pool_id != JPOOL_IMAGE)</span>
+<span class="lineNum">     533 </span><span class="lineNoCov">               0:     ERREXIT1(cinfo, JERR_BAD_POOL_ID, pool_id);	<I><FONT COLOR="#B22222">/* safety check */</FONT></I></span>
+<span class="lineNum">     534 </span>                : 
+<span class="lineNum">     535 </span>                :   <I><FONT COLOR="#B22222">/* get control block */</FONT></I>
+<span class="lineNum">     536 </span><span class="lineCov">            2221:   result = (jvirt_sarray_ptr) alloc_small(cinfo, pool_id,</span>
+<span class="lineNum">     537 </span>                : 					  SIZEOF(<B><FONT COLOR="#228B22">struct</FONT></B> jvirt_sarray_control));
+<span class="lineNum">     538 </span>                : 
+<span class="lineNum">     539 </span><span class="lineCov">            2221:   result-&gt;mem_buffer = NULL;	<I><FONT COLOR="#B22222">/* marks array not yet realized */</FONT></I></span>
+<span class="lineNum">     540 </span><span class="lineCov">            2221:   result-&gt;rows_in_array = numrows;</span>
+<span class="lineNum">     541 </span><span class="lineCov">            2221:   result-&gt;samplesperrow = samplesperrow;</span>
+<span class="lineNum">     542 </span><span class="lineCov">            2221:   result-&gt;maxaccess = maxaccess;</span>
+<span class="lineNum">     543 </span><span class="lineCov">            2221:   result-&gt;pre_zero = pre_zero;</span>
+<span class="lineNum">     544 </span><span class="lineCov">            2221:   result-&gt;b_s_open = FALSE;	<I><FONT COLOR="#B22222">/* no associated backing-store object */</FONT></I></span>
+<span class="lineNum">     545 </span><span class="lineCov">            2221:   result-&gt;next = mem-&gt;virt_sarray_list; <I><FONT COLOR="#B22222">/* add to list of virtual arrays */</FONT></I></span>
+<span class="lineNum">     546 </span><span class="lineCov">            2221:   mem-&gt;virt_sarray_list = result;</span>
+<span class="lineNum">     547 </span>                : 
+<span class="lineNum">     548 </span><span class="lineCov">            2221:   <B><FONT COLOR="#A020F0">return</FONT></B> result;</span>
+<span class="lineNum">     549 </span>                : }
+<span class="lineNum">     550 </span>                : 
+<span class="lineNum">     551 </span>                : 
+<span class="lineNum">     552 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(jvirt_barray_ptr)
+<span class="lineNum">     553 </span><span class="lineCov">            2910: <B><FONT COLOR="#0000FF">request_virt_barray</FONT></B> (j_common_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> pool_id, boolean pre_zero,</span>
+<span class="lineNum">     554 </span>                : 		     JDIMENSION blocksperrow, JDIMENSION numrows,
+<span class="lineNum">     555 </span>                : 		     JDIMENSION maxaccess)
+<span class="lineNum">     556 </span>                : <I><FONT COLOR="#B22222">/* Request a virtual 2-D coefficient-block array */</FONT></I>
+<span class="lineNum">     557 </span>                : {
+<span class="lineNum">     558 </span><span class="lineCov">            2910:   my_mem_ptr mem = (my_mem_ptr) cinfo-&gt;mem;</span>
+<span class="lineNum">     559 </span>                :   jvirt_barray_ptr result;
+<span class="lineNum">     560 </span>                : 
+<span class="lineNum">     561 </span>                :   <I><FONT COLOR="#B22222">/* Only IMAGE-lifetime virtual arrays are currently supported */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2910: branch 1 taken</span>
+</span><span class="lineNum">     562 </span><span class="lineCov">            2910:   <B><FONT COLOR="#A020F0">if</FONT></B> (pool_id != JPOOL_IMAGE)</span>
+<span class="lineNum">     563 </span><span class="lineNoCov">               0:     ERREXIT1(cinfo, JERR_BAD_POOL_ID, pool_id);	<I><FONT COLOR="#B22222">/* safety check */</FONT></I></span>
+<span class="lineNum">     564 </span>                : 
+<span class="lineNum">     565 </span>                :   <I><FONT COLOR="#B22222">/* get control block */</FONT></I>
+<span class="lineNum">     566 </span><span class="lineCov">            2910:   result = (jvirt_barray_ptr) alloc_small(cinfo, pool_id,</span>
+<span class="lineNum">     567 </span>                : 					  SIZEOF(<B><FONT COLOR="#228B22">struct</FONT></B> jvirt_barray_control));
+<span class="lineNum">     568 </span>                : 
+<span class="lineNum">     569 </span><span class="lineCov">            2910:   result-&gt;mem_buffer = NULL;	<I><FONT COLOR="#B22222">/* marks array not yet realized */</FONT></I></span>
+<span class="lineNum">     570 </span><span class="lineCov">            2910:   result-&gt;rows_in_array = numrows;</span>
+<span class="lineNum">     571 </span><span class="lineCov">            2910:   result-&gt;blocksperrow = blocksperrow;</span>
+<span class="lineNum">     572 </span><span class="lineCov">            2910:   result-&gt;maxaccess = maxaccess;</span>
+<span class="lineNum">     573 </span><span class="lineCov">            2910:   result-&gt;pre_zero = pre_zero;</span>
+<span class="lineNum">     574 </span><span class="lineCov">            2910:   result-&gt;b_s_open = FALSE;	<I><FONT COLOR="#B22222">/* no associated backing-store object */</FONT></I></span>
+<span class="lineNum">     575 </span><span class="lineCov">            2910:   result-&gt;next = mem-&gt;virt_barray_list; <I><FONT COLOR="#B22222">/* add to list of virtual arrays */</FONT></I></span>
+<span class="lineNum">     576 </span><span class="lineCov">            2910:   mem-&gt;virt_barray_list = result;</span>
+<span class="lineNum">     577 </span>                : 
+<span class="lineNum">     578 </span><span class="lineCov">            2910:   <B><FONT COLOR="#A020F0">return</FONT></B> result;</span>
+<span class="lineNum">     579 </span>                : }
+<span class="lineNum">     580 </span>                : 
+<span class="lineNum">     581 </span>                : 
+<span class="lineNum">     582 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     583 </span><span class="lineCov">            9067: <B><FONT COLOR="#0000FF">realize_virt_arrays</FONT></B> (j_common_ptr cinfo)</span>
+<span class="lineNum">     584 </span>                : <I><FONT COLOR="#B22222">/* Allocate the in-memory buffers for any unrealized virtual arrays */</FONT></I>
+<span class="lineNum">     585 </span>                : {
+<span class="lineNum">     586 </span><span class="lineCov">            9067:   my_mem_ptr mem = (my_mem_ptr) cinfo-&gt;mem;</span>
+<span class="lineNum">     587 </span>                :   <B><FONT COLOR="#228B22">long</FONT></B> space_per_minheight, maximum_space, avail_mem;
+<span class="lineNum">     588 </span>                :   <B><FONT COLOR="#228B22">long</FONT></B> minheights, max_minheights;
+<span class="lineNum">     589 </span>                :   jvirt_sarray_ptr sptr;
+<span class="lineNum">     590 </span>                :   jvirt_barray_ptr bptr;
+<span class="lineNum">     591 </span>                : 
+<span class="lineNum">     592 </span>                :   <I><FONT COLOR="#B22222">/* Compute the minimum space needed (maxaccess rows in each buffer)
+<span class="lineNum">     593 </span>                :    * and the maximum space needed (full image height in each buffer).
+<span class="lineNum">     594 </span>                :    * These may be of use to the system-dependent jpeg_mem_available routine.
+<span class="lineNum">     595 </span>                :    */</FONT></I>
+<span class="lineNum">     596 </span><span class="lineCov">            9067:   space_per_minheight = 0;</span>
+<span class="lineNum">     597 </span><span class="lineCov">            9067:   maximum_space = 0;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1850: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9067: branch 1 taken</span>
+</span><span class="lineNum">     598 </span><span class="lineCov">           10917:   <B><FONT COLOR="#A020F0">for</FONT></B> (sptr = mem-&gt;virt_sarray_list; sptr != NULL; sptr = sptr-&gt;next) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1850: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     599 </span><span class="lineCov">            1850:     <B><FONT COLOR="#A020F0">if</FONT></B> (sptr-&gt;mem_buffer == NULL) { <I><FONT COLOR="#B22222">/* if not realized yet */</FONT></I></span>
+<span class="lineNum">     600 </span><span class="lineCov">            5550:       space_per_minheight += (<B><FONT COLOR="#228B22">long</FONT></B>) sptr-&gt;maxaccess *</span>
+<span class="lineNum">     601 </span><span class="lineCov">            3700: 			     (<B><FONT COLOR="#228B22">long</FONT></B>) sptr-&gt;samplesperrow * SIZEOF(JSAMPLE);</span>
+<span class="lineNum">     602 </span><span class="lineCov">            5550:       maximum_space += (<B><FONT COLOR="#228B22">long</FONT></B>) sptr-&gt;rows_in_array *</span>
+<span class="lineNum">     603 </span><span class="lineCov">            3700: 		       (<B><FONT COLOR="#228B22">long</FONT></B>) sptr-&gt;samplesperrow * SIZEOF(JSAMPLE);</span>
+<span class="lineNum">     604 </span>                :     }
+<span class="lineNum">     605 </span>                :   }
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            2910: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9067: branch 1 taken</span>
+</span><span class="lineNum">     606 </span><span class="lineCov">           11977:   <B><FONT COLOR="#A020F0">for</FONT></B> (bptr = mem-&gt;virt_barray_list; bptr != NULL; bptr = bptr-&gt;next) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            2910: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     607 </span><span class="lineCov">            2910:     <B><FONT COLOR="#A020F0">if</FONT></B> (bptr-&gt;mem_buffer == NULL) { <I><FONT COLOR="#B22222">/* if not realized yet */</FONT></I></span>
+<span class="lineNum">     608 </span><span class="lineCov">            8730:       space_per_minheight += (<B><FONT COLOR="#228B22">long</FONT></B>) bptr-&gt;maxaccess *</span>
+<span class="lineNum">     609 </span><span class="lineCov">            5820: 			     (<B><FONT COLOR="#228B22">long</FONT></B>) bptr-&gt;blocksperrow * SIZEOF(JBLOCK);</span>
+<span class="lineNum">     610 </span><span class="lineCov">            8730:       maximum_space += (<B><FONT COLOR="#228B22">long</FONT></B>) bptr-&gt;rows_in_array *</span>
+<span class="lineNum">     611 </span><span class="lineCov">            5820: 		       (<B><FONT COLOR="#228B22">long</FONT></B>) bptr-&gt;blocksperrow * SIZEOF(JBLOCK);</span>
+<span class="lineNum">     612 </span>                :     }
+<span class="lineNum">     613 </span>                :   }
+<span class="lineNum">     614 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            5849: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3218: branch 1 taken</span>
+</span><span class="lineNum">     615 </span><span class="lineCov">            9067:   <B><FONT COLOR="#A020F0">if</FONT></B> (space_per_minheight &lt;= 0)</span>
+<span class="lineNum">     616 </span><span class="lineCov">           14916:     <B><FONT COLOR="#A020F0">return</FONT></B>;			<I><FONT COLOR="#B22222">/* no unrealized arrays, no work */</FONT></I></span>
+<span class="lineNum">     617 </span>                : 
+<span class="lineNum">     618 </span>                :   <I><FONT COLOR="#B22222">/* Determine amount of memory to actually use; this is system-dependent. */</FONT></I>
+<span class="lineNum">     619 </span><span class="lineCov">            3218:   avail_mem = jpeg_mem_available(cinfo, space_per_minheight, maximum_space,</span>
+<span class="lineNum">     620 </span>                : 				 mem-&gt;total_space_allocated);
+<span class="lineNum">     621 </span>                : 
+<span class="lineNum">     622 </span>                :   <I><FONT COLOR="#B22222">/* If the maximum space needed is available, make all the buffers full
+<span class="lineNum">     623 </span>                :    * height; otherwise parcel it out with the same number of minheights
+<span class="lineNum">     624 </span>                :    * in each buffer.
+<span class="lineNum">     625 </span>                :    */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            3218: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     626 </span><span class="lineCov">            3218:   <B><FONT COLOR="#A020F0">if</FONT></B> (avail_mem &gt;= maximum_space)</span>
+<span class="lineNum">     627 </span><span class="lineCov">            3218:     max_minheights = 1000000000L;</span>
+<span class="lineNum">     628 </span>                :   <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     629 </span><span class="lineNoCov">               0:     max_minheights = avail_mem / space_per_minheight;</span>
+<span class="lineNum">     630 </span>                :     <I><FONT COLOR="#B22222">/* If there doesn't seem to be enough space, try to get the minimum
+<span class="lineNum">     631 </span>                :      * anyway.  This allows a &quot;stub&quot; implementation of jpeg_mem_available().
+<span class="lineNum">     632 </span>                :      */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     633 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (max_minheights &lt;= 0)</span>
+<span class="lineNum">     634 </span><span class="lineNoCov">               0:       max_minheights = 1;</span>
+<span class="lineNum">     635 </span>                :   }
+<span class="lineNum">     636 </span>                : 
+<span class="lineNum">     637 </span>                :   <I><FONT COLOR="#B22222">/* Allocate the in-memory buffers and initialize backing store as needed. */</FONT></I>
+<span class="lineNum">     638 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1850: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3218: branch 1 taken</span>
+</span><span class="lineNum">     639 </span><span class="lineCov">            5068:   <B><FONT COLOR="#A020F0">for</FONT></B> (sptr = mem-&gt;virt_sarray_list; sptr != NULL; sptr = sptr-&gt;next) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1850: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     640 </span><span class="lineCov">            1850:     <B><FONT COLOR="#A020F0">if</FONT></B> (sptr-&gt;mem_buffer == NULL) { <I><FONT COLOR="#B22222">/* if not realized yet */</FONT></I></span>
+<span class="lineNum">     641 </span><span class="lineCov">            1850:       minheights = ((<B><FONT COLOR="#228B22">long</FONT></B>) sptr-&gt;rows_in_array - 1L) / sptr-&gt;maxaccess + 1L;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1850: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     642 </span><span class="lineCov">            1850:       <B><FONT COLOR="#A020F0">if</FONT></B> (minheights &lt;= max_minheights) {</span>
+<span class="lineNum">     643 </span>                : 	<I><FONT COLOR="#B22222">/* This buffer fits in memory */</FONT></I>
+<span class="lineNum">     644 </span><span class="lineCov">            1850: 	sptr-&gt;rows_in_mem = sptr-&gt;rows_in_array;</span>
+<span class="lineNum">     645 </span>                :       } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     646 </span>                : 	<I><FONT COLOR="#B22222">/* It doesn't fit in memory, create backing store. */</FONT></I>
+<span class="lineNum">     647 </span><span class="lineNoCov">               0: 	sptr-&gt;rows_in_mem = (JDIMENSION) (max_minheights * sptr-&gt;maxaccess);</span>
+<span class="lineNum">     648 </span><span class="lineNoCov">               0: 	jpeg_open_backing_store(cinfo, &amp; sptr-&gt;b_s_info,</span>
+<span class="lineNum">     649 </span><span class="lineNoCov">               0: 				(<B><FONT COLOR="#228B22">long</FONT></B>) sptr-&gt;rows_in_array *</span>
+<span class="lineNum">     650 </span><span class="lineNoCov">               0: 				(<B><FONT COLOR="#228B22">long</FONT></B>) sptr-&gt;samplesperrow *</span>
+<span class="lineNum">     651 </span>                : 				(<B><FONT COLOR="#228B22">long</FONT></B>) SIZEOF(JSAMPLE));
+<span class="lineNum">     652 </span><span class="lineNoCov">               0: 	sptr-&gt;b_s_open = TRUE;</span>
+<span class="lineNum">     653 </span>                :       }
+<span class="lineNum">     654 </span><span class="lineCov">            1850:       sptr-&gt;mem_buffer = alloc_sarray(cinfo, JPOOL_IMAGE,</span>
+<span class="lineNum">     655 </span>                : 				      sptr-&gt;samplesperrow, sptr-&gt;rows_in_mem);
+<span class="lineNum">     656 </span><span class="lineCov">            1850:       sptr-&gt;rowsperchunk = mem-&gt;last_rowsperchunk;</span>
+<span class="lineNum">     657 </span><span class="lineCov">            1850:       sptr-&gt;cur_start_row = 0;</span>
+<span class="lineNum">     658 </span><span class="lineCov">            1850:       sptr-&gt;first_undef_row = 0;</span>
+<span class="lineNum">     659 </span><span class="lineCov">            1850:       sptr-&gt;dirty = FALSE;</span>
+<span class="lineNum">     660 </span>                :     }
+<span class="lineNum">     661 </span>                :   }
+<span class="lineNum">     662 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            2910: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3218: branch 1 taken</span>
+</span><span class="lineNum">     663 </span><span class="lineCov">            6128:   <B><FONT COLOR="#A020F0">for</FONT></B> (bptr = mem-&gt;virt_barray_list; bptr != NULL; bptr = bptr-&gt;next) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            2910: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     664 </span><span class="lineCov">            2910:     <B><FONT COLOR="#A020F0">if</FONT></B> (bptr-&gt;mem_buffer == NULL) { <I><FONT COLOR="#B22222">/* if not realized yet */</FONT></I></span>
+<span class="lineNum">     665 </span><span class="lineCov">            2910:       minheights = ((<B><FONT COLOR="#228B22">long</FONT></B>) bptr-&gt;rows_in_array - 1L) / bptr-&gt;maxaccess + 1L;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            2910: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     666 </span><span class="lineCov">            2910:       <B><FONT COLOR="#A020F0">if</FONT></B> (minheights &lt;= max_minheights) {</span>
+<span class="lineNum">     667 </span>                : 	<I><FONT COLOR="#B22222">/* This buffer fits in memory */</FONT></I>
+<span class="lineNum">     668 </span><span class="lineCov">            2910: 	bptr-&gt;rows_in_mem = bptr-&gt;rows_in_array;</span>
+<span class="lineNum">     669 </span>                :       } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     670 </span>                : 	<I><FONT COLOR="#B22222">/* It doesn't fit in memory, create backing store. */</FONT></I>
+<span class="lineNum">     671 </span><span class="lineNoCov">               0: 	bptr-&gt;rows_in_mem = (JDIMENSION) (max_minheights * bptr-&gt;maxaccess);</span>
+<span class="lineNum">     672 </span><span class="lineNoCov">               0: 	jpeg_open_backing_store(cinfo, &amp; bptr-&gt;b_s_info,</span>
+<span class="lineNum">     673 </span><span class="lineNoCov">               0: 				(<B><FONT COLOR="#228B22">long</FONT></B>) bptr-&gt;rows_in_array *</span>
+<span class="lineNum">     674 </span><span class="lineNoCov">               0: 				(<B><FONT COLOR="#228B22">long</FONT></B>) bptr-&gt;blocksperrow *</span>
+<span class="lineNum">     675 </span>                : 				(<B><FONT COLOR="#228B22">long</FONT></B>) SIZEOF(JBLOCK));
+<span class="lineNum">     676 </span><span class="lineNoCov">               0: 	bptr-&gt;b_s_open = TRUE;</span>
+<span class="lineNum">     677 </span>                :       }
+<span class="lineNum">     678 </span><span class="lineCov">            2910:       bptr-&gt;mem_buffer = alloc_barray(cinfo, JPOOL_IMAGE,</span>
+<span class="lineNum">     679 </span>                : 				      bptr-&gt;blocksperrow, bptr-&gt;rows_in_mem);
+<span class="lineNum">     680 </span><span class="lineCov">            2910:       bptr-&gt;rowsperchunk = mem-&gt;last_rowsperchunk;</span>
+<span class="lineNum">     681 </span><span class="lineCov">            2910:       bptr-&gt;cur_start_row = 0;</span>
+<span class="lineNum">     682 </span><span class="lineCov">            2910:       bptr-&gt;first_undef_row = 0;</span>
+<span class="lineNum">     683 </span><span class="lineCov">            2910:       bptr-&gt;dirty = FALSE;</span>
+<span class="lineNum">     684 </span>                :     }
+<span class="lineNum">     685 </span>                :   }
+<span class="lineNum">     686 </span>                : }
+<span class="lineNum">     687 </span>                : 
+<span class="lineNum">     688 </span>                : 
+<span class="lineNum">     689 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     690 </span><span class="lineNoCov">               0: <B><FONT COLOR="#0000FF">do_sarray_io</FONT></B> (j_common_ptr cinfo, jvirt_sarray_ptr ptr, boolean writing)</span>
+<span class="lineNum">     691 </span>                : <I><FONT COLOR="#B22222">/* Do backing store read or write of a virtual sample array */</FONT></I>
+<span class="lineNum">     692 </span>                : {
+<span class="lineNum">     693 </span>                :   <B><FONT COLOR="#228B22">long</FONT></B> bytesperrow, file_offset, byte_count, rows, thisrow, i;
+<span class="lineNum">     694 </span>                : 
+<span class="lineNum">     695 </span><span class="lineNoCov">               0:   bytesperrow = (<B><FONT COLOR="#228B22">long</FONT></B>) ptr-&gt;samplesperrow * SIZEOF(JSAMPLE);</span>
+<span class="lineNum">     696 </span><span class="lineNoCov">               0:   file_offset = ptr-&gt;cur_start_row * bytesperrow;</span>
+<span class="lineNum">     697 </span>                :   <I><FONT COLOR="#B22222">/* Loop to read or write each allocation chunk in mem_buffer */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     698 </span><span class="lineNoCov">               0:   <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; (<B><FONT COLOR="#228B22">long</FONT></B>) ptr-&gt;rows_in_mem; i += ptr-&gt;rowsperchunk) {</span>
+<span class="lineNum">     699 </span>                :     <I><FONT COLOR="#B22222">/* One chunk, but check for short chunk at end of buffer */</FONT></I>
+<span class="lineNum">     700 </span><span class="lineNoCov">               0:     rows = MIN((<B><FONT COLOR="#228B22">long</FONT></B>) ptr-&gt;rowsperchunk, (<B><FONT COLOR="#228B22">long</FONT></B>) ptr-&gt;rows_in_mem - i);</span>
+<span class="lineNum">     701 </span>                :     <I><FONT COLOR="#B22222">/* Transfer no more than is currently defined */</FONT></I>
+<span class="lineNum">     702 </span><span class="lineNoCov">               0:     thisrow = (<B><FONT COLOR="#228B22">long</FONT></B>) ptr-&gt;cur_start_row + i;</span>
+<span class="lineNum">     703 </span><span class="lineNoCov">               0:     rows = MIN(rows, (<B><FONT COLOR="#228B22">long</FONT></B>) ptr-&gt;first_undef_row - thisrow);</span>
+<span class="lineNum">     704 </span>                :     <I><FONT COLOR="#B22222">/* Transfer no more than fits in file */</FONT></I>
+<span class="lineNum">     705 </span><span class="lineNoCov">               0:     rows = MIN(rows, (<B><FONT COLOR="#228B22">long</FONT></B>) ptr-&gt;rows_in_array - thisrow);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     706 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (rows &lt;= 0)		<I><FONT COLOR="#B22222">/* this chunk might be past end of file! */</FONT></I></span>
+<span class="lineNum">     707 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     708 </span><span class="lineNoCov">               0:     byte_count = rows * bytesperrow;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     709 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (writing)</span>
+<span class="lineNum">     710 </span><span class="lineNoCov">               0:       (*ptr-&gt;b_s_info.write_backing_store) (cinfo, &amp; ptr-&gt;b_s_info,</span>
+<span class="lineNum">     711 </span><span class="lineNoCov">               0: 					    (<B><FONT COLOR="#228B22">void</FONT></B> FAR *) ptr-&gt;mem_buffer[i],</span>
+<span class="lineNum">     712 </span>                : 					    file_offset, byte_count);
+<span class="lineNum">     713 </span>                :     <B><FONT COLOR="#A020F0">else</FONT></B>
+<span class="lineNum">     714 </span><span class="lineNoCov">               0:       (*ptr-&gt;b_s_info.read_backing_store) (cinfo, &amp; ptr-&gt;b_s_info,</span>
+<span class="lineNum">     715 </span><span class="lineNoCov">               0: 					   (<B><FONT COLOR="#228B22">void</FONT></B> FAR *) ptr-&gt;mem_buffer[i],</span>
+<span class="lineNum">     716 </span>                : 					   file_offset, byte_count);
+<span class="lineNum">     717 </span><span class="lineNoCov">               0:     file_offset += byte_count;</span>
+<span class="lineNum">     718 </span>                :   }
+<span class="lineNum">     719 </span><span class="lineNoCov">               0: }</span>
+<span class="lineNum">     720 </span>                : 
+<span class="lineNum">     721 </span>                : 
+<span class="lineNum">     722 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     723 </span><span class="lineNoCov">               0: <B><FONT COLOR="#0000FF">do_barray_io</FONT></B> (j_common_ptr cinfo, jvirt_barray_ptr ptr, boolean writing)</span>
+<span class="lineNum">     724 </span>                : <I><FONT COLOR="#B22222">/* Do backing store read or write of a virtual coefficient-block array */</FONT></I>
+<span class="lineNum">     725 </span>                : {
+<span class="lineNum">     726 </span>                :   <B><FONT COLOR="#228B22">long</FONT></B> bytesperrow, file_offset, byte_count, rows, thisrow, i;
+<span class="lineNum">     727 </span>                : 
+<span class="lineNum">     728 </span><span class="lineNoCov">               0:   bytesperrow = (<B><FONT COLOR="#228B22">long</FONT></B>) ptr-&gt;blocksperrow * SIZEOF(JBLOCK);</span>
+<span class="lineNum">     729 </span><span class="lineNoCov">               0:   file_offset = ptr-&gt;cur_start_row * bytesperrow;</span>
+<span class="lineNum">     730 </span>                :   <I><FONT COLOR="#B22222">/* Loop to read or write each allocation chunk in mem_buffer */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     731 </span><span class="lineNoCov">               0:   <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; (<B><FONT COLOR="#228B22">long</FONT></B>) ptr-&gt;rows_in_mem; i += ptr-&gt;rowsperchunk) {</span>
+<span class="lineNum">     732 </span>                :     <I><FONT COLOR="#B22222">/* One chunk, but check for short chunk at end of buffer */</FONT></I>
+<span class="lineNum">     733 </span><span class="lineNoCov">               0:     rows = MIN((<B><FONT COLOR="#228B22">long</FONT></B>) ptr-&gt;rowsperchunk, (<B><FONT COLOR="#228B22">long</FONT></B>) ptr-&gt;rows_in_mem - i);</span>
+<span class="lineNum">     734 </span>                :     <I><FONT COLOR="#B22222">/* Transfer no more than is currently defined */</FONT></I>
+<span class="lineNum">     735 </span><span class="lineNoCov">               0:     thisrow = (<B><FONT COLOR="#228B22">long</FONT></B>) ptr-&gt;cur_start_row + i;</span>
+<span class="lineNum">     736 </span><span class="lineNoCov">               0:     rows = MIN(rows, (<B><FONT COLOR="#228B22">long</FONT></B>) ptr-&gt;first_undef_row - thisrow);</span>
+<span class="lineNum">     737 </span>                :     <I><FONT COLOR="#B22222">/* Transfer no more than fits in file */</FONT></I>
+<span class="lineNum">     738 </span><span class="lineNoCov">               0:     rows = MIN(rows, (<B><FONT COLOR="#228B22">long</FONT></B>) ptr-&gt;rows_in_array - thisrow);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     739 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (rows &lt;= 0)		<I><FONT COLOR="#B22222">/* this chunk might be past end of file! */</FONT></I></span>
+<span class="lineNum">     740 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     741 </span><span class="lineNoCov">               0:     byte_count = rows * bytesperrow;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     742 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (writing)</span>
+<span class="lineNum">     743 </span><span class="lineNoCov">               0:       (*ptr-&gt;b_s_info.write_backing_store) (cinfo, &amp; ptr-&gt;b_s_info,</span>
+<span class="lineNum">     744 </span><span class="lineNoCov">               0: 					    (<B><FONT COLOR="#228B22">void</FONT></B> FAR *) ptr-&gt;mem_buffer[i],</span>
+<span class="lineNum">     745 </span>                : 					    file_offset, byte_count);
+<span class="lineNum">     746 </span>                :     <B><FONT COLOR="#A020F0">else</FONT></B>
+<span class="lineNum">     747 </span><span class="lineNoCov">               0:       (*ptr-&gt;b_s_info.read_backing_store) (cinfo, &amp; ptr-&gt;b_s_info,</span>
+<span class="lineNum">     748 </span><span class="lineNoCov">               0: 					   (<B><FONT COLOR="#228B22">void</FONT></B> FAR *) ptr-&gt;mem_buffer[i],</span>
+<span class="lineNum">     749 </span>                : 					   file_offset, byte_count);
+<span class="lineNum">     750 </span><span class="lineNoCov">               0:     file_offset += byte_count;</span>
+<span class="lineNum">     751 </span>                :   }
+<span class="lineNum">     752 </span><span class="lineNoCov">               0: }</span>
+<span class="lineNum">     753 </span>                : 
+<span class="lineNum">     754 </span>                : 
+<span class="lineNum">     755 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(JSAMPARRAY)
+<span class="lineNum">     756 </span><span class="lineCov">          525444: <B><FONT COLOR="#0000FF">access_virt_sarray</FONT></B> (j_common_ptr cinfo, jvirt_sarray_ptr ptr,</span>
+<span class="lineNum">     757 </span>                : 		    JDIMENSION start_row, JDIMENSION num_rows,
+<span class="lineNum">     758 </span>                : 		    boolean writable)
+<span class="lineNum">     759 </span>                : <I><FONT COLOR="#B22222">/* Access the part of a virtual sample array starting at start_row */</FONT></I>
+<span class="lineNum">     760 </span>                : <I><FONT COLOR="#B22222">/* and extending for num_rows rows.  writable is true if  */</FONT></I>
+<span class="lineNum">     761 </span>                : <I><FONT COLOR="#B22222">/* caller intends to modify the accessed area. */</FONT></I>
+<span class="lineNum">     762 </span>                : {
+<span class="lineNum">     763 </span><span class="lineCov">          525444:   JDIMENSION end_row = start_row + num_rows;</span>
+<span class="lineNum">     764 </span>                :   JDIMENSION undef_row;
+<span class="lineNum">     765 </span>                : 
+<span class="lineNum">     766 </span>                :   <I><FONT COLOR="#B22222">/* debugging check */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          525444: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          525444: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 4 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          525444: branch 5 taken</span>
+</span><span class="lineNum">     767 </span><span class="lineCov">         1050888:   <B><FONT COLOR="#A020F0">if</FONT></B> (end_row &gt; ptr-&gt;rows_in_array || num_rows &gt; ptr-&gt;maxaccess ||</span>
+<span class="lineNum">     768 </span><span class="lineCov">          525444:       ptr-&gt;mem_buffer == NULL)</span>
+<span class="lineNum">     769 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_BAD_VIRTUAL_ACCESS);</span>
+<span class="lineNum">     770 </span>                : 
+<span class="lineNum">     771 </span>                :   <I><FONT COLOR="#B22222">/* Make the desired part of the virtual array accessible */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          525444: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          525444: branch 3 taken</span>
+</span><span class="lineNum">     772 </span><span class="lineCov">         1050888:   <B><FONT COLOR="#A020F0">if</FONT></B> (start_row &lt; ptr-&gt;cur_start_row ||</span>
+<span class="lineNum">     773 </span><span class="lineCov">          525444:       end_row &gt; ptr-&gt;cur_start_row+ptr-&gt;rows_in_mem) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     774 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (! ptr-&gt;b_s_open)</span>
+<span class="lineNum">     775 </span><span class="lineNoCov">               0:       ERREXIT(cinfo, JERR_VIRTUAL_BUG);</span>
+<span class="lineNum">     776 </span>                :     <I><FONT COLOR="#B22222">/* Flush old buffer contents if necessary */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     777 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (ptr-&gt;dirty) {</span>
+<span class="lineNum">     778 </span><span class="lineNoCov">               0:       do_sarray_io(cinfo, ptr, TRUE);</span>
+<span class="lineNum">     779 </span><span class="lineNoCov">               0:       ptr-&gt;dirty = FALSE;</span>
+<span class="lineNum">     780 </span>                :     }
+<span class="lineNum">     781 </span>                :     <I><FONT COLOR="#B22222">/* Decide what part of virtual array to access.
+<span class="lineNum">     782 </span>                :      * Algorithm: if target address &gt; current window, assume forward scan,
+<span class="lineNum">     783 </span>                :      * load starting at target address.  If target address &lt; current window,
+<span class="lineNum">     784 </span>                :      * assume backward scan, load so that target area is top of window.
+<span class="lineNum">     785 </span>                :      * Note that when switching from forward write to forward read, will have
+<span class="lineNum">     786 </span>                :      * start_row = 0, so the limiting case applies and we load from 0 anyway.
+<span class="lineNum">     787 </span>                :      */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     788 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (start_row &gt; ptr-&gt;cur_start_row) {</span>
+<span class="lineNum">     789 </span><span class="lineNoCov">               0:       ptr-&gt;cur_start_row = start_row;</span>
+<span class="lineNum">     790 </span>                :     } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     791 </span>                :       <I><FONT COLOR="#B22222">/* use long arithmetic here to avoid overflow &amp; unsigned problems */</FONT></I>
+<span class="lineNum">     792 </span>                :       <B><FONT COLOR="#228B22">long</FONT></B> ltemp;
+<span class="lineNum">     793 </span>                : 
+<span class="lineNum">     794 </span><span class="lineNoCov">               0:       ltemp = (<B><FONT COLOR="#228B22">long</FONT></B>) end_row - (<B><FONT COLOR="#228B22">long</FONT></B>) ptr-&gt;rows_in_mem;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     795 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#A020F0">if</FONT></B> (ltemp &lt; 0)</span>
+<span class="lineNum">     796 </span><span class="lineNoCov">               0: 	ltemp = 0;		<I><FONT COLOR="#B22222">/* don't fall off front end of file */</FONT></I></span>
+<span class="lineNum">     797 </span><span class="lineNoCov">               0:       ptr-&gt;cur_start_row = (JDIMENSION) ltemp;</span>
+<span class="lineNum">     798 </span>                :     }
+<span class="lineNum">     799 </span>                :     <I><FONT COLOR="#B22222">/* Read in the selected part of the array.
+<span class="lineNum">     800 </span>                :      * During the initial write pass, we will do no actual read
+<span class="lineNum">     801 </span>                :      * because the selected part is all undefined.
+<span class="lineNum">     802 </span>                :      */</FONT></I>
+<span class="lineNum">     803 </span><span class="lineNoCov">               0:     do_sarray_io(cinfo, ptr, FALSE);</span>
+<span class="lineNum">     804 </span>                :   }
+<span class="lineNum">     805 </span>                :   <I><FONT COLOR="#B22222">/* Ensure the accessed part of the array is defined; prezero if needed.
+<span class="lineNum">     806 </span>                :    * To improve locality of access, we only prezero the part of the array
+<span class="lineNum">     807 </span>                :    * that the caller is about to access, not the entire in-memory array.
+<span class="lineNum">     808 </span>                :    */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          267331: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          258113: branch 1 taken</span>
+</span><span class="lineNum">     809 </span><span class="lineCov">          525444:   <B><FONT COLOR="#A020F0">if</FONT></B> (ptr-&gt;first_undef_row &lt; end_row) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          267331: branch 1 taken</span>
+</span><span class="lineNum">     810 </span><span class="lineCov">          267331:     <B><FONT COLOR="#A020F0">if</FONT></B> (ptr-&gt;first_undef_row &lt; start_row) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     811 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#A020F0">if</FONT></B> (writable)		<I><FONT COLOR="#B22222">/* writer skipped over a section of array */</FONT></I></span>
+<span class="lineNum">     812 </span><span class="lineNoCov">               0: 	ERREXIT(cinfo, JERR_BAD_VIRTUAL_ACCESS);</span>
+<span class="lineNum">     813 </span><span class="lineNoCov">               0:       undef_row = start_row;	<I><FONT COLOR="#B22222">/* but reader is allowed to read ahead */</FONT></I></span>
+<span class="lineNum">     814 </span>                :     } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     815 </span><span class="lineCov">          267331:       undef_row = ptr-&gt;first_undef_row;</span>
+<span class="lineNum">     816 </span>                :     }
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          267331: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     817 </span><span class="lineCov">          267331:     <B><FONT COLOR="#A020F0">if</FONT></B> (writable)</span>
+<span class="lineNum">     818 </span><span class="lineCov">          267331:       ptr-&gt;first_undef_row = end_row;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          267331: branch 1 taken</span>
+</span><span class="lineNum">     819 </span><span class="lineCov">          267331:     <B><FONT COLOR="#A020F0">if</FONT></B> (ptr-&gt;pre_zero) {</span>
+<span class="lineNum">     820 </span><span class="lineNoCov">               0:       size_t bytesperrow = (size_t) ptr-&gt;samplesperrow * SIZEOF(JSAMPLE);</span>
+<span class="lineNum">     821 </span><span class="lineNoCov">               0:       undef_row -= ptr-&gt;cur_start_row; <I><FONT COLOR="#B22222">/* make indexes relative to buffer */</FONT></I></span>
+<span class="lineNum">     822 </span><span class="lineNoCov">               0:       end_row -= ptr-&gt;cur_start_row;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     823 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#A020F0">while</FONT></B> (undef_row &lt; end_row) {</span>
+<span class="lineNum">     824 </span><span class="lineNoCov">               0: 	jzero_far((<B><FONT COLOR="#228B22">void</FONT></B> FAR *) ptr-&gt;mem_buffer[undef_row], bytesperrow);</span>
+<span class="lineNum">     825 </span><span class="lineNoCov">               0: 	undef_row++;</span>
+<span class="lineNum">     826 </span>                :       }
+<span class="lineNum">     827 </span>                :     } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          267331: branch 1 taken</span>
+</span><span class="lineNum">     828 </span><span class="lineCov">          267331:       <B><FONT COLOR="#A020F0">if</FONT></B> (! writable)		<I><FONT COLOR="#B22222">/* reader looking at undefined data */</FONT></I></span>
+<span class="lineNum">     829 </span><span class="lineNoCov">               0: 	ERREXIT(cinfo, JERR_BAD_VIRTUAL_ACCESS);</span>
+<span class="lineNum">     830 </span>                :     }
+<span class="lineNum">     831 </span>                :   }
+<span class="lineNum">     832 </span>                :   <I><FONT COLOR="#B22222">/* Flag the buffer dirty if caller will write in it */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          267331: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          258113: branch 1 taken</span>
+</span><span class="lineNum">     833 </span><span class="lineCov">          525444:   <B><FONT COLOR="#A020F0">if</FONT></B> (writable)</span>
+<span class="lineNum">     834 </span><span class="lineCov">          267331:     ptr-&gt;dirty = TRUE;</span>
+<span class="lineNum">     835 </span>                :   <I><FONT COLOR="#B22222">/* Return address of proper part of the buffer */</FONT></I>
+<span class="lineNum">     836 </span><span class="lineCov">          525444:   <B><FONT COLOR="#A020F0">return</FONT></B> ptr-&gt;mem_buffer + (start_row - ptr-&gt;cur_start_row);</span>
+<span class="lineNum">     837 </span>                : }
+<span class="lineNum">     838 </span>                : 
+<span class="lineNum">     839 </span>                : 
+<span class="lineNum">     840 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(JBLOCKARRAY)
+<span class="lineNum">     841 </span><span class="lineCov">           76332: <B><FONT COLOR="#0000FF">access_virt_barray</FONT></B> (j_common_ptr cinfo, jvirt_barray_ptr ptr,</span>
+<span class="lineNum">     842 </span>                : 		    JDIMENSION start_row, JDIMENSION num_rows,
+<span class="lineNum">     843 </span>                : 		    boolean writable)
+<span class="lineNum">     844 </span>                : <I><FONT COLOR="#B22222">/* Access the part of a virtual block array starting at start_row */</FONT></I>
+<span class="lineNum">     845 </span>                : <I><FONT COLOR="#B22222">/* and extending for num_rows rows.  writable is true if  */</FONT></I>
+<span class="lineNum">     846 </span>                : <I><FONT COLOR="#B22222">/* caller intends to modify the accessed area. */</FONT></I>
+<span class="lineNum">     847 </span>                : {
+<span class="lineNum">     848 </span><span class="lineCov">           76332:   JDIMENSION end_row = start_row + num_rows;</span>
+<span class="lineNum">     849 </span>                :   JDIMENSION undef_row;
+<span class="lineNum">     850 </span>                : 
+<span class="lineNum">     851 </span>                :   <I><FONT COLOR="#B22222">/* debugging check */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           76332: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           76332: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 4 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           76332: branch 5 taken</span>
+</span><span class="lineNum">     852 </span><span class="lineCov">          152664:   <B><FONT COLOR="#A020F0">if</FONT></B> (end_row &gt; ptr-&gt;rows_in_array || num_rows &gt; ptr-&gt;maxaccess ||</span>
+<span class="lineNum">     853 </span><span class="lineCov">           76332:       ptr-&gt;mem_buffer == NULL)</span>
+<span class="lineNum">     854 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_BAD_VIRTUAL_ACCESS);</span>
+<span class="lineNum">     855 </span>                : 
+<span class="lineNum">     856 </span>                :   <I><FONT COLOR="#B22222">/* Make the desired part of the virtual array accessible */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           76332: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           76332: branch 3 taken</span>
+</span><span class="lineNum">     857 </span><span class="lineCov">          152664:   <B><FONT COLOR="#A020F0">if</FONT></B> (start_row &lt; ptr-&gt;cur_start_row ||</span>
+<span class="lineNum">     858 </span><span class="lineCov">           76332:       end_row &gt; ptr-&gt;cur_start_row+ptr-&gt;rows_in_mem) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     859 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (! ptr-&gt;b_s_open)</span>
+<span class="lineNum">     860 </span><span class="lineNoCov">               0:       ERREXIT(cinfo, JERR_VIRTUAL_BUG);</span>
+<span class="lineNum">     861 </span>                :     <I><FONT COLOR="#B22222">/* Flush old buffer contents if necessary */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     862 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (ptr-&gt;dirty) {</span>
+<span class="lineNum">     863 </span><span class="lineNoCov">               0:       do_barray_io(cinfo, ptr, TRUE);</span>
+<span class="lineNum">     864 </span><span class="lineNoCov">               0:       ptr-&gt;dirty = FALSE;</span>
+<span class="lineNum">     865 </span>                :     }
+<span class="lineNum">     866 </span>                :     <I><FONT COLOR="#B22222">/* Decide what part of virtual array to access.
+<span class="lineNum">     867 </span>                :      * Algorithm: if target address &gt; current window, assume forward scan,
+<span class="lineNum">     868 </span>                :      * load starting at target address.  If target address &lt; current window,
+<span class="lineNum">     869 </span>                :      * assume backward scan, load so that target area is top of window.
+<span class="lineNum">     870 </span>                :      * Note that when switching from forward write to forward read, will have
+<span class="lineNum">     871 </span>                :      * start_row = 0, so the limiting case applies and we load from 0 anyway.
+<span class="lineNum">     872 </span>                :      */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     873 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (start_row &gt; ptr-&gt;cur_start_row) {</span>
+<span class="lineNum">     874 </span><span class="lineNoCov">               0:       ptr-&gt;cur_start_row = start_row;</span>
+<span class="lineNum">     875 </span>                :     } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     876 </span>                :       <I><FONT COLOR="#B22222">/* use long arithmetic here to avoid overflow &amp; unsigned problems */</FONT></I>
+<span class="lineNum">     877 </span>                :       <B><FONT COLOR="#228B22">long</FONT></B> ltemp;
+<span class="lineNum">     878 </span>                : 
+<span class="lineNum">     879 </span><span class="lineNoCov">               0:       ltemp = (<B><FONT COLOR="#228B22">long</FONT></B>) end_row - (<B><FONT COLOR="#228B22">long</FONT></B>) ptr-&gt;rows_in_mem;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     880 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#A020F0">if</FONT></B> (ltemp &lt; 0)</span>
+<span class="lineNum">     881 </span><span class="lineNoCov">               0: 	ltemp = 0;		<I><FONT COLOR="#B22222">/* don't fall off front end of file */</FONT></I></span>
+<span class="lineNum">     882 </span><span class="lineNoCov">               0:       ptr-&gt;cur_start_row = (JDIMENSION) ltemp;</span>
+<span class="lineNum">     883 </span>                :     }
+<span class="lineNum">     884 </span>                :     <I><FONT COLOR="#B22222">/* Read in the selected part of the array.
+<span class="lineNum">     885 </span>                :      * During the initial write pass, we will do no actual read
+<span class="lineNum">     886 </span>                :      * because the selected part is all undefined.
+<span class="lineNum">     887 </span>                :      */</FONT></I>
+<span class="lineNum">     888 </span><span class="lineNoCov">               0:     do_barray_io(cinfo, ptr, FALSE);</span>
+<span class="lineNum">     889 </span>                :   }
+<span class="lineNum">     890 </span>                :   <I><FONT COLOR="#B22222">/* Ensure the accessed part of the array is defined; prezero if needed.
+<span class="lineNum">     891 </span>                :    * To improve locality of access, we only prezero the part of the array
+<span class="lineNum">     892 </span>                :    * that the caller is about to access, not the entire in-memory array.
+<span class="lineNum">     893 </span>                :    */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            8451: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           67881: branch 1 taken</span>
+</span><span class="lineNum">     894 </span><span class="lineCov">           76332:   <B><FONT COLOR="#A020F0">if</FONT></B> (ptr-&gt;first_undef_row &lt; end_row) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            8451: branch 1 taken</span>
+</span><span class="lineNum">     895 </span><span class="lineCov">            8451:     <B><FONT COLOR="#A020F0">if</FONT></B> (ptr-&gt;first_undef_row &lt; start_row) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     896 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#A020F0">if</FONT></B> (writable)		<I><FONT COLOR="#B22222">/* writer skipped over a section of array */</FONT></I></span>
+<span class="lineNum">     897 </span><span class="lineNoCov">               0: 	ERREXIT(cinfo, JERR_BAD_VIRTUAL_ACCESS);</span>
+<span class="lineNum">     898 </span><span class="lineNoCov">               0:       undef_row = start_row;	<I><FONT COLOR="#B22222">/* but reader is allowed to read ahead */</FONT></I></span>
+<span class="lineNum">     899 </span>                :     } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     900 </span><span class="lineCov">            8451:       undef_row = ptr-&gt;first_undef_row;</span>
+<span class="lineNum">     901 </span>                :     }
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            8451: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     902 </span><span class="lineCov">            8451:     <B><FONT COLOR="#A020F0">if</FONT></B> (writable)</span>
+<span class="lineNum">     903 </span><span class="lineCov">            8451:       ptr-&gt;first_undef_row = end_row;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            8451: branch 1 taken</span>
+</span><span class="lineNum">     904 </span><span class="lineCov">            8451:     <B><FONT COLOR="#A020F0">if</FONT></B> (ptr-&gt;pre_zero) {</span>
+<span class="lineNum">     905 </span><span class="lineNoCov">               0:       size_t bytesperrow = (size_t) ptr-&gt;blocksperrow * SIZEOF(JBLOCK);</span>
+<span class="lineNum">     906 </span><span class="lineNoCov">               0:       undef_row -= ptr-&gt;cur_start_row; <I><FONT COLOR="#B22222">/* make indexes relative to buffer */</FONT></I></span>
+<span class="lineNum">     907 </span><span class="lineNoCov">               0:       end_row -= ptr-&gt;cur_start_row;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     908 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#A020F0">while</FONT></B> (undef_row &lt; end_row) {</span>
+<span class="lineNum">     909 </span><span class="lineNoCov">               0: 	jzero_far((<B><FONT COLOR="#228B22">void</FONT></B> FAR *) ptr-&gt;mem_buffer[undef_row], bytesperrow);</span>
+<span class="lineNum">     910 </span><span class="lineNoCov">               0: 	undef_row++;</span>
+<span class="lineNum">     911 </span>                :       }
+<span class="lineNum">     912 </span>                :     } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            8451: branch 1 taken</span>
+</span><span class="lineNum">     913 </span><span class="lineCov">            8451:       <B><FONT COLOR="#A020F0">if</FONT></B> (! writable)		<I><FONT COLOR="#B22222">/* reader looking at undefined data */</FONT></I></span>
+<span class="lineNum">     914 </span><span class="lineNoCov">               0: 	ERREXIT(cinfo, JERR_BAD_VIRTUAL_ACCESS);</span>
+<span class="lineNum">     915 </span>                :     }
+<span class="lineNum">     916 </span>                :   }
+<span class="lineNum">     917 </span>                :   <I><FONT COLOR="#B22222">/* Flag the buffer dirty if caller will write in it */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            8451: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           67881: branch 1 taken</span>
+</span><span class="lineNum">     918 </span><span class="lineCov">           76332:   <B><FONT COLOR="#A020F0">if</FONT></B> (writable)</span>
+<span class="lineNum">     919 </span><span class="lineCov">            8451:     ptr-&gt;dirty = TRUE;</span>
+<span class="lineNum">     920 </span>                :   <I><FONT COLOR="#B22222">/* Return address of proper part of the buffer */</FONT></I>
+<span class="lineNum">     921 </span><span class="lineCov">           76332:   <B><FONT COLOR="#A020F0">return</FONT></B> ptr-&gt;mem_buffer + (start_row - ptr-&gt;cur_start_row);</span>
+<span class="lineNum">     922 </span>                : }
+<span class="lineNum">     923 </span>                : 
+<span class="lineNum">     924 </span>                : 
+<span class="lineNum">     925 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     926 </span>                :  * Release all objects belonging to a specified pool.
+<span class="lineNum">     927 </span>                :  */</FONT></I>
+<span class="lineNum">     928 </span>                : 
+<span class="lineNum">     929 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     930 </span><span class="lineCov">           31118: <B><FONT COLOR="#0000FF">free_pool</FONT></B> (j_common_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> pool_id)</span>
+<span class="lineNum">     931 </span>                : {
+<span class="lineNum">     932 </span><span class="lineCov">           31118:   my_mem_ptr mem = (my_mem_ptr) cinfo-&gt;mem;</span>
+<span class="lineNum">     933 </span>                :   small_pool_ptr shdr_ptr;
+<span class="lineNum">     934 </span>                :   large_pool_ptr lhdr_ptr;
+<span class="lineNum">     935 </span>                :   size_t space_freed;
+<span class="lineNum">     936 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           31118: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           31118: branch 3 taken</span>
+</span><span class="lineNum">     937 </span><span class="lineCov">           31118:   <B><FONT COLOR="#A020F0">if</FONT></B> (pool_id &lt; 0 || pool_id &gt;= JPOOL_NUMPOOLS)</span>
+<span class="lineNum">     938 </span><span class="lineNoCov">               0:     ERREXIT1(cinfo, JERR_BAD_POOL_ID, pool_id);	<I><FONT COLOR="#B22222">/* safety check */</FONT></I></span>
+<span class="lineNum">     939 </span>                : 
+<span class="lineNum">     940 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">MEM_STATS</FONT>
+<span class="lineNum">     941 </span>                :   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;err-&gt;trace_level &gt; 1)
+<span class="lineNum">     942 </span>                :     print_mem_stats(cinfo, pool_id); <I><FONT COLOR="#B22222">/* print pool's memory usage statistics */</FONT></I>
+<span class="lineNum">     943 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     944 </span>                : 
+<span class="lineNum">     945 </span>                :   <I><FONT COLOR="#B22222">/* If freeing IMAGE pool, close any virtual arrays first */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           17569: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           13549: branch 1 taken</span>
+</span><span class="lineNum">     946 </span><span class="lineCov">           31118:   <B><FONT COLOR="#A020F0">if</FONT></B> (pool_id == JPOOL_IMAGE) {</span>
+<span class="lineNum">     947 </span>                :     jvirt_sarray_ptr sptr;
+<span class="lineNum">     948 </span>                :     jvirt_barray_ptr bptr;
+<span class="lineNum">     949 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            2218: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           17569: branch 1 taken</span>
+</span><span class="lineNum">     950 </span><span class="lineCov">           19787:     <B><FONT COLOR="#A020F0">for</FONT></B> (sptr = mem-&gt;virt_sarray_list; sptr != NULL; sptr = sptr-&gt;next) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2218: branch 1 taken</span>
+</span><span class="lineNum">     951 </span><span class="lineCov">            2218:       <B><FONT COLOR="#A020F0">if</FONT></B> (sptr-&gt;b_s_open) {	<I><FONT COLOR="#B22222">/* there may be no backing store */</FONT></I></span>
+<span class="lineNum">     952 </span><span class="lineNoCov">               0: 	sptr-&gt;b_s_open = FALSE;	<I><FONT COLOR="#B22222">/* prevent recursive close if error */</FONT></I></span>
+<span class="lineNum">     953 </span><span class="lineNoCov">               0: 	(*sptr-&gt;b_s_info.close_backing_store) (cinfo, &amp; sptr-&gt;b_s_info);</span>
+<span class="lineNum">     954 </span>                :       }
+<span class="lineNum">     955 </span>                :     }
+<span class="lineNum">     956 </span><span class="lineCov">           17569:     mem-&gt;virt_sarray_list = NULL;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            2910: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           17569: branch 1 taken</span>
+</span><span class="lineNum">     957 </span><span class="lineCov">           20479:     <B><FONT COLOR="#A020F0">for</FONT></B> (bptr = mem-&gt;virt_barray_list; bptr != NULL; bptr = bptr-&gt;next) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2910: branch 1 taken</span>
+</span><span class="lineNum">     958 </span><span class="lineCov">            2910:       <B><FONT COLOR="#A020F0">if</FONT></B> (bptr-&gt;b_s_open) {	<I><FONT COLOR="#B22222">/* there may be no backing store */</FONT></I></span>
+<span class="lineNum">     959 </span><span class="lineNoCov">               0: 	bptr-&gt;b_s_open = FALSE;	<I><FONT COLOR="#B22222">/* prevent recursive close if error */</FONT></I></span>
+<span class="lineNum">     960 </span><span class="lineNoCov">               0: 	(*bptr-&gt;b_s_info.close_backing_store) (cinfo, &amp; bptr-&gt;b_s_info);</span>
+<span class="lineNum">     961 </span>                :       }
+<span class="lineNum">     962 </span>                :     }
+<span class="lineNum">     963 </span><span class="lineCov">           17569:     mem-&gt;virt_barray_list = NULL;</span>
+<span class="lineNum">     964 </span>                :   }
+<span class="lineNum">     965 </span>                : 
+<span class="lineNum">     966 </span>                :   <I><FONT COLOR="#B22222">/* Release large objects */</FONT></I>
+<span class="lineNum">     967 </span><span class="lineCov">           31118:   lhdr_ptr = mem-&gt;large_list[pool_id];</span>
+<span class="lineNum">     968 </span><span class="lineCov">           31118:   mem-&gt;large_list[pool_id] = NULL;</span>
+<span class="lineNum">     969 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           54212: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           31118: branch 1 taken</span>
+</span><span class="lineNum">     970 </span><span class="lineCov">          116448:   <B><FONT COLOR="#A020F0">while</FONT></B> (lhdr_ptr != NULL) {</span>
+<span class="lineNum">     971 </span><span class="lineCov">           54212:     large_pool_ptr next_lhdr_ptr = lhdr_ptr-&gt;hdr.next;</span>
+<span class="lineNum">     972 </span><span class="lineCov">          108424:     space_freed = lhdr_ptr-&gt;hdr.bytes_used +</span>
+<span class="lineNum">     973 </span><span class="lineCov">           54212: 		  lhdr_ptr-&gt;hdr.bytes_left +</span>
+<span class="lineNum">     974 </span>                : 		  SIZEOF(large_pool_hdr);
+<span class="lineNum">     975 </span><span class="lineCov">           54212:     jpeg_free_large(cinfo, (<B><FONT COLOR="#228B22">void</FONT></B> FAR *) lhdr_ptr, space_freed);</span>
+<span class="lineNum">     976 </span><span class="lineCov">           54212:     mem-&gt;total_space_allocated -= space_freed;</span>
+<span class="lineNum">     977 </span><span class="lineCov">           54212:     lhdr_ptr = next_lhdr_ptr;</span>
+<span class="lineNum">     978 </span>                :   }
+<span class="lineNum">     979 </span>                : 
+<span class="lineNum">     980 </span>                :   <I><FONT COLOR="#B22222">/* Release small objects */</FONT></I>
+<span class="lineNum">     981 </span><span class="lineCov">           31118:   shdr_ptr = mem-&gt;small_list[pool_id];</span>
+<span class="lineNum">     982 </span><span class="lineCov">           31118:   mem-&gt;small_list[pool_id] = NULL;</span>
+<span class="lineNum">     983 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           73231: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           31118: branch 1 taken</span>
+</span><span class="lineNum">     984 </span><span class="lineCov">          135467:   <B><FONT COLOR="#A020F0">while</FONT></B> (shdr_ptr != NULL) {</span>
+<span class="lineNum">     985 </span><span class="lineCov">           73231:     small_pool_ptr next_shdr_ptr = shdr_ptr-&gt;hdr.next;</span>
+<span class="lineNum">     986 </span><span class="lineCov">          146462:     space_freed = shdr_ptr-&gt;hdr.bytes_used +</span>
+<span class="lineNum">     987 </span><span class="lineCov">           73231: 		  shdr_ptr-&gt;hdr.bytes_left +</span>
+<span class="lineNum">     988 </span>                : 		  SIZEOF(small_pool_hdr);
+<span class="lineNum">     989 </span><span class="lineCov">           73231:     jpeg_free_small(cinfo, (<B><FONT COLOR="#228B22">void</FONT></B> *) shdr_ptr, space_freed);</span>
+<span class="lineNum">     990 </span><span class="lineCov">           73231:     mem-&gt;total_space_allocated -= space_freed;</span>
+<span class="lineNum">     991 </span><span class="lineCov">           73231:     shdr_ptr = next_shdr_ptr;</span>
+<span class="lineNum">     992 </span>                :   }
+<span class="lineNum">     993 </span><span class="lineCov">           31118: }</span>
+<span class="lineNum">     994 </span>                : 
+<span class="lineNum">     995 </span>                : 
+<span class="lineNum">     996 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     997 </span>                :  * Close up shop entirely.
+<span class="lineNum">     998 </span>                :  * Note that this cannot be called unless cinfo-&gt;mem is non-NULL.
+<span class="lineNum">     999 </span>                :  */</FONT></I>
+<span class="lineNum">    1000 </span>                : 
+<span class="lineNum">    1001 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">    1002 </span><span class="lineCov">           13549: <B><FONT COLOR="#0000FF">self_destruct</FONT></B> (j_common_ptr cinfo)</span>
+<span class="lineNum">    1003 </span>                : {
+<span class="lineNum">    1004 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> pool;
+<span class="lineNum">    1005 </span>                : 
+<span class="lineNum">    1006 </span>                :   <I><FONT COLOR="#B22222">/* Close all backing store, release all memory.
+<span class="lineNum">    1007 </span>                :    * Releasing pools in reverse order might help avoid fragmentation
+<span class="lineNum">    1008 </span>                :    * with some (brain-damaged) malloc libraries.
+<span class="lineNum">    1009 </span>                :    */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           27098: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           13549: branch 1 taken</span>
+</span><span class="lineNum">    1010 </span><span class="lineCov">           40647:   <B><FONT COLOR="#A020F0">for</FONT></B> (pool = JPOOL_NUMPOOLS-1; pool &gt;= JPOOL_PERMANENT; pool--) {</span>
+<span class="lineNum">    1011 </span><span class="lineCov">           27098:     free_pool(cinfo, pool);</span>
+<span class="lineNum">    1012 </span>                :   }
+<span class="lineNum">    1013 </span>                : 
+<span class="lineNum">    1014 </span>                :   <I><FONT COLOR="#B22222">/* Release the memory manager control block too. */</FONT></I>
+<span class="lineNum">    1015 </span><span class="lineCov">           13549:   jpeg_free_small(cinfo, (<B><FONT COLOR="#228B22">void</FONT></B> *) cinfo-&gt;mem, SIZEOF(my_memory_mgr));</span>
+<span class="lineNum">    1016 </span><span class="lineCov">           13549:   cinfo-&gt;mem = NULL;		<I><FONT COLOR="#B22222">/* ensures I will be called only once */</FONT></I></span>
+<span class="lineNum">    1017 </span>                : 
+<span class="lineNum">    1018 </span><span class="lineCov">           13549:   jpeg_mem_term(cinfo);		<I><FONT COLOR="#B22222">/* system-dependent cleanup */</FONT></I></span>
+<span class="lineNum">    1019 </span><span class="lineCov">           13549: }</span>
+<span class="lineNum">    1020 </span>                : 
+<span class="lineNum">    1021 </span>                : 
+<span class="lineNum">    1022 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">    1023 </span>                :  * Memory manager initialization.
+<span class="lineNum">    1024 </span>                :  * When this is called, only the error manager pointer is valid in cinfo!
+<span class="lineNum">    1025 </span>                :  */</FONT></I>
+<span class="lineNum">    1026 </span>                : 
+<span class="lineNum">    1027 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">    1028 </span><span class="lineCov">           13688: <B><FONT COLOR="#0000FF">jinit_memory_mgr</FONT></B> (j_common_ptr cinfo)</span>
+<span class="lineNum">    1029 </span>                : {
+<span class="lineNum">    1030 </span>                :   my_mem_ptr mem;
+<span class="lineNum">    1031 </span>                :   <B><FONT COLOR="#228B22">long</FONT></B> max_to_use;
+<span class="lineNum">    1032 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> pool;
+<span class="lineNum">    1033 </span>                :   size_t test_mac;
+<span class="lineNum">    1034 </span>                : 
+<span class="lineNum">    1035 </span><span class="lineCov">           13688:   cinfo-&gt;mem = NULL;		<I><FONT COLOR="#B22222">/* for safety if init fails */</FONT></I></span>
+<span class="lineNum">    1036 </span>                : 
+<span class="lineNum">    1037 </span>                :   <I><FONT COLOR="#B22222">/* Check for configuration errors.
+<span class="lineNum">    1038 </span>                :    * SIZEOF(ALIGN_TYPE) should be a power of 2; otherwise, it probably
+<span class="lineNum">    1039 </span>                :    * doesn't reflect any real hardware alignment requirement.
+<span class="lineNum">    1040 </span>                :    * The test is a little tricky: for X&gt;0, X and X-1 have no one-bits
+<span class="lineNum">    1041 </span>                :    * in common if and only if X is a power of 2, ie has only one one-bit.
+<span class="lineNum">    1042 </span>                :    * Some compilers may give an &quot;unreachable code&quot; warning here; ignore it.
+<span class="lineNum">    1043 </span>                :    */</FONT></I>
+<span class="lineNum">    1044 </span>                :   <B><FONT COLOR="#A020F0">if</FONT></B> ((SIZEOF(ALIGN_TYPE) &amp; (SIZEOF(ALIGN_TYPE)-1)) != 0)
+<span class="lineNum">    1045 </span>                :     ERREXIT(cinfo, JERR_BAD_ALIGN_TYPE);
+<span class="lineNum">    1046 </span>                :   <I><FONT COLOR="#B22222">/* MAX_ALLOC_CHUNK must be representable as type size_t, and must be
+<span class="lineNum">    1047 </span>                :    * a multiple of SIZEOF(ALIGN_TYPE).
+<span class="lineNum">    1048 </span>                :    * Again, an &quot;unreachable code&quot; warning may be ignored here.
+<span class="lineNum">    1049 </span>                :    * But a &quot;constant too large&quot; warning means you need to fix MAX_ALLOC_CHUNK.
+<span class="lineNum">    1050 </span>                :    */</FONT></I>
+<span class="lineNum">    1051 </span><span class="lineCov">           13688:   test_mac = (size_t) MAX_ALLOC_CHUNK;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           13688: branch 1 taken</span>
+</span><span class="lineNum">    1052 </span><span class="lineCov">           13688:   <B><FONT COLOR="#A020F0">if</FONT></B> ((<B><FONT COLOR="#228B22">long</FONT></B>) test_mac != MAX_ALLOC_CHUNK ||</span>
+<span class="lineNum">    1053 </span>                :       (MAX_ALLOC_CHUNK % SIZEOF(ALIGN_TYPE)) != 0)
+<span class="lineNum">    1054 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_BAD_ALLOC_CHUNK);</span>
+<span class="lineNum">    1055 </span>                : 
+<span class="lineNum">    1056 </span><span class="lineCov">           13688:   max_to_use = jpeg_mem_init(cinfo); <I><FONT COLOR="#B22222">/* system-dependent initialization */</FONT></I></span>
+<span class="lineNum">    1057 </span>                : 
+<span class="lineNum">    1058 </span>                :   <I><FONT COLOR="#B22222">/* Attempt to allocate memory manager's control block */</FONT></I>
+<span class="lineNum">    1059 </span><span class="lineCov">           13688:   mem = (my_mem_ptr) jpeg_get_small(cinfo, SIZEOF(my_memory_mgr));</span>
+<span class="lineNum">    1060 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           13688: branch 1 taken</span>
+</span><span class="lineNum">    1061 </span><span class="lineCov">           13688:   <B><FONT COLOR="#A020F0">if</FONT></B> (mem == NULL) {</span>
+<span class="lineNum">    1062 </span><span class="lineNoCov">               0:     jpeg_mem_term(cinfo);	<I><FONT COLOR="#B22222">/* system-dependent cleanup */</FONT></I></span>
+<span class="lineNum">    1063 </span><span class="lineNoCov">               0:     ERREXIT1(cinfo, JERR_OUT_OF_MEMORY, 0);</span>
+<span class="lineNum">    1064 </span>                :   }
+<span class="lineNum">    1065 </span>                : 
+<span class="lineNum">    1066 </span>                :   <I><FONT COLOR="#B22222">/* OK, fill in the method pointers */</FONT></I>
+<span class="lineNum">    1067 </span><span class="lineCov">           13688:   mem-&gt;pub.alloc_small = alloc_small;</span>
+<span class="lineNum">    1068 </span><span class="lineCov">           13688:   mem-&gt;pub.alloc_large = alloc_large;</span>
+<span class="lineNum">    1069 </span><span class="lineCov">           13688:   mem-&gt;pub.alloc_sarray = alloc_sarray;</span>
+<span class="lineNum">    1070 </span><span class="lineCov">           13688:   mem-&gt;pub.alloc_barray = alloc_barray;</span>
+<span class="lineNum">    1071 </span><span class="lineCov">           13688:   mem-&gt;pub.request_virt_sarray = request_virt_sarray;</span>
+<span class="lineNum">    1072 </span><span class="lineCov">           13688:   mem-&gt;pub.request_virt_barray = request_virt_barray;</span>
+<span class="lineNum">    1073 </span><span class="lineCov">           13688:   mem-&gt;pub.realize_virt_arrays = realize_virt_arrays;</span>
+<span class="lineNum">    1074 </span><span class="lineCov">           13688:   mem-&gt;pub.access_virt_sarray = access_virt_sarray;</span>
+<span class="lineNum">    1075 </span><span class="lineCov">           13688:   mem-&gt;pub.access_virt_barray = access_virt_barray;</span>
+<span class="lineNum">    1076 </span><span class="lineCov">           13688:   mem-&gt;pub.free_pool = free_pool;</span>
+<span class="lineNum">    1077 </span><span class="lineCov">           13688:   mem-&gt;pub.self_destruct = self_destruct;</span>
+<span class="lineNum">    1078 </span>                : 
+<span class="lineNum">    1079 </span>                :   <I><FONT COLOR="#B22222">/* Make MAX_ALLOC_CHUNK accessible to other modules */</FONT></I>
+<span class="lineNum">    1080 </span><span class="lineCov">           13688:   mem-&gt;pub.max_alloc_chunk = MAX_ALLOC_CHUNK;</span>
+<span class="lineNum">    1081 </span>                : 
+<span class="lineNum">    1082 </span>                :   <I><FONT COLOR="#B22222">/* Initialize working state */</FONT></I>
+<span class="lineNum">    1083 </span><span class="lineCov">           13688:   mem-&gt;pub.max_memory_to_use = max_to_use;</span>
+<span class="lineNum">    1084 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           27376: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           13688: branch 1 taken</span>
+</span><span class="lineNum">    1085 </span><span class="lineCov">           41064:   <B><FONT COLOR="#A020F0">for</FONT></B> (pool = JPOOL_NUMPOOLS-1; pool &gt;= JPOOL_PERMANENT; pool--) {</span>
+<span class="lineNum">    1086 </span><span class="lineCov">           27376:     mem-&gt;small_list[pool] = NULL;</span>
+<span class="lineNum">    1087 </span><span class="lineCov">           27376:     mem-&gt;large_list[pool] = NULL;</span>
+<span class="lineNum">    1088 </span>                :   }
+<span class="lineNum">    1089 </span><span class="lineCov">           13688:   mem-&gt;virt_sarray_list = NULL;</span>
+<span class="lineNum">    1090 </span><span class="lineCov">           13688:   mem-&gt;virt_barray_list = NULL;</span>
+<span class="lineNum">    1091 </span>                : 
+<span class="lineNum">    1092 </span><span class="lineCov">           13688:   mem-&gt;total_space_allocated = SIZEOF(my_memory_mgr);</span>
+<span class="lineNum">    1093 </span>                : 
+<span class="lineNum">    1094 </span>                :   <I><FONT COLOR="#B22222">/* Declare ourselves open for business */</FONT></I>
+<span class="lineNum">    1095 </span><span class="lineCov">           13688:   cinfo-&gt;mem = &amp; mem-&gt;pub;</span>
+<span class="lineNum">    1096 </span>                : 
+<span class="lineNum">    1097 </span>                :   <I><FONT COLOR="#B22222">/* Check for an environment variable JPEGMEM; if found, override the
+<span class="lineNum">    1098 </span>                :    * default max_memory setting from jpeg_mem_init.  Note that the
+<span class="lineNum">    1099 </span>                :    * surrounding application may again override this value.
+<span class="lineNum">    1100 </span>                :    * If your system doesn't support getenv(), define NO_GETENV to disable
+<span class="lineNum">    1101 </span>                :    * this feature.
+<span class="lineNum">    1102 </span>                :    */</FONT></I>
+<span class="lineNum">    1103 </span>                : #<B><FONT COLOR="#5F9EA0">ifndef</FONT></B> <FONT COLOR="#B8860B">NO_GETENV</FONT>
+<span class="lineNum">    1104 </span>                :   { <B><FONT COLOR="#228B22">char</FONT></B> * memenv;
+<span class="lineNum">    1105 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           13688: branch 2 taken</span>
+</span><span class="lineNum">    1106 </span><span class="lineCov">           13688:     <B><FONT COLOR="#A020F0">if</FONT></B> ((memenv = getenv(<B><FONT COLOR="#BC8F8F">&quot;JPEGMEM&quot;</FONT></B>)) != NULL) {</span>
+<span class="lineNum">    1107 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#228B22">char</FONT></B> ch = <B><FONT COLOR="#BC8F8F">'x'</FONT></B>;</span>
+<span class="lineNum">    1108 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">    1109 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#A020F0">if</FONT></B> (sscanf(memenv, <B><FONT COLOR="#BC8F8F">&quot;%ld%c&quot;</FONT></B>, &amp;max_to_use, &amp;ch) &gt; 0) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
+</span><span class="lineNum">    1110 </span><span class="lineNoCov">               0: 	<B><FONT COLOR="#A020F0">if</FONT></B> (ch == <B><FONT COLOR="#BC8F8F">'m'</FONT></B> || ch == <B><FONT COLOR="#BC8F8F">'M'</FONT></B>)</span>
+<span class="lineNum">    1111 </span><span class="lineNoCov">               0: 	  max_to_use *= 1000L;</span>
+<span class="lineNum">    1112 </span><span class="lineNoCov">               0: 	mem-&gt;pub.max_memory_to_use = max_to_use * 1000L;</span>
+<span class="lineNum">    1113 </span>                :       }
+<span class="lineNum">    1114 </span>                :     }
+<span class="lineNum">    1115 </span>                :   }
+<span class="lineNum">    1116 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">    1117 </span>                : 
+<span class="lineNum">    1118 </span><span class="lineCov">           13688: }</span>
+</pre>
+<hr>
+Generated: 2016-04-07&nbsp;12:37 by <a href="http://minormatter.com/zcov">zcov</a><br>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<html>
+<head>
+  <script src="sorttable.js"></script>
+  <script src="sourceview.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <title>zcov: /home/vagrant/workspace/proj_libjpeg/cov/jdatadst.c</title>
+</head>
+<body>
+<center><h1> zcov: <a href="index.html">/home/vagrant/workspace/proj_libjpeg/cov</a>/<a href="jdatadst.c.html">jdatadst.c</a> </h1></center>
+<hr>
+
+
+<center>
+<table id="headertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Files:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Taken:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>40.0%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 4&nbsp;/&nbsp;10 </td>
+  </tr>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Generated:</b> </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;12:37 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>80.0%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 8&nbsp;/&nbsp;10 </td>
+  </tr>
+  <tr>
+    <td colspan=2> </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Line&nbsp;Coverage:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>73.5%</b> </td>
+    <td bgcolor=#F0F0FF align=right> 25&nbsp;/&nbsp;34 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<center>
+<table id="fileheadertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Programs:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Runs</b> </td>
+    <td bgcolor=#F0F0FF align=right> 13686 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<pre>
+<span class="lineNum">       1 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">       2 </span>                :  * jdatadst.c
+<span class="lineNum">       3 </span>                :  *
+<span class="lineNum">       4 </span>                :  * Copyright (C) 1994-1996, Thomas G. Lane.
+<span class="lineNum">       5 </span>                :  * This file is part of the Independent JPEG Group's software.
+<span class="lineNum">       6 </span>                :  * For conditions of distribution and use, see the accompanying README file.
+<span class="lineNum">       7 </span>                :  *
+<span class="lineNum">       8 </span>                :  * This file contains compression data destination routines for the case of
+<span class="lineNum">       9 </span>                :  * emitting JPEG data to a file (or any stdio stream).  While these routines
+<span class="lineNum">      10 </span>                :  * are sufficient for most applications, some will want to use a different
+<span class="lineNum">      11 </span>                :  * destination manager.
+<span class="lineNum">      12 </span>                :  * IMPORTANT: we assume that fwrite() will correctly transcribe an array of
+<span class="lineNum">      13 </span>                :  * JOCTETs into 8-bit-wide elements on external storage.  If char is wider
+<span class="lineNum">      14 </span>                :  * than 8 bits on your machine, you may need to do some tweaking.
+<span class="lineNum">      15 </span>                :  */</FONT></I>
+<span class="lineNum">      16 </span>                : 
+<span class="lineNum">      17 </span>                : <I><FONT COLOR="#B22222">/* this is not a core library module, so it doesn't define JPEG_INTERNALS */</FONT></I>
+<span class="lineNum">      18 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jinclude.h&quot;</FONT></B>
+<span class="lineNum">      19 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jpeglib.h&quot;</FONT></B>
+<span class="lineNum">      20 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jerror.h&quot;</FONT></B>
+<span class="lineNum">      21 </span>                : 
+<span class="lineNum">      22 </span>                : 
+<span class="lineNum">      23 </span>                : <I><FONT COLOR="#B22222">/* Expanded data destination object for stdio output */</FONT></I>
+<span class="lineNum">      24 </span>                : 
+<span class="lineNum">      25 </span>                : <B><FONT COLOR="#228B22">typedef</FONT></B> <B><FONT COLOR="#228B22">struct</FONT></B> {
+<span class="lineNum">      26 </span>                :   <B><FONT COLOR="#228B22">struct</FONT></B> jpeg_destination_mgr pub; <I><FONT COLOR="#B22222">/* public fields */</FONT></I>
+<span class="lineNum">      27 </span>                : 
+<span class="lineNum">      28 </span>                :   FILE * outfile;		<I><FONT COLOR="#B22222">/* target stream */</FONT></I>
+<span class="lineNum">      29 </span>                :   JOCTET * buffer;		<I><FONT COLOR="#B22222">/* start of buffer */</FONT></I>
+<span class="lineNum">      30 </span>                : } my_destination_mgr;
+<span class="lineNum">      31 </span>                : 
+<span class="lineNum">      32 </span>                : <B><FONT COLOR="#228B22">typedef</FONT></B> my_destination_mgr * my_dest_ptr;
+<span class="lineNum">      33 </span>                : 
+<span class="lineNum">      34 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">OUTPUT_BUF_SIZE</FONT>  4096	<I><FONT COLOR="#B22222">/* choose an efficiently fwrite'able size */</FONT></I>
+<span class="lineNum">      35 </span>                : 
+<span class="lineNum">      36 </span>                : 
+<span class="lineNum">      37 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      38 </span>                :  * Initialize destination --- called by jpeg_start_compress
+<span class="lineNum">      39 </span>                :  * before any data is actually written.
+<span class="lineNum">      40 </span>                :  */</FONT></I>
+<span class="lineNum">      41 </span>                : 
+<span class="lineNum">      42 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">      43 </span><span class="lineCov">            9300: <B><FONT COLOR="#0000FF">init_destination</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">      44 </span>                : {
+<span class="lineNum">      45 </span><span class="lineCov">            9300:   my_dest_ptr dest = (my_dest_ptr) cinfo-&gt;dest;</span>
+<span class="lineNum">      46 </span>                : 
+<span class="lineNum">      47 </span>                :   <I><FONT COLOR="#B22222">/* Allocate the output buffer --- it will be released when done with image */</FONT></I>
+<span class="lineNum">      48 </span><span class="lineCov">            9300:   dest-&gt;buffer = (JOCTET *)</span>
+<span class="lineNum">      49 </span><span class="lineCov">            9300:       (*cinfo-&gt;mem-&gt;alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
+<span class="lineNum">      50 </span>                : 				  OUTPUT_BUF_SIZE * SIZEOF(JOCTET));
+<span class="lineNum">      51 </span>                : 
+<span class="lineNum">      52 </span><span class="lineCov">            9300:   dest-&gt;pub.next_output_byte = dest-&gt;buffer;</span>
+<span class="lineNum">      53 </span><span class="lineCov">            9300:   dest-&gt;pub.free_in_buffer = OUTPUT_BUF_SIZE;</span>
+<span class="lineNum">      54 </span><span class="lineCov">            9300: }</span>
+<span class="lineNum">      55 </span>                : 
+<span class="lineNum">      56 </span>                : 
+<span class="lineNum">      57 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      58 </span>                :  * Empty the output buffer --- called whenever buffer fills up.
+<span class="lineNum">      59 </span>                :  *
+<span class="lineNum">      60 </span>                :  * In typical applications, this should write the entire output buffer
+<span class="lineNum">      61 </span>                :  * (ignoring the current state of next_output_byte &amp; free_in_buffer),
+<span class="lineNum">      62 </span>                :  * reset the pointer &amp; count to the start of the buffer, and return TRUE
+<span class="lineNum">      63 </span>                :  * indicating that the buffer has been dumped.
+<span class="lineNum">      64 </span>                :  *
+<span class="lineNum">      65 </span>                :  * In applications that need to be able to suspend compression due to output
+<span class="lineNum">      66 </span>                :  * overrun, a FALSE return indicates that the buffer cannot be emptied now.
+<span class="lineNum">      67 </span>                :  * In this situation, the compressor will return to its caller (possibly with
+<span class="lineNum">      68 </span>                :  * an indication that it has not accepted all the supplied scanlines).  The
+<span class="lineNum">      69 </span>                :  * application should resume compression after it has made more room in the
+<span class="lineNum">      70 </span>                :  * output buffer.  Note that there are substantial restrictions on the use of
+<span class="lineNum">      71 </span>                :  * suspension --- see the documentation.
+<span class="lineNum">      72 </span>                :  *
+<span class="lineNum">      73 </span>                :  * When suspending, the compressor will back up to a convenient restart point
+<span class="lineNum">      74 </span>                :  * (typically the start of the current MCU). next_output_byte &amp; free_in_buffer
+<span class="lineNum">      75 </span>                :  * indicate where the restart point will be if the current call returns FALSE.
+<span class="lineNum">      76 </span>                :  * Data beyond this point will be regenerated after resumption, so do not
+<span class="lineNum">      77 </span>                :  * write it out when emptying the buffer externally.
+<span class="lineNum">      78 </span>                :  */</FONT></I>
+<span class="lineNum">      79 </span>                : 
+<span class="lineNum">      80 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(boolean)
+<span class="lineNum">      81 </span><span class="lineNoCov">               0: <B><FONT COLOR="#0000FF">empty_output_buffer</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">      82 </span>                : {
+<span class="lineNum">      83 </span><span class="lineNoCov">               0:   my_dest_ptr dest = (my_dest_ptr) cinfo-&gt;dest;</span>
+<span class="lineNum">      84 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+</span><span class="lineNum">      85 </span><span class="lineNoCov">               0:   <B><FONT COLOR="#A020F0">if</FONT></B> (JFWRITE(dest-&gt;outfile, dest-&gt;buffer, OUTPUT_BUF_SIZE) !=</span>
+<span class="lineNum">      86 </span>                :       (size_t) OUTPUT_BUF_SIZE)
+<span class="lineNum">      87 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_FILE_WRITE);</span>
+<span class="lineNum">      88 </span>                : 
+<span class="lineNum">      89 </span><span class="lineNoCov">               0:   dest-&gt;pub.next_output_byte = dest-&gt;buffer;</span>
+<span class="lineNum">      90 </span><span class="lineNoCov">               0:   dest-&gt;pub.free_in_buffer = OUTPUT_BUF_SIZE;</span>
+<span class="lineNum">      91 </span>                : 
+<span class="lineNum">      92 </span><span class="lineNoCov">               0:   <B><FONT COLOR="#A020F0">return</FONT></B> TRUE;</span>
+<span class="lineNum">      93 </span>                : }
+<span class="lineNum">      94 </span>                : 
+<span class="lineNum">      95 </span>                : 
+<span class="lineNum">      96 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      97 </span>                :  * Terminate destination --- called by jpeg_finish_compress
+<span class="lineNum">      98 </span>                :  * after all data has been written.  Usually needs to flush buffer.
+<span class="lineNum">      99 </span>                :  *
+<span class="lineNum">     100 </span>                :  * NB: *not* called by jpeg_abort or jpeg_destroy; surrounding
+<span class="lineNum">     101 </span>                :  * application must deal with any cleanup that should happen even
+<span class="lineNum">     102 </span>                :  * for error exit.
+<span class="lineNum">     103 </span>                :  */</FONT></I>
+<span class="lineNum">     104 </span>                : 
+<span class="lineNum">     105 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     106 </span><span class="lineCov">            4018: <B><FONT COLOR="#0000FF">term_destination</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     107 </span>                : {
+<span class="lineNum">     108 </span><span class="lineCov">            4018:   my_dest_ptr dest = (my_dest_ptr) cinfo-&gt;dest;</span>
+<span class="lineNum">     109 </span><span class="lineCov">            4018:   size_t datacount = OUTPUT_BUF_SIZE - dest-&gt;pub.free_in_buffer;</span>
+<span class="lineNum">     110 </span>                : 
+<span class="lineNum">     111 </span>                :   <I><FONT COLOR="#B22222">/* Write any data remaining in the buffer */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            4018: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     112 </span><span class="lineCov">            4018:   <B><FONT COLOR="#A020F0">if</FONT></B> (datacount &gt; 0) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4018: branch 2 taken</span>
+</span><span class="lineNum">     113 </span><span class="lineCov">            4018:     <B><FONT COLOR="#A020F0">if</FONT></B> (JFWRITE(dest-&gt;outfile, dest-&gt;buffer, datacount) != datacount)</span>
+<span class="lineNum">     114 </span><span class="lineNoCov">               0:       ERREXIT(cinfo, JERR_FILE_WRITE);</span>
+<span class="lineNum">     115 </span>                :   }
+<span class="lineNum">     116 </span><span class="lineCov">            4018:   fflush(dest-&gt;outfile);</span>
+<span class="lineNum">     117 </span>                :   <I><FONT COLOR="#B22222">/* Make sure we wrote the output file OK */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4018: branch 2 taken</span>
+</span><span class="lineNum">     118 </span><span class="lineCov">            4018:   <B><FONT COLOR="#A020F0">if</FONT></B> (ferror(dest-&gt;outfile))</span>
+<span class="lineNum">     119 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_FILE_WRITE);</span>
+<span class="lineNum">     120 </span><span class="lineCov">            4018: }</span>
+<span class="lineNum">     121 </span>                : 
+<span class="lineNum">     122 </span>                : 
+<span class="lineNum">     123 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     124 </span>                :  * Prepare for output to a stdio stream.
+<span class="lineNum">     125 </span>                :  * The caller must have already opened the stream, and is responsible
+<span class="lineNum">     126 </span>                :  * for closing it after finishing compression.
+<span class="lineNum">     127 </span>                :  */</FONT></I>
+<span class="lineNum">     128 </span>                : 
+<span class="lineNum">     129 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     130 </span><span class="lineCov">            9300: <B><FONT COLOR="#0000FF">jpeg_stdio_dest</FONT></B> (j_compress_ptr cinfo, FILE * outfile)</span>
+<span class="lineNum">     131 </span>                : {
+<span class="lineNum">     132 </span>                :   my_dest_ptr dest;
+<span class="lineNum">     133 </span>                : 
+<span class="lineNum">     134 </span>                :   <I><FONT COLOR="#B22222">/* The destination object is made permanent so that multiple JPEG images
+<span class="lineNum">     135 </span>                :    * can be written to the same file without re-executing jpeg_stdio_dest.
+<span class="lineNum">     136 </span>                :    * This makes it dangerous to use this manager and a different destination
+<span class="lineNum">     137 </span>                :    * manager serially with the same JPEG object, because their private object
+<span class="lineNum">     138 </span>                :    * sizes may be different.  Caveat programmer.
+<span class="lineNum">     139 </span>                :    */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            9300: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     140 </span><span class="lineCov">            9300:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;dest == NULL) {	<I><FONT COLOR="#B22222">/* first time for this JPEG object? */</FONT></I></span>
+<span class="lineNum">     141 </span><span class="lineCov">            9300:     cinfo-&gt;dest = (<B><FONT COLOR="#228B22">struct</FONT></B> jpeg_destination_mgr *)</span>
+<span class="lineNum">     142 </span><span class="lineCov">            9300:       (*cinfo-&gt;mem-&gt;alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,</span>
+<span class="lineNum">     143 </span>                : 				  SIZEOF(my_destination_mgr));
+<span class="lineNum">     144 </span>                :   }
+<span class="lineNum">     145 </span>                : 
+<span class="lineNum">     146 </span><span class="lineCov">            9300:   dest = (my_dest_ptr) cinfo-&gt;dest;</span>
+<span class="lineNum">     147 </span><span class="lineCov">            9300:   dest-&gt;pub.init_destination = init_destination;</span>
+<span class="lineNum">     148 </span><span class="lineCov">            9300:   dest-&gt;pub.empty_output_buffer = empty_output_buffer;</span>
+<span class="lineNum">     149 </span><span class="lineCov">            9300:   dest-&gt;pub.term_destination = term_destination;</span>
+<span class="lineNum">     150 </span><span class="lineCov">            9300:   dest-&gt;outfile = outfile;</span>
+<span class="lineNum">     151 </span><span class="lineCov">            9300: }</span>
+</pre>
+<hr>
+Generated: 2016-04-07&nbsp;12:37 by <a href="http://minormatter.com/zcov">zcov</a><br>
+</body>
+</html>

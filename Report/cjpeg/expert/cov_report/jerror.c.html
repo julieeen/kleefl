@@ -1,0 +1,342 @@
+<html>
+<head>
+  <script src="sorttable.js"></script>
+  <script src="sourceview.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <title>zcov: /home/vagrant/workspace/proj_libjpeg/cov/jerror.c</title>
+</head>
+<body>
+<center><h1> zcov: <a href="index.html">/home/vagrant/workspace/proj_libjpeg/cov</a>/<a href="jerror.c.html">jerror.c</a> </h1></center>
+<hr>
+
+
+<center>
+<table id="headertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Files:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Taken:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>57.1%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 16&nbsp;/&nbsp;28 </td>
+  </tr>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Generated:</b> </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;17:52 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>85.7%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 24&nbsp;/&nbsp;28 </td>
+  </tr>
+  <tr>
+    <td colspan=2> </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Line&nbsp;Coverage:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>89.8%</b> </td>
+    <td bgcolor=#F0F0FF align=right> 53&nbsp;/&nbsp;59 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<center>
+<table id="fileheadertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Programs:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Runs</b> </td>
+    <td bgcolor=#F0F0FF align=right> 5570 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<pre>
+<span class="lineNum">       1 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">       2 </span>                :  * jerror.c
+<span class="lineNum">       3 </span>                :  *
+<span class="lineNum">       4 </span>                :  * Copyright (C) 1991-1998, Thomas G. Lane.
+<span class="lineNum">       5 </span>                :  * This file is part of the Independent JPEG Group's software.
+<span class="lineNum">       6 </span>                :  * For conditions of distribution and use, see the accompanying README file.
+<span class="lineNum">       7 </span>                :  *
+<span class="lineNum">       8 </span>                :  * This file contains simple error-reporting and trace-message routines.
+<span class="lineNum">       9 </span>                :  * These are suitable for Unix-like systems and others where writing to
+<span class="lineNum">      10 </span>                :  * stderr is the right thing to do.  Many applications will want to replace
+<span class="lineNum">      11 </span>                :  * some or all of these routines.
+<span class="lineNum">      12 </span>                :  *
+<span class="lineNum">      13 </span>                :  * If you define USE_WINDOWS_MESSAGEBOX in jconfig.h or in the makefile,
+<span class="lineNum">      14 </span>                :  * you get a Windows-specific hack to display error messages in a dialog box.
+<span class="lineNum">      15 </span>                :  * It ain't much, but it beats dropping error messages into the bit bucket,
+<span class="lineNum">      16 </span>                :  * which is what happens to output to stderr under most Windows C compilers.
+<span class="lineNum">      17 </span>                :  *
+<span class="lineNum">      18 </span>                :  * These routines are used by both the compression and decompression code.
+<span class="lineNum">      19 </span>                :  */</FONT></I>
+<span class="lineNum">      20 </span>                : 
+<span class="lineNum">      21 </span>                : <I><FONT COLOR="#B22222">/* this is not a core library module, so it doesn't define JPEG_INTERNALS */</FONT></I>
+<span class="lineNum">      22 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jinclude.h&quot;</FONT></B>
+<span class="lineNum">      23 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jpeglib.h&quot;</FONT></B>
+<span class="lineNum">      24 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jversion.h&quot;</FONT></B>
+<span class="lineNum">      25 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jerror.h&quot;</FONT></B>
+<span class="lineNum">      26 </span>                : 
+<span class="lineNum">      27 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">USE_WINDOWS_MESSAGEBOX</FONT>
+<span class="lineNum">      28 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&lt;windows.h&gt;</FONT></B>
+<span class="lineNum">      29 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      30 </span>                : 
+<span class="lineNum">      31 </span>                : #<B><FONT COLOR="#5F9EA0">ifndef</FONT></B> <FONT COLOR="#B8860B">EXIT_FAILURE</FONT>		<I><FONT COLOR="#B22222">/* define exit() codes if not provided */</FONT></I>
+<span class="lineNum">      32 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">EXIT_FAILURE</FONT>  1
+<span class="lineNum">      33 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      34 </span>                : 
+<span class="lineNum">      35 </span>                : 
+<span class="lineNum">      36 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      37 </span>                :  * Create the message string table.
+<span class="lineNum">      38 </span>                :  * We do this from the master message list in jerror.h by re-reading
+<span class="lineNum">      39 </span>                :  * jerror.h with a suitable definition for macro JMESSAGE.
+<span class="lineNum">      40 </span>                :  * The message table is made an external symbol just in case any applications
+<span class="lineNum">      41 </span>                :  * want to refer to it directly.
+<span class="lineNum">      42 </span>                :  */</FONT></I>
+<span class="lineNum">      43 </span>                : 
+<span class="lineNum">      44 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">NEED_SHORT_EXTERNAL_NAMES</FONT>
+<span class="lineNum">      45 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">jpeg_std_message_table</FONT>	jMsgTable
+<span class="lineNum">      46 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      47 </span>                : 
+<span class="lineNum">      48 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <B><FONT COLOR="#0000FF">JMESSAGE</FONT></B>(code,string)	string ,
+<span class="lineNum">      49 </span>                : 
+<span class="lineNum">      50 </span>                : <B><FONT COLOR="#228B22">const</FONT></B> <B><FONT COLOR="#228B22">char</FONT></B> * <B><FONT COLOR="#228B22">const</FONT></B> jpeg_std_message_table[] = {
+<span class="lineNum">      51 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jerror.h&quot;</FONT></B>
+<span class="lineNum">      52 </span>                :   NULL
+<span class="lineNum">      53 </span>                : };
+<span class="lineNum">      54 </span>                : 
+<span class="lineNum">      55 </span>                : 
+<span class="lineNum">      56 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      57 </span>                :  * Error exit handler: must not return to caller.
+<span class="lineNum">      58 </span>                :  *
+<span class="lineNum">      59 </span>                :  * Applications may override this if they want to get control back after
+<span class="lineNum">      60 </span>                :  * an error.  Typically one would longjmp somewhere instead of exiting.
+<span class="lineNum">      61 </span>                :  * The setjmp buffer can be made a private field within an expanded error
+<span class="lineNum">      62 </span>                :  * handler object.  Note that the info needed to generate an error message
+<span class="lineNum">      63 </span>                :  * is stored in the error object, so you can generate the message now or
+<span class="lineNum">      64 </span>                :  * later, at your convenience.
+<span class="lineNum">      65 </span>                :  * You should make sure that the JPEG object is cleaned up (with jpeg_abort
+<span class="lineNum">      66 </span>                :  * or jpeg_destroy) at some point.
+<span class="lineNum">      67 </span>                :  */</FONT></I>
+<span class="lineNum">      68 </span>                : 
+<span class="lineNum">      69 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">      70 </span><span class="lineCov">            3145: <B><FONT COLOR="#0000FF">error_exit</FONT></B> (j_common_ptr cinfo)</span>
+<span class="lineNum">      71 </span>                : {
+<span class="lineNum">      72 </span>                :   <I><FONT COLOR="#B22222">/* Always display the message */</FONT></I>
+<span class="lineNum">      73 </span><span class="lineCov">            3145:   (*cinfo-&gt;err-&gt;output_message) (cinfo);</span>
+<span class="lineNum">      74 </span>                : 
+<span class="lineNum">      75 </span>                :   <I><FONT COLOR="#B22222">/* Let the memory manager delete any temp files before we die */</FONT></I>
+<span class="lineNum">      76 </span><span class="lineCov">            3145:   jpeg_destroy(cinfo);</span>
+<span class="lineNum">      77 </span>                : 
+<span class="lineNum">      78 </span><span class="lineCov">            3145:   exit(EXIT_FAILURE);</span>
+<span class="lineNum">      79 </span>                : }
+<span class="lineNum">      80 </span>                : 
+<span class="lineNum">      81 </span>                : 
+<span class="lineNum">      82 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      83 </span>                :  * Actual output of an error or trace message.
+<span class="lineNum">      84 </span>                :  * Applications may override this method to send JPEG messages somewhere
+<span class="lineNum">      85 </span>                :  * other than stderr.
+<span class="lineNum">      86 </span>                :  *
+<span class="lineNum">      87 </span>                :  * On Windows, printing to stderr is generally completely useless,
+<span class="lineNum">      88 </span>                :  * so we provide optional code to produce an error-dialog popup.
+<span class="lineNum">      89 </span>                :  * Most Windows applications will still prefer to override this routine,
+<span class="lineNum">      90 </span>                :  * but if they don't, it'll do something at least marginally useful.
+<span class="lineNum">      91 </span>                :  *
+<span class="lineNum">      92 </span>                :  * NOTE: to use the library in an environment that doesn't support the
+<span class="lineNum">      93 </span>                :  * C stdio library, you may have to delete the call to fprintf() entirely,
+<span class="lineNum">      94 </span>                :  * not just not use this routine.
+<span class="lineNum">      95 </span>                :  */</FONT></I>
+<span class="lineNum">      96 </span>                : 
+<span class="lineNum">      97 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">      98 </span><span class="lineCov">            3482: <B><FONT COLOR="#0000FF">output_message</FONT></B> (j_common_ptr cinfo)</span>
+<span class="lineNum">      99 </span>                : {
+<span class="lineNum">     100 </span>                :   <B><FONT COLOR="#228B22">char</FONT></B> buffer[JMSG_LENGTH_MAX];
+<span class="lineNum">     101 </span>                : 
+<span class="lineNum">     102 </span>                :   <I><FONT COLOR="#B22222">/* Create the message */</FONT></I>
+<span class="lineNum">     103 </span><span class="lineCov">            3482:   (*cinfo-&gt;err-&gt;format_message) (cinfo, buffer);</span>
+<span class="lineNum">     104 </span>                : 
+<span class="lineNum">     105 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">USE_WINDOWS_MESSAGEBOX</FONT>
+<span class="lineNum">     106 </span>                :   <I><FONT COLOR="#B22222">/* Display it in a message dialog box */</FONT></I>
+<span class="lineNum">     107 </span>                :   MessageBox(GetActiveWindow(), buffer, <B><FONT COLOR="#BC8F8F">&quot;JPEG Library Error&quot;</FONT></B>,
+<span class="lineNum">     108 </span>                : 	     MB_OK | MB_ICONERROR);
+<span class="lineNum">     109 </span>                : #<B><FONT COLOR="#5F9EA0">else</FONT></B>
+<span class="lineNum">     110 </span>                :   <I><FONT COLOR="#B22222">/* Send it to stderr, adding a newline */</FONT></I>
+<span class="lineNum">     111 </span><span class="lineCov">            3482:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;%s\n&quot;</FONT></B>, buffer);</span>
+<span class="lineNum">     112 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     113 </span><span class="lineCov">            3482: }</span>
+<span class="lineNum">     114 </span>                : 
+<span class="lineNum">     115 </span>                : 
+<span class="lineNum">     116 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     117 </span>                :  * Decide whether to emit a trace or warning message.
+<span class="lineNum">     118 </span>                :  * msg_level is one of:
+<span class="lineNum">     119 </span>                :  *   -1: recoverable corrupt-data warning, may want to abort.
+<span class="lineNum">     120 </span>                :  *    0: important advisory messages (always display to user).
+<span class="lineNum">     121 </span>                :  *    1: first level of tracing detail.
+<span class="lineNum">     122 </span>                :  *    2,3,...: successively more detailed tracing messages.
+<span class="lineNum">     123 </span>                :  * An application might override this method if it wanted to abort on warnings
+<span class="lineNum">     124 </span>                :  * or change the policy about which messages to display.
+<span class="lineNum">     125 </span>                :  */</FONT></I>
+<span class="lineNum">     126 </span>                : 
+<span class="lineNum">     127 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     128 </span><span class="lineCov">            4607: <B><FONT COLOR="#0000FF">emit_message</FONT></B> (j_common_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> msg_level)</span>
+<span class="lineNum">     129 </span>                : {
+<span class="lineNum">     130 </span><span class="lineCov">            4607:   <B><FONT COLOR="#228B22">struct</FONT></B> jpeg_error_mgr * err = cinfo-&gt;err;</span>
+<span class="lineNum">     131 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4607: branch 1 taken</span>
+</span><span class="lineNum">     132 </span><span class="lineCov">            4607:   <B><FONT COLOR="#A020F0">if</FONT></B> (msg_level &lt; 0) {</span>
+<span class="lineNum">     133 </span>                :     <I><FONT COLOR="#B22222">/* It's a warning message.  Since corrupt files may generate many warnings,
+<span class="lineNum">     134 </span>                :      * the policy implemented here is to show only the first warning,
+<span class="lineNum">     135 </span>                :      * unless trace_level &gt;= 3.
+<span class="lineNum">     136 </span>                :      */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
+</span><span class="lineNum">     137 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (err-&gt;num_warnings == 0 || err-&gt;trace_level &gt;= 3)</span>
+<span class="lineNum">     138 </span><span class="lineNoCov">               0:       (*err-&gt;output_message) (cinfo);</span>
+<span class="lineNum">     139 </span>                :     <I><FONT COLOR="#B22222">/* Always count warnings in num_warnings. */</FONT></I>
+<span class="lineNum">     140 </span><span class="lineNoCov">               0:     err-&gt;num_warnings++;</span>
+<span class="lineNum">     141 </span>                :   } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     142 </span>                :     <I><FONT COLOR="#B22222">/* It's a trace message.  Show it if trace_level &gt;= msg_level. */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             337: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4270: branch 1 taken</span>
+</span><span class="lineNum">     143 </span><span class="lineCov">            4607:     <B><FONT COLOR="#A020F0">if</FONT></B> (err-&gt;trace_level &gt;= msg_level)</span>
+<span class="lineNum">     144 </span><span class="lineCov">             337:       (*err-&gt;output_message) (cinfo);</span>
+<span class="lineNum">     145 </span>                :   }
+<span class="lineNum">     146 </span><span class="lineCov">            4607: }</span>
+<span class="lineNum">     147 </span>                : 
+<span class="lineNum">     148 </span>                : 
+<span class="lineNum">     149 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     150 </span>                :  * Format a message string for the most recent JPEG error or message.
+<span class="lineNum">     151 </span>                :  * The message is stored into buffer, which should be at least JMSG_LENGTH_MAX
+<span class="lineNum">     152 </span>                :  * characters.  Note that no '\n' character is added to the string.
+<span class="lineNum">     153 </span>                :  * Few applications should need to override this method.
+<span class="lineNum">     154 </span>                :  */</FONT></I>
+<span class="lineNum">     155 </span>                : 
+<span class="lineNum">     156 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     157 </span><span class="lineCov">            3482: <B><FONT COLOR="#0000FF">format_message</FONT></B> (j_common_ptr cinfo, <B><FONT COLOR="#228B22">char</FONT></B> * buffer)</span>
+<span class="lineNum">     158 </span>                : {
+<span class="lineNum">     159 </span><span class="lineCov">            3482:   <B><FONT COLOR="#228B22">struct</FONT></B> jpeg_error_mgr * err = cinfo-&gt;err;</span>
+<span class="lineNum">     160 </span><span class="lineCov">            3482:   <B><FONT COLOR="#228B22">int</FONT></B> msg_code = err-&gt;msg_code;</span>
+<span class="lineNum">     161 </span><span class="lineCov">            3482:   <B><FONT COLOR="#228B22">const</FONT></B> <B><FONT COLOR="#228B22">char</FONT></B> * msgtext = NULL;</span>
+<span class="lineNum">     162 </span>                :   <B><FONT COLOR="#228B22">const</FONT></B> <B><FONT COLOR="#228B22">char</FONT></B> * msgptr;
+<span class="lineNum">     163 </span>                :   <B><FONT COLOR="#228B22">char</FONT></B> ch;
+<span class="lineNum">     164 </span>                :   boolean isstring;
+<span class="lineNum">     165 </span>                : 
+<span class="lineNum">     166 </span>                :   <I><FONT COLOR="#B22222">/* Look up message string in proper table */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            3482: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2224: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1258: branch 3 taken</span>
+</span><span class="lineNum">     167 </span><span class="lineCov">            3482:   <B><FONT COLOR="#A020F0">if</FONT></B> (msg_code &gt; 0 &amp;&amp; msg_code &lt;= err-&gt;last_jpeg_message) {</span>
+<span class="lineNum">     168 </span><span class="lineCov">            2224:     msgtext = err-&gt;jpeg_message_table[msg_code];</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1258: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1258: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
+</span><span class="lineNum">     169 </span><span class="lineCov">            2516:   } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (err-&gt;addon_message_table != NULL &amp;&amp;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1258: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     170 </span><span class="lineCov">            2516: 	     msg_code &gt;= err-&gt;first_addon_message &amp;&amp;</span>
+<span class="lineNum">     171 </span><span class="lineCov">            1258: 	     msg_code &lt;= err-&gt;last_addon_message) {</span>
+<span class="lineNum">     172 </span><span class="lineCov">            1258:     msgtext = err-&gt;addon_message_table[msg_code - err-&gt;first_addon_message];</span>
+<span class="lineNum">     173 </span>                :   }
+<span class="lineNum">     174 </span>                : 
+<span class="lineNum">     175 </span>                :   <I><FONT COLOR="#B22222">/* Defend against bogus message number */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3482: branch 1 taken</span>
+</span><span class="lineNum">     176 </span><span class="lineCov">            3482:   <B><FONT COLOR="#A020F0">if</FONT></B> (msgtext == NULL) {</span>
+<span class="lineNum">     177 </span><span class="lineNoCov">               0:     err-&gt;msg_parm.i[0] = msg_code;</span>
+<span class="lineNum">     178 </span><span class="lineNoCov">               0:     msgtext = err-&gt;jpeg_message_table[0];</span>
+<span class="lineNum">     179 </span>                :   }
+<span class="lineNum">     180 </span>                : 
+<span class="lineNum">     181 </span>                :   <I><FONT COLOR="#B22222">/* Check for string parameter, as indicated by %s in the message text */</FONT></I>
+<span class="lineNum">     182 </span><span class="lineCov">            3482:   isstring = FALSE;</span>
+<span class="lineNum">     183 </span><span class="lineCov">            3482:   msgptr = msgtext;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           90714: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3044: branch 1 taken</span>
+</span><span class="lineNum">     184 </span><span class="lineCov">           97240:   <B><FONT COLOR="#A020F0">while</FONT></B> ((ch = *msgptr++) != <B><FONT COLOR="#BC8F8F">'\0'</FONT></B>) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             438: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           90276: branch 1 taken</span>
+</span><span class="lineNum">     185 </span><span class="lineCov">           90714:     <B><FONT COLOR="#A020F0">if</FONT></B> (ch == <B><FONT COLOR="#BC8F8F">'%'</FONT></B>) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             438: branch 1 taken</span>
+</span><span class="lineNum">     186 </span><span class="lineCov">             438:       <B><FONT COLOR="#A020F0">if</FONT></B> (*msgptr == <B><FONT COLOR="#BC8F8F">'s'</FONT></B>) isstring = TRUE;</span>
+<span class="lineNum">     187 </span><span class="lineCov">             438:       <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     188 </span>                :     }
+<span class="lineNum">     189 </span>                :   }
+<span class="lineNum">     190 </span>                : 
+<span class="lineNum">     191 </span>                :   <I><FONT COLOR="#B22222">/* Format the message into the passed buffer */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3482: branch 1 taken</span>
+</span><span class="lineNum">     192 </span><span class="lineCov">            3482:   <B><FONT COLOR="#A020F0">if</FONT></B> (isstring)</span>
+<span class="lineNum">     193 </span><span class="lineNoCov">               0:     sprintf(buffer, msgtext, err-&gt;msg_parm.s);</span>
+<span class="lineNum">     194 </span>                :   <B><FONT COLOR="#A020F0">else</FONT></B>
+<span class="lineNum">     195 </span><span class="lineCov">            3482:     sprintf(buffer, msgtext,</span>
+<span class="lineNum">     196 </span>                : 	    err-&gt;msg_parm.i[0], err-&gt;msg_parm.i[1],
+<span class="lineNum">     197 </span>                : 	    err-&gt;msg_parm.i[2], err-&gt;msg_parm.i[3],
+<span class="lineNum">     198 </span>                : 	    err-&gt;msg_parm.i[4], err-&gt;msg_parm.i[5],
+<span class="lineNum">     199 </span>                : 	    err-&gt;msg_parm.i[6], err-&gt;msg_parm.i[7]);
+<span class="lineNum">     200 </span><span class="lineCov">            3482: }</span>
+<span class="lineNum">     201 </span>                : 
+<span class="lineNum">     202 </span>                : 
+<span class="lineNum">     203 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     204 </span>                :  * Reset error state variables at start of a new image.
+<span class="lineNum">     205 </span>                :  * This is called during compression startup to reset trace/error
+<span class="lineNum">     206 </span>                :  * processing to default state, without losing any application-specific
+<span class="lineNum">     207 </span>                :  * method pointers.  An application might possibly want to override
+<span class="lineNum">     208 </span>                :  * this method if it has additional error processing state.
+<span class="lineNum">     209 </span>                :  */</FONT></I>
+<span class="lineNum">     210 </span>                : 
+<span class="lineNum">     211 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     212 </span><span class="lineCov">            3965: <B><FONT COLOR="#0000FF">reset_error_mgr</FONT></B> (j_common_ptr cinfo)</span>
+<span class="lineNum">     213 </span>                : {
+<span class="lineNum">     214 </span><span class="lineCov">            3965:   cinfo-&gt;err-&gt;num_warnings = 0;</span>
+<span class="lineNum">     215 </span>                :   <I><FONT COLOR="#B22222">/* trace_level is not reset since it is an application-supplied parameter */</FONT></I>
+<span class="lineNum">     216 </span><span class="lineCov">            3965:   cinfo-&gt;err-&gt;msg_code = 0;	<I><FONT COLOR="#B22222">/* may be useful as a flag for &quot;no error&quot; */</FONT></I></span>
+<span class="lineNum">     217 </span><span class="lineCov">            3965: }</span>
+<span class="lineNum">     218 </span>                : 
+<span class="lineNum">     219 </span>                : 
+<span class="lineNum">     220 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     221 </span>                :  * Fill in the standard error-handling methods in a jpeg_error_mgr object.
+<span class="lineNum">     222 </span>                :  * Typical call is:
+<span class="lineNum">     223 </span>                :  *	struct jpeg_compress_struct cinfo;
+<span class="lineNum">     224 </span>                :  *	struct jpeg_error_mgr err;
+<span class="lineNum">     225 </span>                :  *
+<span class="lineNum">     226 </span>                :  *	cinfo.err = jpeg_std_error(&amp;err);
+<span class="lineNum">     227 </span>                :  * after which the application may override some of the methods.
+<span class="lineNum">     228 </span>                :  */</FONT></I>
+<span class="lineNum">     229 </span>                : 
+<span class="lineNum">     230 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">struct</FONT></B> jpeg_error_mgr *)
+<span class="lineNum">     231 </span><span class="lineCov">            5570: <B><FONT COLOR="#0000FF">jpeg_std_error</FONT></B> (<B><FONT COLOR="#228B22">struct</FONT></B> jpeg_error_mgr * err)</span>
+<span class="lineNum">     232 </span>                : {
+<span class="lineNum">     233 </span><span class="lineCov">            5570:   err-&gt;error_exit = error_exit;</span>
+<span class="lineNum">     234 </span><span class="lineCov">            5570:   err-&gt;emit_message = emit_message;</span>
+<span class="lineNum">     235 </span><span class="lineCov">            5570:   err-&gt;output_message = output_message;</span>
+<span class="lineNum">     236 </span><span class="lineCov">            5570:   err-&gt;format_message = format_message;</span>
+<span class="lineNum">     237 </span><span class="lineCov">            5570:   err-&gt;reset_error_mgr = reset_error_mgr;</span>
+<span class="lineNum">     238 </span>                : 
+<span class="lineNum">     239 </span><span class="lineCov">            5570:   err-&gt;trace_level = 0;		<I><FONT COLOR="#B22222">/* default = no tracing */</FONT></I></span>
+<span class="lineNum">     240 </span><span class="lineCov">            5570:   err-&gt;num_warnings = 0;	<I><FONT COLOR="#B22222">/* no warnings emitted yet */</FONT></I></span>
+<span class="lineNum">     241 </span><span class="lineCov">            5570:   err-&gt;msg_code = 0;		<I><FONT COLOR="#B22222">/* may be useful as a flag for &quot;no error&quot; */</FONT></I></span>
+<span class="lineNum">     242 </span>                : 
+<span class="lineNum">     243 </span>                :   <I><FONT COLOR="#B22222">/* Initialize message table pointers */</FONT></I>
+<span class="lineNum">     244 </span><span class="lineCov">            5570:   err-&gt;jpeg_message_table = jpeg_std_message_table;</span>
+<span class="lineNum">     245 </span><span class="lineCov">            5570:   err-&gt;last_jpeg_message = (<B><FONT COLOR="#228B22">int</FONT></B>) JMSG_LASTMSGCODE - 1;</span>
+<span class="lineNum">     246 </span>                : 
+<span class="lineNum">     247 </span><span class="lineCov">            5570:   err-&gt;addon_message_table = NULL;</span>
+<span class="lineNum">     248 </span><span class="lineCov">            5570:   err-&gt;first_addon_message = 0;	<I><FONT COLOR="#B22222">/* for safety */</FONT></I></span>
+<span class="lineNum">     249 </span><span class="lineCov">            5570:   err-&gt;last_addon_message = 0;</span>
+<span class="lineNum">     250 </span>                : 
+<span class="lineNum">     251 </span><span class="lineCov">            5570:   <B><FONT COLOR="#A020F0">return</FONT></B> err;</span>
+<span class="lineNum">     252 </span>                : }
+</pre>
+<hr>
+Generated: 2016-04-07&nbsp;17:52 by <a href="http://minormatter.com/zcov">zcov</a><br>
+</body>
+</html>

@@ -4,6 +4,8 @@ import sys
 import subprocess
 from easyprocess import EasyProcess
 
+binary_run_timout = 3
+
 if len(sys.argv) != 3:
 	print "build source :	kleefl_cov make source_dir/"
 	print "analyze cov  :	kleefl_cov cov_build/binary path_to_afl_sync_dir/ "
@@ -106,10 +108,9 @@ print "--> found "+str(len(fuzzer_coll))+" fuzzing instances in "+sync_dir
 for fuzzer in fuzzer_coll:
 	for call in fuzzer.calls():
 		print "exec: "+call
-		# execute call (collect cov data)
+		# execute call (to collect cov data)
 		try:
-			process = EasyProcess(call).call(timeout=2)
-			#print process.return_code,
+			process = EasyProcess(call).call(timeout=binary_run_timout)
 		except:
 			print "ERROR on subprocess! (testing binary)"
 			print call

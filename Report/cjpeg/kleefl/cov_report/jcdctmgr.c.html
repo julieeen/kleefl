@@ -1,0 +1,499 @@
+<html>
+<head>
+  <script src="sorttable.js"></script>
+  <script src="sourceview.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <title>zcov: /home/vagrant/workspace/proj_libjpeg/cov/jcdctmgr.c</title>
+</head>
+<body>
+<center><h1> zcov: <a href="index.html">/home/vagrant/workspace/proj_libjpeg/cov</a>/<a href="jcdctmgr.c.html">jcdctmgr.c</a> </h1></center>
+<hr>
+
+
+<center>
+<table id="headertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Files:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Taken:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>90.0%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 45&nbsp;/&nbsp;50 </td>
+  </tr>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Generated:</b> </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;12:37 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>100.0%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 50&nbsp;/&nbsp;50 </td>
+  </tr>
+  <tr>
+    <td colspan=2> </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Line&nbsp;Coverage:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>95.7%</b> </td>
+    <td bgcolor=#F0F0FF align=right> 110&nbsp;/&nbsp;115 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<center>
+<table id="fileheadertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Programs:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Runs</b> </td>
+    <td bgcolor=#F0F0FF align=right> 13688 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<pre>
+<span class="lineNum">       1 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">       2 </span>                :  * jcdctmgr.c
+<span class="lineNum">       3 </span>                :  *
+<span class="lineNum">       4 </span>                :  * Copyright (C) 1994-1996, Thomas G. Lane.
+<span class="lineNum">       5 </span>                :  * This file is part of the Independent JPEG Group's software.
+<span class="lineNum">       6 </span>                :  * For conditions of distribution and use, see the accompanying README file.
+<span class="lineNum">       7 </span>                :  *
+<span class="lineNum">       8 </span>                :  * This file contains the forward-DCT management logic.
+<span class="lineNum">       9 </span>                :  * This code selects a particular DCT implementation to be used,
+<span class="lineNum">      10 </span>                :  * and it performs related housekeeping chores including coefficient
+<span class="lineNum">      11 </span>                :  * quantization.
+<span class="lineNum">      12 </span>                :  */</FONT></I>
+<span class="lineNum">      13 </span>                : 
+<span class="lineNum">      14 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">JPEG_INTERNALS</FONT>
+<span class="lineNum">      15 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jinclude.h&quot;</FONT></B>
+<span class="lineNum">      16 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jpeglib.h&quot;</FONT></B>
+<span class="lineNum">      17 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jdct.h&quot;</FONT></B>		<I><FONT COLOR="#B22222">/* Private declarations for DCT subsystem */</FONT></I>
+<span class="lineNum">      18 </span>                : 
+<span class="lineNum">      19 </span>                : 
+<span class="lineNum">      20 </span>                : <I><FONT COLOR="#B22222">/* Private subobject for this module */</FONT></I>
+<span class="lineNum">      21 </span>                : 
+<span class="lineNum">      22 </span>                : <B><FONT COLOR="#228B22">typedef</FONT></B> <B><FONT COLOR="#228B22">struct</FONT></B> {
+<span class="lineNum">      23 </span>                :   <B><FONT COLOR="#228B22">struct</FONT></B> jpeg_forward_dct pub;	<I><FONT COLOR="#B22222">/* public fields */</FONT></I>
+<span class="lineNum">      24 </span>                : 
+<span class="lineNum">      25 </span>                :   <I><FONT COLOR="#B22222">/* Pointer to the DCT routine actually in use */</FONT></I>
+<span class="lineNum">      26 </span>                :   forward_DCT_method_ptr do_dct;
+<span class="lineNum">      27 </span>                : 
+<span class="lineNum">      28 </span>                :   <I><FONT COLOR="#B22222">/* The actual post-DCT divisors --- not identical to the quant table
+<span class="lineNum">      29 </span>                :    * entries, because of scaling (especially for an unnormalized DCT).
+<span class="lineNum">      30 </span>                :    * Each table is given in normal array order.
+<span class="lineNum">      31 </span>                :    */</FONT></I>
+<span class="lineNum">      32 </span>                :   DCTELEM * divisors[NUM_QUANT_TBLS];
+<span class="lineNum">      33 </span>                : 
+<span class="lineNum">      34 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">DCT_FLOAT_SUPPORTED</FONT>
+<span class="lineNum">      35 </span>                :   <I><FONT COLOR="#B22222">/* Same as above for the floating-point case. */</FONT></I>
+<span class="lineNum">      36 </span>                :   float_DCT_method_ptr do_float_dct;
+<span class="lineNum">      37 </span>                :   FAST_FLOAT * float_divisors[NUM_QUANT_TBLS];
+<span class="lineNum">      38 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      39 </span>                : } my_fdct_controller;
+<span class="lineNum">      40 </span>                : 
+<span class="lineNum">      41 </span>                : <B><FONT COLOR="#228B22">typedef</FONT></B> my_fdct_controller * my_fdct_ptr;
+<span class="lineNum">      42 </span>                : 
+<span class="lineNum">      43 </span>                : 
+<span class="lineNum">      44 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      45 </span>                :  * Initialize for a processing pass.
+<span class="lineNum">      46 </span>                :  * Verify that all referenced Q-tables are present, and set up
+<span class="lineNum">      47 </span>                :  * the divisor table for each one.
+<span class="lineNum">      48 </span>                :  * In the current implementation, DCT of all components is done during
+<span class="lineNum">      49 </span>                :  * the first pass, even if only some components will be output in the
+<span class="lineNum">      50 </span>                :  * first scan.  Hence all components should be examined here.
+<span class="lineNum">      51 </span>                :  */</FONT></I>
+<span class="lineNum">      52 </span>                : 
+<span class="lineNum">      53 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">      54 </span><span class="lineCov">            9067: <B><FONT COLOR="#0000FF">start_pass_fdctmgr</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">      55 </span>                : {
+<span class="lineNum">      56 </span><span class="lineCov">            9067:   my_fdct_ptr fdct = (my_fdct_ptr) cinfo-&gt;fdct;</span>
+<span class="lineNum">      57 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> ci, qtblno, i;
+<span class="lineNum">      58 </span>                :   jpeg_component_info *compptr;
+<span class="lineNum">      59 </span>                :   JQUANT_TBL * qtbl;
+<span class="lineNum">      60 </span>                :   DCTELEM * dtbl;
+<span class="lineNum">      61 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           17279: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9067: branch 1 taken</span>
+</span><span class="lineNum">      62 </span><span class="lineCov">           35413:   <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0, compptr = cinfo-&gt;comp_info; ci &lt; cinfo-&gt;num_components;</span>
+<span class="lineNum">      63 </span><span class="lineCov">           17279:        ci++, compptr++) {</span>
+<span class="lineNum">      64 </span><span class="lineCov">           17279:     qtblno = compptr-&gt;quant_tbl_no;</span>
+<span class="lineNum">      65 </span>                :     <I><FONT COLOR="#B22222">/* Make sure specified quantization table is present */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           17279: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           17279: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 4 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           17279: branch 5 taken</span>
+</span><span class="lineNum">      66 </span><span class="lineCov">           34558:     <B><FONT COLOR="#A020F0">if</FONT></B> (qtblno &lt; 0 || qtblno &gt;= NUM_QUANT_TBLS ||</span>
+<span class="lineNum">      67 </span><span class="lineCov">           17279: 	cinfo-&gt;quant_tbl_ptrs[qtblno] == NULL)</span>
+<span class="lineNum">      68 </span><span class="lineNoCov">               0:       ERREXIT1(cinfo, JERR_NO_QUANT_TABLE, qtblno);</span>
+<span class="lineNum">      69 </span><span class="lineCov">           17279:     qtbl = cinfo-&gt;quant_tbl_ptrs[qtblno];</span>
+<span class="lineNum">      70 </span>                :     <I><FONT COLOR="#B22222">/* Compute divisors for this quant table */</FONT></I>
+<span class="lineNum">      71 </span>                :     <I><FONT COLOR="#B22222">/* We may do this more than once for same table, but it's not a big deal */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           13598: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1881: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1800: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
+</span><span class="lineNum">      72 </span><span class="lineCov">           17279:     <B><FONT COLOR="#A020F0">switch</FONT></B> (cinfo-&gt;dct_method) {</span>
+<span class="lineNum">      73 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">DCT_ISLOW_SUPPORTED</FONT>
+<span class="lineNum">      74 </span>                :     <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">JDCT_ISLOW</FONT></B>:
+<span class="lineNum">      75 </span>                :       <I><FONT COLOR="#B22222">/* For LL&amp;M IDCT method, divisors are equal to raw quantization
+<span class="lineNum">      76 </span>                :        * coefficients multiplied by 8 (to counteract scaling).
+<span class="lineNum">      77 </span>                :        */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           10464: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3134: branch 1 taken</span>
+</span><span class="lineNum">      78 </span><span class="lineCov">           13598:       <B><FONT COLOR="#A020F0">if</FONT></B> (fdct-&gt;divisors[qtblno] == NULL) {</span>
+<span class="lineNum">      79 </span><span class="lineCov">           10464: 	fdct-&gt;divisors[qtblno] = (DCTELEM *)</span>
+<span class="lineNum">      80 </span><span class="lineCov">           10464: 	  (*cinfo-&gt;mem-&gt;alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
+<span class="lineNum">      81 </span>                : 				      DCTSIZE2 * SIZEOF(DCTELEM));
+<span class="lineNum">      82 </span>                :       }
+<span class="lineNum">      83 </span><span class="lineCov">           13598:       dtbl = fdct-&gt;divisors[qtblno];</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          870272: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           13598: branch 1 taken</span>
+</span><span class="lineNum">      84 </span><span class="lineCov">          883870:       <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; DCTSIZE2; i++) {</span>
+<span class="lineNum">      85 </span><span class="lineCov">          870272: 	dtbl[i] = ((DCTELEM) qtbl-&gt;quantval[i]) &lt;&lt; 3;</span>
+<span class="lineNum">      86 </span>                :       }
+<span class="lineNum">      87 </span><span class="lineCov">           13598:       <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">      88 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      89 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">DCT_IFAST_SUPPORTED</FONT>
+<span class="lineNum">      90 </span>                :     <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">JDCT_IFAST</FONT></B>:
+<span class="lineNum">      91 </span>                :       {
+<span class="lineNum">      92 </span>                : 	<I><FONT COLOR="#B22222">/* For AA&amp;N IDCT method, divisors are equal to quantization
+<span class="lineNum">      93 </span>                : 	 * coefficients scaled by scalefactor[row]*scalefactor[col], where
+<span class="lineNum">      94 </span>                : 	 *   scalefactor[0] = 1
+<span class="lineNum">      95 </span>                : 	 *   scalefactor[k] = cos(k*PI/16) * sqrt(2)    for k=1..7
+<span class="lineNum">      96 </span>                : 	 * We apply a further scale factor of 8.
+<span class="lineNum">      97 </span>                : 	 */</FONT></I>
+<span class="lineNum">      98 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">CONST_BITS</FONT> 14
+<span class="lineNum">      99 </span>                : 	<B><FONT COLOR="#228B22">static</FONT></B> <B><FONT COLOR="#228B22">const</FONT></B> INT16 aanscales[DCTSIZE2] = {
+<span class="lineNum">     100 </span>                : 	  <I><FONT COLOR="#B22222">/* precomputed values scaled up by 14 bits */</FONT></I>
+<span class="lineNum">     101 </span>                : 	  16384, 22725, 21407, 19266, 16384, 12873,  8867,  4520,
+<span class="lineNum">     102 </span>                : 	  22725, 31521, 29692, 26722, 22725, 17855, 12299,  6270,
+<span class="lineNum">     103 </span>                : 	  21407, 29692, 27969, 25172, 21407, 16819, 11585,  5906,
+<span class="lineNum">     104 </span>                : 	  19266, 26722, 25172, 22654, 19266, 15137, 10426,  5315,
+<span class="lineNum">     105 </span>                : 	  16384, 22725, 21407, 19266, 16384, 12873,  8867,  4520,
+<span class="lineNum">     106 </span>                : 	  12873, 17855, 16819, 15137, 12873, 10114,  6967,  3552,
+<span class="lineNum">     107 </span>                : 	   8867, 12299, 11585, 10426,  8867,  6967,  4799,  2446,
+<span class="lineNum">     108 </span>                : 	   4520,  6270,  5906,  5315,  4520,  3552,  2446,  1247
+<span class="lineNum">     109 </span>                : 	};
+<span class="lineNum">     110 </span>                : 	SHIFT_TEMPS
+<span class="lineNum">     111 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1383: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             498: branch 1 taken</span>
+</span><span class="lineNum">     112 </span><span class="lineCov">            1881: 	<B><FONT COLOR="#A020F0">if</FONT></B> (fdct-&gt;divisors[qtblno] == NULL) {</span>
+<span class="lineNum">     113 </span><span class="lineCov">            1383: 	  fdct-&gt;divisors[qtblno] = (DCTELEM *)</span>
+<span class="lineNum">     114 </span><span class="lineCov">            1383: 	    (*cinfo-&gt;mem-&gt;alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
+<span class="lineNum">     115 </span>                : 					DCTSIZE2 * SIZEOF(DCTELEM));
+<span class="lineNum">     116 </span>                : 	}
+<span class="lineNum">     117 </span><span class="lineCov">            1881: 	dtbl = fdct-&gt;divisors[qtblno];</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          120384: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1881: branch 1 taken</span>
+</span><span class="lineNum">     118 </span><span class="lineCov">          122265: 	<B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; DCTSIZE2; i++) {</span>
+<span class="lineNum">     119 </span><span class="lineCov">          240768: 	  dtbl[i] = (DCTELEM)</span>
+<span class="lineNum">     120 </span><span class="lineCov">          120384: 	    DESCALE(MULTIPLY16V16((INT32) qtbl-&gt;quantval[i],</span>
+<span class="lineNum">     121 </span>                : 				  (INT32) aanscales[i]),
+<span class="lineNum">     122 </span>                : 		    CONST_BITS-3);
+<span class="lineNum">     123 </span>                : 	}
+<span class="lineNum">     124 </span>                :       }
+<span class="lineNum">     125 </span><span class="lineCov">            1881:       <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     126 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     127 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">DCT_FLOAT_SUPPORTED</FONT>
+<span class="lineNum">     128 </span>                :     <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">JDCT_FLOAT</FONT></B>:
+<span class="lineNum">     129 </span>                :       {
+<span class="lineNum">     130 </span>                : 	<I><FONT COLOR="#B22222">/* For float AA&amp;N IDCT method, divisors are equal to quantization
+<span class="lineNum">     131 </span>                : 	 * coefficients scaled by scalefactor[row]*scalefactor[col], where
+<span class="lineNum">     132 </span>                : 	 *   scalefactor[0] = 1
+<span class="lineNum">     133 </span>                : 	 *   scalefactor[k] = cos(k*PI/16) * sqrt(2)    for k=1..7
+<span class="lineNum">     134 </span>                : 	 * We apply a further scale factor of 8.
+<span class="lineNum">     135 </span>                : 	 * What's actually stored is 1/divisor so that the inner loop can
+<span class="lineNum">     136 </span>                : 	 * use a multiplication rather than a division.
+<span class="lineNum">     137 </span>                : 	 */</FONT></I>
+<span class="lineNum">     138 </span>                : 	FAST_FLOAT * fdtbl;
+<span class="lineNum">     139 </span>                : 	<B><FONT COLOR="#228B22">int</FONT></B> row, col;
+<span class="lineNum">     140 </span>                : 	<B><FONT COLOR="#228B22">static</FONT></B> <B><FONT COLOR="#228B22">const</FONT></B> <B><FONT COLOR="#228B22">double</FONT></B> aanscalefactor[DCTSIZE] = {
+<span class="lineNum">     141 </span>                : 	  1.0, 1.387039845, 1.306562965, 1.175875602,
+<span class="lineNum">     142 </span>                : 	  1.0, 0.785694958, 0.541196100, 0.275899379
+<span class="lineNum">     143 </span>                : 	};
+<span class="lineNum">     144 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1326: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             474: branch 1 taken</span>
+</span><span class="lineNum">     145 </span><span class="lineCov">            1800: 	<B><FONT COLOR="#A020F0">if</FONT></B> (fdct-&gt;float_divisors[qtblno] == NULL) {</span>
+<span class="lineNum">     146 </span><span class="lineCov">            1326: 	  fdct-&gt;float_divisors[qtblno] = (FAST_FLOAT *)</span>
+<span class="lineNum">     147 </span><span class="lineCov">            1326: 	    (*cinfo-&gt;mem-&gt;alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
+<span class="lineNum">     148 </span>                : 					DCTSIZE2 * SIZEOF(FAST_FLOAT));
+<span class="lineNum">     149 </span>                : 	}
+<span class="lineNum">     150 </span><span class="lineCov">            1800: 	fdtbl = fdct-&gt;float_divisors[qtblno];</span>
+<span class="lineNum">     151 </span><span class="lineCov">            1800: 	i = 0;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           14400: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1800: branch 1 taken</span>
+</span><span class="lineNum">     152 </span><span class="lineCov">           16200: 	<B><FONT COLOR="#A020F0">for</FONT></B> (row = 0; row &lt; DCTSIZE; row++) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          115200: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           14400: branch 1 taken</span>
+</span><span class="lineNum">     153 </span><span class="lineCov">          129600: 	  <B><FONT COLOR="#A020F0">for</FONT></B> (col = 0; col &lt; DCTSIZE; col++) {</span>
+<span class="lineNum">     154 </span><span class="lineCov">          230400: 	    fdtbl[i] = (FAST_FLOAT)</span>
+<span class="lineNum">     155 </span><span class="lineCov">          230400: 	      (1.0 / (((<B><FONT COLOR="#228B22">double</FONT></B>) qtbl-&gt;quantval[i] *</span>
+<span class="lineNum">     156 </span><span class="lineCov">          230400: 		       aanscalefactor[row] * aanscalefactor[col] * 8.0)));</span>
+<span class="lineNum">     157 </span><span class="lineCov">          115200: 	    i++;</span>
+<span class="lineNum">     158 </span>                : 	  }
+<span class="lineNum">     159 </span>                : 	}
+<span class="lineNum">     160 </span>                :       }
+<span class="lineNum">     161 </span><span class="lineCov">            1800:       <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     162 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     163 </span>                :     <B><FONT COLOR="#5F9EA0">default</FONT></B>:
+<span class="lineNum">     164 </span><span class="lineNoCov">               0:       ERREXIT(cinfo, JERR_NOT_COMPILED);</span>
+<span class="lineNum">     165 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     166 </span>                :     }
+<span class="lineNum">     167 </span>                :   }
+<span class="lineNum">     168 </span><span class="lineCov">            9067: }</span>
+<span class="lineNum">     169 </span>                : 
+<span class="lineNum">     170 </span>                : 
+<span class="lineNum">     171 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     172 </span>                :  * Perform forward DCT on one or more blocks of a component.
+<span class="lineNum">     173 </span>                :  *
+<span class="lineNum">     174 </span>                :  * The input samples are taken from the sample_data[] array starting at
+<span class="lineNum">     175 </span>                :  * position start_row/start_col, and moving to the right for any additional
+<span class="lineNum">     176 </span>                :  * blocks. The quantized coefficients are returned in coef_blocks[].
+<span class="lineNum">     177 </span>                :  */</FONT></I>
+<span class="lineNum">     178 </span>                : 
+<span class="lineNum">     179 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     180 </span><span class="lineCov">          163752: <B><FONT COLOR="#0000FF">forward_DCT</FONT></B> (j_compress_ptr cinfo, jpeg_component_info * compptr,</span>
+<span class="lineNum">     181 </span>                : 	     JSAMPARRAY sample_data, JBLOCKROW coef_blocks,
+<span class="lineNum">     182 </span>                : 	     JDIMENSION start_row, JDIMENSION start_col,
+<span class="lineNum">     183 </span>                : 	     JDIMENSION num_blocks)
+<span class="lineNum">     184 </span>                : <I><FONT COLOR="#B22222">/* This version is used for integer DCT implementations. */</FONT></I>
+<span class="lineNum">     185 </span>                : {
+<span class="lineNum">     186 </span>                :   <I><FONT COLOR="#B22222">/* This routine is heavily used, so it's worth coding it tightly. */</FONT></I>
+<span class="lineNum">     187 </span><span class="lineCov">          163752:   my_fdct_ptr fdct = (my_fdct_ptr) cinfo-&gt;fdct;</span>
+<span class="lineNum">     188 </span><span class="lineCov">          163752:   forward_DCT_method_ptr do_dct = fdct-&gt;do_dct;</span>
+<span class="lineNum">     189 </span><span class="lineCov">          163752:   DCTELEM * divisors = fdct-&gt;divisors[compptr-&gt;quant_tbl_no];</span>
+<span class="lineNum">     190 </span>                :   DCTELEM workspace[DCTSIZE2];	<I><FONT COLOR="#B22222">/* work area for FDCT subroutine */</FONT></I>
+<span class="lineNum">     191 </span>                :   JDIMENSION bi;
+<span class="lineNum">     192 </span>                : 
+<span class="lineNum">     193 </span><span class="lineCov">          163752:   sample_data += start_row;	<I><FONT COLOR="#B22222">/* fold in the vertical offset once */</FONT></I></span>
+<span class="lineNum">     194 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          215042: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          163752: branch 1 taken</span>
+</span><span class="lineNum">     195 </span><span class="lineCov">          378794:   <B><FONT COLOR="#A020F0">for</FONT></B> (bi = 0; bi &lt; num_blocks; bi++, start_col += DCTSIZE) {</span>
+<span class="lineNum">     196 </span>                :     <I><FONT COLOR="#B22222">/* Load data into workspace, applying unsigned-&gt;signed conversion */</FONT></I>
+<span class="lineNum">     197 </span>                :     { <B><FONT COLOR="#228B22">register</FONT></B> DCTELEM *workspaceptr;
+<span class="lineNum">     198 </span>                :       <B><FONT COLOR="#228B22">register</FONT></B> JSAMPROW elemptr;
+<span class="lineNum">     199 </span>                :       <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> elemr;
+<span class="lineNum">     200 </span>                : 
+<span class="lineNum">     201 </span><span class="lineCov">          215042:       workspaceptr = workspace;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">         1720336: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          215042: branch 1 taken</span>
+</span><span class="lineNum">     202 </span><span class="lineCov">         1935378:       <B><FONT COLOR="#A020F0">for</FONT></B> (elemr = 0; elemr &lt; DCTSIZE; elemr++) {</span>
+<span class="lineNum">     203 </span><span class="lineCov">         1720336: 	elemptr = sample_data[elemr] + start_col;</span>
+<span class="lineNum">     204 </span>                : #<B><FONT COLOR="#5F9EA0">if</FONT></B> <FONT COLOR="#B8860B">DCTSIZE</FONT> == 8		<I><FONT COLOR="#B22222">/* unroll the inner loop */</FONT></I>
+<span class="lineNum">     205 </span><span class="lineCov">         1720336: 	*workspaceptr++ = GETJSAMPLE(*elemptr++) - CENTERJSAMPLE;</span>
+<span class="lineNum">     206 </span><span class="lineCov">         1720336: 	*workspaceptr++ = GETJSAMPLE(*elemptr++) - CENTERJSAMPLE;</span>
+<span class="lineNum">     207 </span><span class="lineCov">         1720336: 	*workspaceptr++ = GETJSAMPLE(*elemptr++) - CENTERJSAMPLE;</span>
+<span class="lineNum">     208 </span><span class="lineCov">         1720336: 	*workspaceptr++ = GETJSAMPLE(*elemptr++) - CENTERJSAMPLE;</span>
+<span class="lineNum">     209 </span><span class="lineCov">         1720336: 	*workspaceptr++ = GETJSAMPLE(*elemptr++) - CENTERJSAMPLE;</span>
+<span class="lineNum">     210 </span><span class="lineCov">         1720336: 	*workspaceptr++ = GETJSAMPLE(*elemptr++) - CENTERJSAMPLE;</span>
+<span class="lineNum">     211 </span><span class="lineCov">         1720336: 	*workspaceptr++ = GETJSAMPLE(*elemptr++) - CENTERJSAMPLE;</span>
+<span class="lineNum">     212 </span><span class="lineCov">         1720336: 	*workspaceptr++ = GETJSAMPLE(*elemptr++) - CENTERJSAMPLE;</span>
+<span class="lineNum">     213 </span>                : #<B><FONT COLOR="#5F9EA0">else</FONT></B>
+<span class="lineNum">     214 </span>                : 	{ <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> elemc;
+<span class="lineNum">     215 </span>                : 	  <B><FONT COLOR="#A020F0">for</FONT></B> (elemc = DCTSIZE; elemc &gt; 0; elemc--) {
+<span class="lineNum">     216 </span>                : 	    *workspaceptr++ = GETJSAMPLE(*elemptr++) - CENTERJSAMPLE;
+<span class="lineNum">     217 </span>                : 	  }
+<span class="lineNum">     218 </span>                : 	}
+<span class="lineNum">     219 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     220 </span>                :       }
+<span class="lineNum">     221 </span>                :     }
+<span class="lineNum">     222 </span>                : 
+<span class="lineNum">     223 </span>                :     <I><FONT COLOR="#B22222">/* Perform the DCT */</FONT></I>
+<span class="lineNum">     224 </span><span class="lineCov">          215042:     (*do_dct) (workspace);</span>
+<span class="lineNum">     225 </span>                : 
+<span class="lineNum">     226 </span>                :     <I><FONT COLOR="#B22222">/* Quantize/descale the coefficients, and store into coef_blocks[] */</FONT></I>
+<span class="lineNum">     227 </span>                :     { <B><FONT COLOR="#228B22">register</FONT></B> DCTELEM temp, qval;
+<span class="lineNum">     228 </span>                :       <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> i;
+<span class="lineNum">     229 </span><span class="lineCov">          215042:       <B><FONT COLOR="#228B22">register</FONT></B> JCOEFPTR output_ptr = coef_blocks[bi];</span>
+<span class="lineNum">     230 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">        13762688: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          215042: branch 1 taken</span>
+</span><span class="lineNum">     231 </span><span class="lineCov">        13977730:       <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; DCTSIZE2; i++) {</span>
+<span class="lineNum">     232 </span><span class="lineCov">        13762688: 	qval = divisors[i];</span>
+<span class="lineNum">     233 </span><span class="lineCov">        13762688: 	temp = workspace[i];</span>
+<span class="lineNum">     234 </span>                : 	<I><FONT COLOR="#B22222">/* Divide the coefficient value by qval, ensuring proper rounding.
+<span class="lineNum">     235 </span>                : 	 * Since C does not specify the direction of rounding for negative
+<span class="lineNum">     236 </span>                : 	 * quotients, we have to force the dividend positive for portability.
+<span class="lineNum">     237 </span>                : 	 *
+<span class="lineNum">     238 </span>                : 	 * In most files, at least half of the output values will be zero
+<span class="lineNum">     239 </span>                : 	 * (at default quantization settings, more like three-quarters...)
+<span class="lineNum">     240 </span>                : 	 * so we should ensure that this case is fast.  On many machines,
+<span class="lineNum">     241 </span>                : 	 * a comparison is enough cheaper than a divide to make a special test
+<span class="lineNum">     242 </span>                : 	 * a win.  Since both inputs will be nonnegative, we need only test
+<span class="lineNum">     243 </span>                : 	 * for a &lt; b to discover whether a/b is 0.
+<span class="lineNum">     244 </span>                : 	 * If your machine's division is fast enough, define FAST_DIVIDE.
+<span class="lineNum">     245 </span>                : 	 */</FONT></I>
+<span class="lineNum">     246 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">FAST_DIVIDE</FONT>
+<span class="lineNum">     247 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <B><FONT COLOR="#0000FF">DIVIDE_BY</FONT></B>(a,b)	a /= b
+<span class="lineNum">     248 </span>                : #<B><FONT COLOR="#5F9EA0">else</FONT></B>
+<span class="lineNum">     249 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <B><FONT COLOR="#0000FF">DIVIDE_BY</FONT></B>(a,b)	if (a &gt;= b) a /= b; else a = 0
+<span class="lineNum">     250 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          175741: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">        13586947: branch 1 taken</span>
+</span><span class="lineNum">     251 </span><span class="lineCov">        13762688: 	<B><FONT COLOR="#A020F0">if</FONT></B> (temp &lt; 0) {</span>
+<span class="lineNum">     252 </span><span class="lineCov">          175741: 	  temp = -temp;</span>
+<span class="lineNum">     253 </span><span class="lineCov">          175741: 	  temp += qval&gt;&gt;1;	<I><FONT COLOR="#B22222">/* for rounding */</FONT></I></span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           81609: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           94132: branch 1 taken</span>
+</span><span class="lineNum">     254 </span><span class="lineCov">          175741: 	  DIVIDE_BY(temp, qval);</span>
+<span class="lineNum">     255 </span><span class="lineCov">          175741: 	  temp = -temp;</span>
+<span class="lineNum">     256 </span>                : 	} <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     257 </span><span class="lineCov">        13586947: 	  temp += qval&gt;&gt;1;	<I><FONT COLOR="#B22222">/* for rounding */</FONT></I></span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          203864: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">        13383083: branch 1 taken</span>
+</span><span class="lineNum">     258 </span><span class="lineCov">        13586947: 	  DIVIDE_BY(temp, qval);</span>
+<span class="lineNum">     259 </span>                : 	}
+<span class="lineNum">     260 </span><span class="lineCov">        13762688: 	output_ptr[i] = (JCOEF) temp;</span>
+<span class="lineNum">     261 </span>                :       }
+<span class="lineNum">     262 </span>                :     }
+<span class="lineNum">     263 </span>                :   }
+<span class="lineNum">     264 </span><span class="lineCov">          163752: }</span>
+<span class="lineNum">     265 </span>                : 
+<span class="lineNum">     266 </span>                : 
+<span class="lineNum">     267 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">DCT_FLOAT_SUPPORTED</FONT>
+<span class="lineNum">     268 </span>                : 
+<span class="lineNum">     269 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     270 </span><span class="lineCov">           22845: <B><FONT COLOR="#0000FF">forward_DCT_float</FONT></B> (j_compress_ptr cinfo, jpeg_component_info * compptr,</span>
+<span class="lineNum">     271 </span>                : 		   JSAMPARRAY sample_data, JBLOCKROW coef_blocks,
+<span class="lineNum">     272 </span>                : 		   JDIMENSION start_row, JDIMENSION start_col,
+<span class="lineNum">     273 </span>                : 		   JDIMENSION num_blocks)
+<span class="lineNum">     274 </span>                : <I><FONT COLOR="#B22222">/* This version is used for floating-point DCT implementations. */</FONT></I>
+<span class="lineNum">     275 </span>                : {
+<span class="lineNum">     276 </span>                :   <I><FONT COLOR="#B22222">/* This routine is heavily used, so it's worth coding it tightly. */</FONT></I>
+<span class="lineNum">     277 </span><span class="lineCov">           22845:   my_fdct_ptr fdct = (my_fdct_ptr) cinfo-&gt;fdct;</span>
+<span class="lineNum">     278 </span><span class="lineCov">           22845:   float_DCT_method_ptr do_dct = fdct-&gt;do_float_dct;</span>
+<span class="lineNum">     279 </span><span class="lineCov">           22845:   FAST_FLOAT * divisors = fdct-&gt;float_divisors[compptr-&gt;quant_tbl_no];</span>
+<span class="lineNum">     280 </span>                :   FAST_FLOAT workspace[DCTSIZE2]; <I><FONT COLOR="#B22222">/* work area for FDCT subroutine */</FONT></I>
+<span class="lineNum">     281 </span>                :   JDIMENSION bi;
+<span class="lineNum">     282 </span>                : 
+<span class="lineNum">     283 </span><span class="lineCov">           22845:   sample_data += start_row;	<I><FONT COLOR="#B22222">/* fold in the vertical offset once */</FONT></I></span>
+<span class="lineNum">     284 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           29856: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           22845: branch 1 taken</span>
+</span><span class="lineNum">     285 </span><span class="lineCov">           52701:   <B><FONT COLOR="#A020F0">for</FONT></B> (bi = 0; bi &lt; num_blocks; bi++, start_col += DCTSIZE) {</span>
+<span class="lineNum">     286 </span>                :     <I><FONT COLOR="#B22222">/* Load data into workspace, applying unsigned-&gt;signed conversion */</FONT></I>
+<span class="lineNum">     287 </span>                :     { <B><FONT COLOR="#228B22">register</FONT></B> FAST_FLOAT *workspaceptr;
+<span class="lineNum">     288 </span>                :       <B><FONT COLOR="#228B22">register</FONT></B> JSAMPROW elemptr;
+<span class="lineNum">     289 </span>                :       <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> elemr;
+<span class="lineNum">     290 </span>                : 
+<span class="lineNum">     291 </span><span class="lineCov">           29856:       workspaceptr = workspace;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          238848: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           29856: branch 1 taken</span>
+</span><span class="lineNum">     292 </span><span class="lineCov">          268704:       <B><FONT COLOR="#A020F0">for</FONT></B> (elemr = 0; elemr &lt; DCTSIZE; elemr++) {</span>
+<span class="lineNum">     293 </span><span class="lineCov">          238848: 	elemptr = sample_data[elemr] + start_col;</span>
+<span class="lineNum">     294 </span>                : #<B><FONT COLOR="#5F9EA0">if</FONT></B> <FONT COLOR="#B8860B">DCTSIZE</FONT> == 8		<I><FONT COLOR="#B22222">/* unroll the inner loop */</FONT></I>
+<span class="lineNum">     295 </span><span class="lineCov">          238848: 	*workspaceptr++ = (FAST_FLOAT)(GETJSAMPLE(*elemptr++) - CENTERJSAMPLE);</span>
+<span class="lineNum">     296 </span><span class="lineCov">          238848: 	*workspaceptr++ = (FAST_FLOAT)(GETJSAMPLE(*elemptr++) - CENTERJSAMPLE);</span>
+<span class="lineNum">     297 </span><span class="lineCov">          238848: 	*workspaceptr++ = (FAST_FLOAT)(GETJSAMPLE(*elemptr++) - CENTERJSAMPLE);</span>
+<span class="lineNum">     298 </span><span class="lineCov">          238848: 	*workspaceptr++ = (FAST_FLOAT)(GETJSAMPLE(*elemptr++) - CENTERJSAMPLE);</span>
+<span class="lineNum">     299 </span><span class="lineCov">          238848: 	*workspaceptr++ = (FAST_FLOAT)(GETJSAMPLE(*elemptr++) - CENTERJSAMPLE);</span>
+<span class="lineNum">     300 </span><span class="lineCov">          238848: 	*workspaceptr++ = (FAST_FLOAT)(GETJSAMPLE(*elemptr++) - CENTERJSAMPLE);</span>
+<span class="lineNum">     301 </span><span class="lineCov">          238848: 	*workspaceptr++ = (FAST_FLOAT)(GETJSAMPLE(*elemptr++) - CENTERJSAMPLE);</span>
+<span class="lineNum">     302 </span><span class="lineCov">          238848: 	*workspaceptr++ = (FAST_FLOAT)(GETJSAMPLE(*elemptr++) - CENTERJSAMPLE);</span>
+<span class="lineNum">     303 </span>                : #<B><FONT COLOR="#5F9EA0">else</FONT></B>
+<span class="lineNum">     304 </span>                : 	{ <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> elemc;
+<span class="lineNum">     305 </span>                : 	  <B><FONT COLOR="#A020F0">for</FONT></B> (elemc = DCTSIZE; elemc &gt; 0; elemc--) {
+<span class="lineNum">     306 </span>                : 	    *workspaceptr++ = (FAST_FLOAT)
+<span class="lineNum">     307 </span>                : 	      (GETJSAMPLE(*elemptr++) - CENTERJSAMPLE);
+<span class="lineNum">     308 </span>                : 	  }
+<span class="lineNum">     309 </span>                : 	}
+<span class="lineNum">     310 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     311 </span>                :       }
+<span class="lineNum">     312 </span>                :     }
+<span class="lineNum">     313 </span>                : 
+<span class="lineNum">     314 </span>                :     <I><FONT COLOR="#B22222">/* Perform the DCT */</FONT></I>
+<span class="lineNum">     315 </span><span class="lineCov">           29856:     (*do_dct) (workspace);</span>
+<span class="lineNum">     316 </span>                : 
+<span class="lineNum">     317 </span>                :     <I><FONT COLOR="#B22222">/* Quantize/descale the coefficients, and store into coef_blocks[] */</FONT></I>
+<span class="lineNum">     318 </span>                :     { <B><FONT COLOR="#228B22">register</FONT></B> FAST_FLOAT temp;
+<span class="lineNum">     319 </span>                :       <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> i;
+<span class="lineNum">     320 </span><span class="lineCov">           29856:       <B><FONT COLOR="#228B22">register</FONT></B> JCOEFPTR output_ptr = coef_blocks[bi];</span>
+<span class="lineNum">     321 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">         1910784: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           29856: branch 1 taken</span>
+</span><span class="lineNum">     322 </span><span class="lineCov">         1940640:       <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; DCTSIZE2; i++) {</span>
+<span class="lineNum">     323 </span>                : 	<I><FONT COLOR="#B22222">/* Apply the quantization and scaling factor */</FONT></I>
+<span class="lineNum">     324 </span><span class="lineCov">         1910784: 	temp = workspace[i] * divisors[i];</span>
+<span class="lineNum">     325 </span>                : 	<I><FONT COLOR="#B22222">/* Round to nearest integer.
+<span class="lineNum">     326 </span>                : 	 * Since C does not specify the direction of rounding for negative
+<span class="lineNum">     327 </span>                : 	 * quotients, we have to force the dividend positive for portability.
+<span class="lineNum">     328 </span>                : 	 * The maximum coefficient size is +-16K (for 12-bit data), so this
+<span class="lineNum">     329 </span>                : 	 * code should work for either 16-bit or 32-bit ints.
+<span class="lineNum">     330 </span>                : 	 */</FONT></I>
+<span class="lineNum">     331 </span><span class="lineCov">         1910784: 	output_ptr[i] = (JCOEF) ((<B><FONT COLOR="#228B22">int</FONT></B>) (temp + (FAST_FLOAT) 16384.5) - 16384);</span>
+<span class="lineNum">     332 </span>                :       }
+<span class="lineNum">     333 </span>                :     }
+<span class="lineNum">     334 </span>                :   }
+<span class="lineNum">     335 </span><span class="lineCov">           22845: }</span>
+<span class="lineNum">     336 </span>                : 
+<span class="lineNum">     337 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B> <I><FONT COLOR="#B22222">/* DCT_FLOAT_SUPPORTED */</FONT></I>
+<span class="lineNum">     338 </span>                : 
+<span class="lineNum">     339 </span>                : 
+<span class="lineNum">     340 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     341 </span>                :  * Initialize FDCT manager.
+<span class="lineNum">     342 </span>                :  */</FONT></I>
+<span class="lineNum">     343 </span>                : 
+<span class="lineNum">     344 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     345 </span><span class="lineCov">            9067: <B><FONT COLOR="#0000FF">jinit_forward_dct</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     346 </span>                : {
+<span class="lineNum">     347 </span>                :   my_fdct_ptr fdct;
+<span class="lineNum">     348 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> i;
+<span class="lineNum">     349 </span>                : 
+<span class="lineNum">     350 </span><span class="lineCov">            9067:   fdct = (my_fdct_ptr)</span>
+<span class="lineNum">     351 </span><span class="lineCov">            9067:     (*cinfo-&gt;mem-&gt;alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
+<span class="lineNum">     352 </span>                : 				SIZEOF(my_fdct_controller));
+<span class="lineNum">     353 </span><span class="lineCov">            9067:   cinfo-&gt;fdct = (<B><FONT COLOR="#228B22">struct</FONT></B> jpeg_forward_dct *) fdct;</span>
+<span class="lineNum">     354 </span><span class="lineCov">            9067:   fdct-&gt;pub.start_pass = start_pass_fdctmgr;</span>
+<span class="lineNum">     355 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            7330: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             885: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             852: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
+</span><span class="lineNum">     356 </span><span class="lineCov">            9067:   <B><FONT COLOR="#A020F0">switch</FONT></B> (cinfo-&gt;dct_method) {</span>
+<span class="lineNum">     357 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">DCT_ISLOW_SUPPORTED</FONT>
+<span class="lineNum">     358 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">JDCT_ISLOW</FONT></B>:
+<span class="lineNum">     359 </span><span class="lineCov">            7330:     fdct-&gt;pub.forward_DCT = forward_DCT;</span>
+<span class="lineNum">     360 </span><span class="lineCov">            7330:     fdct-&gt;do_dct = jpeg_fdct_islow;</span>
+<span class="lineNum">     361 </span><span class="lineCov">            7330:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     362 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     363 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">DCT_IFAST_SUPPORTED</FONT>
+<span class="lineNum">     364 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">JDCT_IFAST</FONT></B>:
+<span class="lineNum">     365 </span><span class="lineCov">             885:     fdct-&gt;pub.forward_DCT = forward_DCT;</span>
+<span class="lineNum">     366 </span><span class="lineCov">             885:     fdct-&gt;do_dct = jpeg_fdct_ifast;</span>
+<span class="lineNum">     367 </span><span class="lineCov">             885:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     368 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     369 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">DCT_FLOAT_SUPPORTED</FONT>
+<span class="lineNum">     370 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">JDCT_FLOAT</FONT></B>:
+<span class="lineNum">     371 </span><span class="lineCov">             852:     fdct-&gt;pub.forward_DCT = forward_DCT_float;</span>
+<span class="lineNum">     372 </span><span class="lineCov">             852:     fdct-&gt;do_float_dct = jpeg_fdct_float;</span>
+<span class="lineNum">     373 </span><span class="lineCov">             852:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     374 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     375 </span>                :   <B><FONT COLOR="#5F9EA0">default</FONT></B>:
+<span class="lineNum">     376 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_NOT_COMPILED);</span>
+<span class="lineNum">     377 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     378 </span>                :   }
+<span class="lineNum">     379 </span>                : 
+<span class="lineNum">     380 </span>                :   <I><FONT COLOR="#B22222">/* Mark divisor tables unallocated */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           36268: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9067: branch 1 taken</span>
+</span><span class="lineNum">     381 </span><span class="lineCov">           45335:   <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; NUM_QUANT_TBLS; i++) {</span>
+<span class="lineNum">     382 </span><span class="lineCov">           36268:     fdct-&gt;divisors[i] = NULL;</span>
+<span class="lineNum">     383 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">DCT_FLOAT_SUPPORTED</FONT>
+<span class="lineNum">     384 </span><span class="lineCov">           36268:     fdct-&gt;float_divisors[i] = NULL;</span>
+<span class="lineNum">     385 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     386 </span>                :   }
+<span class="lineNum">     387 </span><span class="lineCov">            9067: }</span>
+</pre>
+<hr>
+Generated: 2016-04-07&nbsp;12:37 by <a href="http://minormatter.com/zcov">zcov</a><br>
+</body>
+</html>

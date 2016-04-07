@@ -1,0 +1,253 @@
+<html>
+<head>
+  <script src="sorttable.js"></script>
+  <script src="sourceview.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <title>zcov: /home/vagrant/workspace/proj_libjpeg/cov/cdjpeg.c</title>
+</head>
+<body>
+<center><h1> zcov: <a href="index.html">/home/vagrant/workspace/proj_libjpeg/cov</a>/<a href="cdjpeg.c.html">cdjpeg.c</a> </h1></center>
+<hr>
+
+
+<center>
+<table id="headertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Files:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Taken:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>90.0%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 9&nbsp;/&nbsp;10 </td>
+  </tr>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Generated:</b> </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;12:37 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>100.0%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 10&nbsp;/&nbsp;10 </td>
+  </tr>
+  <tr>
+    <td colspan=2> </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Line&nbsp;Coverage:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>78.9%</b> </td>
+    <td bgcolor=#F0F0FF align=right> 15&nbsp;/&nbsp;19 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<center>
+<table id="fileheadertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Programs:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Runs</b> </td>
+    <td bgcolor=#F0F0FF align=right> 13685 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<pre>
+<span class="lineNum">       1 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">       2 </span>                :  * cdjpeg.c
+<span class="lineNum">       3 </span>                :  *
+<span class="lineNum">       4 </span>                :  * Copyright (C) 1991-1997, Thomas G. Lane.
+<span class="lineNum">       5 </span>                :  * This file is part of the Independent JPEG Group's software.
+<span class="lineNum">       6 </span>                :  * For conditions of distribution and use, see the accompanying README file.
+<span class="lineNum">       7 </span>                :  *
+<span class="lineNum">       8 </span>                :  * This file contains common support routines used by the IJG application
+<span class="lineNum">       9 </span>                :  * programs (cjpeg, djpeg, jpegtran).
+<span class="lineNum">      10 </span>                :  */</FONT></I>
+<span class="lineNum">      11 </span>                : 
+<span class="lineNum">      12 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;cdjpeg.h&quot;</FONT></B>		<I><FONT COLOR="#B22222">/* Common decls for cjpeg/djpeg applications */</FONT></I>
+<span class="lineNum">      13 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&lt;ctype.h&gt;</FONT></B>		<I><FONT COLOR="#B22222">/* to declare isupper(), tolower() */</FONT></I>
+<span class="lineNum">      14 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">NEED_SIGNAL_CATCHER</FONT>
+<span class="lineNum">      15 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&lt;signal.h&gt;</FONT></B>		<I><FONT COLOR="#B22222">/* to declare signal() */</FONT></I>
+<span class="lineNum">      16 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      17 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">USE_SETMODE</FONT>
+<span class="lineNum">      18 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&lt;fcntl.h&gt;</FONT></B>		<I><FONT COLOR="#B22222">/* to declare setmode()'s parameter macros */</FONT></I>
+<span class="lineNum">      19 </span>                : <I><FONT COLOR="#B22222">/* If you have setmode() but not &lt;io.h&gt;, just delete this line: */</FONT></I>
+<span class="lineNum">      20 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&lt;io.h&gt;</FONT></B>			<I><FONT COLOR="#B22222">/* to declare setmode() */</FONT></I>
+<span class="lineNum">      21 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      22 </span>                : 
+<span class="lineNum">      23 </span>                : 
+<span class="lineNum">      24 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      25 </span>                :  * Signal catcher to ensure that temporary files are removed before aborting.
+<span class="lineNum">      26 </span>                :  * NB: for Amiga Manx C this is actually a global routine named _abort();
+<span class="lineNum">      27 </span>                :  * we put &quot;#define signal_catcher _abort&quot; in jconfig.h.  Talk about bogus...
+<span class="lineNum">      28 </span>                :  */</FONT></I>
+<span class="lineNum">      29 </span>                : 
+<span class="lineNum">      30 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">NEED_SIGNAL_CATCHER</FONT>
+<span class="lineNum">      31 </span>                : 
+<span class="lineNum">      32 </span>                : <B><FONT COLOR="#228B22">static</FONT></B> j_common_ptr sig_cinfo;
+<span class="lineNum">      33 </span>                : 
+<span class="lineNum">      34 </span>                : <B><FONT COLOR="#228B22">void</FONT></B>				<I><FONT COLOR="#B22222">/* must be global for Manx C */</FONT></I>
+<span class="lineNum">      35 </span>                : <B><FONT COLOR="#0000FF">signal_catcher</FONT></B> (<B><FONT COLOR="#228B22">int</FONT></B> signum)
+<span class="lineNum">      36 </span>                : {
+<span class="lineNum">      37 </span>                :   <B><FONT COLOR="#A020F0">if</FONT></B> (sig_cinfo != NULL) {
+<span class="lineNum">      38 </span>                :     <B><FONT COLOR="#A020F0">if</FONT></B> (sig_cinfo-&gt;err != NULL) <I><FONT COLOR="#B22222">/* turn off trace output */</FONT></I>
+<span class="lineNum">      39 </span>                :       sig_cinfo-&gt;err-&gt;trace_level = 0;
+<span class="lineNum">      40 </span>                :     jpeg_destroy(sig_cinfo);	<I><FONT COLOR="#B22222">/* clean up memory allocation &amp; temp files */</FONT></I>
+<span class="lineNum">      41 </span>                :   }
+<span class="lineNum">      42 </span>                :   exit(EXIT_FAILURE);
+<span class="lineNum">      43 </span>                : }
+<span class="lineNum">      44 </span>                : 
+<span class="lineNum">      45 </span>                : 
+<span class="lineNum">      46 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">      47 </span>                : <B><FONT COLOR="#0000FF">enable_signal_catcher</FONT></B> (j_common_ptr cinfo)
+<span class="lineNum">      48 </span>                : {
+<span class="lineNum">      49 </span>                :   sig_cinfo = cinfo;
+<span class="lineNum">      50 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">SIGINT</FONT>			<I><FONT COLOR="#B22222">/* not all systems have SIGINT */</FONT></I>
+<span class="lineNum">      51 </span>                :   signal(SIGINT, signal_catcher);
+<span class="lineNum">      52 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      53 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">SIGTERM</FONT>			<I><FONT COLOR="#B22222">/* not all systems have SIGTERM */</FONT></I>
+<span class="lineNum">      54 </span>                :   signal(SIGTERM, signal_catcher);
+<span class="lineNum">      55 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      56 </span>                : }
+<span class="lineNum">      57 </span>                : 
+<span class="lineNum">      58 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      59 </span>                : 
+<span class="lineNum">      60 </span>                : 
+<span class="lineNum">      61 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      62 </span>                :  * Optional progress monitor: display a percent-done figure on stderr.
+<span class="lineNum">      63 </span>                :  */</FONT></I>
+<span class="lineNum">      64 </span>                : 
+<span class="lineNum">      65 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">PROGRESS_REPORT</FONT>
+<span class="lineNum">      66 </span>                : 
+<span class="lineNum">      67 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">      68 </span>                : <B><FONT COLOR="#0000FF">progress_monitor</FONT></B> (j_common_ptr cinfo)
+<span class="lineNum">      69 </span>                : {
+<span class="lineNum">      70 </span>                :   cd_progress_ptr prog = (cd_progress_ptr) cinfo-&gt;progress;
+<span class="lineNum">      71 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> total_passes = prog-&gt;pub.total_passes + prog-&gt;total_extra_passes;
+<span class="lineNum">      72 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> percent_done = (<B><FONT COLOR="#228B22">int</FONT></B>) (prog-&gt;pub.pass_counter*100L/prog-&gt;pub.pass_limit);
+<span class="lineNum">      73 </span>                : 
+<span class="lineNum">      74 </span>                :   <B><FONT COLOR="#A020F0">if</FONT></B> (percent_done != prog-&gt;percent_done) {
+<span class="lineNum">      75 </span>                :     prog-&gt;percent_done = percent_done;
+<span class="lineNum">      76 </span>                :     <B><FONT COLOR="#A020F0">if</FONT></B> (total_passes &gt; 1) {
+<span class="lineNum">      77 </span>                :       fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;\rPass %d/%d: %3d%% &quot;</FONT></B>,
+<span class="lineNum">      78 </span>                : 	      prog-&gt;pub.completed_passes + prog-&gt;completed_extra_passes + 1,
+<span class="lineNum">      79 </span>                : 	      total_passes, percent_done);
+<span class="lineNum">      80 </span>                :     } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">      81 </span>                :       fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;\r %3d%% &quot;</FONT></B>, percent_done);
+<span class="lineNum">      82 </span>                :     }
+<span class="lineNum">      83 </span>                :     fflush(stderr);
+<span class="lineNum">      84 </span>                :   }
+<span class="lineNum">      85 </span>                : }
+<span class="lineNum">      86 </span>                : 
+<span class="lineNum">      87 </span>                : 
+<span class="lineNum">      88 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">      89 </span>                : <B><FONT COLOR="#0000FF">start_progress_monitor</FONT></B> (j_common_ptr cinfo, cd_progress_ptr progress)
+<span class="lineNum">      90 </span>                : {
+<span class="lineNum">      91 </span>                :   <I><FONT COLOR="#B22222">/* Enable progress display, unless trace output is on */</FONT></I>
+<span class="lineNum">      92 </span>                :   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;err-&gt;trace_level == 0) {
+<span class="lineNum">      93 </span>                :     progress-&gt;pub.progress_monitor = progress_monitor;
+<span class="lineNum">      94 </span>                :     progress-&gt;completed_extra_passes = 0;
+<span class="lineNum">      95 </span>                :     progress-&gt;total_extra_passes = 0;
+<span class="lineNum">      96 </span>                :     progress-&gt;percent_done = -1;
+<span class="lineNum">      97 </span>                :     cinfo-&gt;progress = &amp;progress-&gt;pub;
+<span class="lineNum">      98 </span>                :   }
+<span class="lineNum">      99 </span>                : }
+<span class="lineNum">     100 </span>                : 
+<span class="lineNum">     101 </span>                : 
+<span class="lineNum">     102 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     103 </span>                : <B><FONT COLOR="#0000FF">end_progress_monitor</FONT></B> (j_common_ptr cinfo)
+<span class="lineNum">     104 </span>                : {
+<span class="lineNum">     105 </span>                :   <I><FONT COLOR="#B22222">/* Clear away progress display */</FONT></I>
+<span class="lineNum">     106 </span>                :   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;err-&gt;trace_level == 0) {
+<span class="lineNum">     107 </span>                :     fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;\r                \r&quot;</FONT></B>);
+<span class="lineNum">     108 </span>                :     fflush(stderr);
+<span class="lineNum">     109 </span>                :   }
+<span class="lineNum">     110 </span>                : }
+<span class="lineNum">     111 </span>                : 
+<span class="lineNum">     112 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     113 </span>                : 
+<span class="lineNum">     114 </span>                : 
+<span class="lineNum">     115 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     116 </span>                :  * Case-insensitive matching of possibly-abbreviated keyword switches.
+<span class="lineNum">     117 </span>                :  * keyword is the constant keyword (must be lower case already),
+<span class="lineNum">     118 </span>                :  * minchars is length of minimum legal abbreviation.
+<span class="lineNum">     119 </span>                :  */</FONT></I>
+<span class="lineNum">     120 </span>                : 
+<span class="lineNum">     121 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(boolean)
+<span class="lineNum">     122 </span><span class="lineCov">          135125: <B><FONT COLOR="#0000FF">keymatch</FONT></B> (<B><FONT COLOR="#228B22">char</FONT></B> * arg, <B><FONT COLOR="#228B22">const</FONT></B> <B><FONT COLOR="#228B22">char</FONT></B> * keyword, <B><FONT COLOR="#228B22">int</FONT></B> minchars)</span>
+<span class="lineNum">     123 </span>                : {
+<span class="lineNum">     124 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> ca, ck;
+<span class="lineNum">     125 </span><span class="lineCov">          135125:   <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> nmatched = 0;</span>
+<span class="lineNum">     126 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          162601: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           29380: branch 1 taken</span>
+</span><span class="lineNum">     127 </span><span class="lineCov">          327106:   <B><FONT COLOR="#A020F0">while</FONT></B> ((ca = *arg++) != <B><FONT COLOR="#BC8F8F">'\0'</FONT></B>) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          162601: branch 1 taken</span>
+</span><span class="lineNum">     128 </span><span class="lineCov">          162601:     <B><FONT COLOR="#A020F0">if</FONT></B> ((ck = *keyword++) == <B><FONT COLOR="#BC8F8F">'\0'</FONT></B>)</span>
+<span class="lineNum">     129 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#A020F0">return</FONT></B> FALSE;		<I><FONT COLOR="#B22222">/* arg longer than keyword, no good */</FONT></I></span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           16800: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          145801: branch 2 taken</span>
+</span><span class="lineNum">     130 </span><span class="lineCov">          162601:     <B><FONT COLOR="#A020F0">if</FONT></B> (isupper(ca))		<I><FONT COLOR="#B22222">/* force arg to lcase (assume ck is already) */</FONT></I></span>
+<span class="lineNum">     131 </span><span class="lineCov">           16800:       ca = tolower(ca);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          105745: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           56856: branch 1 taken</span>
+</span><span class="lineNum">     132 </span><span class="lineCov">          162601:     <B><FONT COLOR="#A020F0">if</FONT></B> (ca != ck)</span>
+<span class="lineNum">     133 </span><span class="lineCov">          105745:       <B><FONT COLOR="#A020F0">return</FONT></B> FALSE;		<I><FONT COLOR="#B22222">/* no good */</FONT></I></span>
+<span class="lineNum">     134 </span><span class="lineCov">           56856:     nmatched++;			<I><FONT COLOR="#B22222">/* count matched characters */</FONT></I></span>
+<span class="lineNum">     135 </span>                :   }
+<span class="lineNum">     136 </span>                :   <I><FONT COLOR="#B22222">/* reached end of argument; fail if it's too short for unique abbrev */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1776: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           27604: branch 1 taken</span>
+</span><span class="lineNum">     137 </span><span class="lineCov">           29380:   <B><FONT COLOR="#A020F0">if</FONT></B> (nmatched &lt; minchars)</span>
+<span class="lineNum">     138 </span><span class="lineCov">            1776:     <B><FONT COLOR="#A020F0">return</FONT></B> FALSE;</span>
+<span class="lineNum">     139 </span><span class="lineCov">           27604:   <B><FONT COLOR="#A020F0">return</FONT></B> TRUE;			<I><FONT COLOR="#B22222">/* A-OK */</FONT></I></span>
+<span class="lineNum">     140 </span>                : }
+<span class="lineNum">     141 </span>                : 
+<span class="lineNum">     142 </span>                : 
+<span class="lineNum">     143 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     144 </span>                :  * Routines to establish binary I/O mode for stdin and stdout.
+<span class="lineNum">     145 </span>                :  * Non-Unix systems often require some hacking to get out of text mode.
+<span class="lineNum">     146 </span>                :  */</FONT></I>
+<span class="lineNum">     147 </span>                : 
+<span class="lineNum">     148 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(FILE *)
+<span class="lineNum">     149 </span><span class="lineNoCov">               0: <B><FONT COLOR="#0000FF">read_stdin</FONT></B> (<B><FONT COLOR="#228B22">void</FONT></B>)</span>
+<span class="lineNum">     150 </span>                : {
+<span class="lineNum">     151 </span><span class="lineNoCov">               0:   FILE * input_file = stdin;</span>
+<span class="lineNum">     152 </span>                : 
+<span class="lineNum">     153 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">USE_SETMODE</FONT>		<I><FONT COLOR="#B22222">/* need to hack file mode? */</FONT></I>
+<span class="lineNum">     154 </span>                :   setmode(fileno(stdin), O_BINARY);
+<span class="lineNum">     155 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     156 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">USE_FDOPEN</FONT>		<I><FONT COLOR="#B22222">/* need to re-open in binary mode? */</FONT></I>
+<span class="lineNum">     157 </span>                :   <B><FONT COLOR="#A020F0">if</FONT></B> ((input_file = fdopen(fileno(stdin), READ_BINARY)) == NULL) {
+<span class="lineNum">     158 </span>                :     fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;Cannot reopen stdin\n&quot;</FONT></B>);
+<span class="lineNum">     159 </span>                :     exit(EXIT_FAILURE);
+<span class="lineNum">     160 </span>                :   }
+<span class="lineNum">     161 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     162 </span><span class="lineNoCov">               0:   <B><FONT COLOR="#A020F0">return</FONT></B> input_file;</span>
+<span class="lineNum">     163 </span>                : }
+<span class="lineNum">     164 </span>                : 
+<span class="lineNum">     165 </span>                : 
+<span class="lineNum">     166 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(FILE *)
+<span class="lineNum">     167 </span><span class="lineCov">           13685: <B><FONT COLOR="#0000FF">write_stdout</FONT></B> (<B><FONT COLOR="#228B22">void</FONT></B>)</span>
+<span class="lineNum">     168 </span>                : {
+<span class="lineNum">     169 </span><span class="lineCov">           13685:   FILE * output_file = stdout;</span>
+<span class="lineNum">     170 </span>                : 
+<span class="lineNum">     171 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">USE_SETMODE</FONT>		<I><FONT COLOR="#B22222">/* need to hack file mode? */</FONT></I>
+<span class="lineNum">     172 </span>                :   setmode(fileno(stdout), O_BINARY);
+<span class="lineNum">     173 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     174 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">USE_FDOPEN</FONT>		<I><FONT COLOR="#B22222">/* need to re-open in binary mode? */</FONT></I>
+<span class="lineNum">     175 </span>                :   <B><FONT COLOR="#A020F0">if</FONT></B> ((output_file = fdopen(fileno(stdout), WRITE_BINARY)) == NULL) {
+<span class="lineNum">     176 </span>                :     fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;Cannot reopen stdout\n&quot;</FONT></B>);
+<span class="lineNum">     177 </span>                :     exit(EXIT_FAILURE);
+<span class="lineNum">     178 </span>                :   }
+<span class="lineNum">     179 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     180 </span><span class="lineCov">           13685:   <B><FONT COLOR="#A020F0">return</FONT></B> output_file;</span>
+<span class="lineNum">     181 </span>                : }
+</pre>
+<hr>
+Generated: 2016-04-07&nbsp;12:37 by <a href="http://minormatter.com/zcov">zcov</a><br>
+</body>
+</html>

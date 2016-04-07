@@ -1,0 +1,144 @@
+<html>
+<head>
+  <script src="sorttable.js"></script>
+  <script src="sourceview.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <title>zcov: /home/vagrant/workspace/proj_libjpeg/cov/jcinit.c</title>
+</head>
+<body>
+<center><h1> zcov: <a href="index.html">/home/vagrant/workspace/proj_libjpeg/cov</a>/<a href="jcinit.c.html">jcinit.c</a> </h1></center>
+<hr>
+
+
+<center>
+<table id="headertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Files:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Taken:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>80.0%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 8&nbsp;/&nbsp;10 </td>
+  </tr>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Generated:</b> </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;17:52 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>100.0%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 10&nbsp;/&nbsp;10 </td>
+  </tr>
+  <tr>
+    <td colspan=2> </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Line&nbsp;Coverage:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>94.7%</b> </td>
+    <td bgcolor=#F0F0FF align=right> 18&nbsp;/&nbsp;19 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<center>
+<table id="fileheadertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Programs:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Runs</b> </td>
+    <td bgcolor=#F0F0FF align=right> 5570 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<pre>
+<span class="lineNum">       1 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">       2 </span>                :  * jcinit.c
+<span class="lineNum">       3 </span>                :  *
+<span class="lineNum">       4 </span>                :  * Copyright (C) 1991-1997, Thomas G. Lane.
+<span class="lineNum">       5 </span>                :  * This file is part of the Independent JPEG Group's software.
+<span class="lineNum">       6 </span>                :  * For conditions of distribution and use, see the accompanying README file.
+<span class="lineNum">       7 </span>                :  *
+<span class="lineNum">       8 </span>                :  * This file contains initialization logic for the JPEG compressor.
+<span class="lineNum">       9 </span>                :  * This routine is in charge of selecting the modules to be executed and
+<span class="lineNum">      10 </span>                :  * making an initialization call to each one.
+<span class="lineNum">      11 </span>                :  *
+<span class="lineNum">      12 </span>                :  * Logically, this code belongs in jcmaster.c.  It's split out because
+<span class="lineNum">      13 </span>                :  * linking this routine implies linking the entire compression library.
+<span class="lineNum">      14 </span>                :  * For a transcoding-only application, we want to be able to use jcmaster.c
+<span class="lineNum">      15 </span>                :  * without linking in the whole library.
+<span class="lineNum">      16 </span>                :  */</FONT></I>
+<span class="lineNum">      17 </span>                : 
+<span class="lineNum">      18 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">JPEG_INTERNALS</FONT>
+<span class="lineNum">      19 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jinclude.h&quot;</FONT></B>
+<span class="lineNum">      20 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jpeglib.h&quot;</FONT></B>
+<span class="lineNum">      21 </span>                : 
+<span class="lineNum">      22 </span>                : 
+<span class="lineNum">      23 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      24 </span>                :  * Master selection of compression modules.
+<span class="lineNum">      25 </span>                :  * This is done once at the start of processing an image.  We determine
+<span class="lineNum">      26 </span>                :  * which modules will be used and give them appropriate initialization calls.
+<span class="lineNum">      27 </span>                :  */</FONT></I>
+<span class="lineNum">      28 </span>                : 
+<span class="lineNum">      29 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">      30 </span><span class="lineCov">            3965: <B><FONT COLOR="#0000FF">jinit_compress_master</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">      31 </span>                : {
+<span class="lineNum">      32 </span>                :   <I><FONT COLOR="#B22222">/* Initialize master control (includes parameter checking/processing) */</FONT></I>
+<span class="lineNum">      33 </span><span class="lineCov">            3965:   jinit_c_master_control(cinfo, FALSE <I><FONT COLOR="#B22222">/* full compression */</FONT></I>);</span>
+<span class="lineNum">      34 </span>                : 
+<span class="lineNum">      35 </span>                :   <I><FONT COLOR="#B22222">/* Preprocessing */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            3850: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">      36 </span><span class="lineCov">            3850:   <B><FONT COLOR="#A020F0">if</FONT></B> (! cinfo-&gt;raw_data_in) {</span>
+<span class="lineNum">      37 </span><span class="lineCov">            3850:     jinit_color_converter(cinfo);</span>
+<span class="lineNum">      38 </span><span class="lineCov">            3850:     jinit_downsampler(cinfo);</span>
+<span class="lineNum">      39 </span><span class="lineCov">            3850:     jinit_c_prep_controller(cinfo, FALSE <I><FONT COLOR="#B22222">/* never need full buffer here */</FONT></I>);</span>
+<span class="lineNum">      40 </span>                :   }
+<span class="lineNum">      41 </span>                :   <I><FONT COLOR="#B22222">/* Forward DCT */</FONT></I>
+<span class="lineNum">      42 </span><span class="lineCov">            3850:   jinit_forward_dct(cinfo);</span>
+<span class="lineNum">      43 </span>                :   <I><FONT COLOR="#B22222">/* Entropy encoding: either Huffman or arithmetic coding. */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3850: branch 1 taken</span>
+</span><span class="lineNum">      44 </span><span class="lineCov">            3850:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;arith_code) {</span>
+<span class="lineNum">      45 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_ARITH_NOTIMPL);</span>
+<span class="lineNum">      46 </span>                :   } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             333: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3517: branch 1 taken</span>
+</span><span class="lineNum">      47 </span><span class="lineCov">            3850:     <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;progressive_mode) {</span>
+<span class="lineNum">      48 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">C_PROGRESSIVE_SUPPORTED</FONT>
+<span class="lineNum">      49 </span><span class="lineCov">             333:       jinit_phuff_encoder(cinfo);</span>
+<span class="lineNum">      50 </span>                : #<B><FONT COLOR="#5F9EA0">else</FONT></B>
+<span class="lineNum">      51 </span>                :       ERREXIT(cinfo, JERR_NOT_COMPILED);
+<span class="lineNum">      52 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      53 </span>                :     } <B><FONT COLOR="#A020F0">else</FONT></B>
+<span class="lineNum">      54 </span><span class="lineCov">            3517:       jinit_huff_encoder(cinfo);</span>
+<span class="lineNum">      55 </span>                :   }
+<span class="lineNum">      56 </span>                : 
+<span class="lineNum">      57 </span>                :   <I><FONT COLOR="#B22222">/* Need a full-image coefficient buffer in any multi-pass mode. */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            3517: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             333: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             308: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3209: branch 3 taken</span>
+</span><span class="lineNum">      58 </span><span class="lineCov">            7367:   jinit_c_coef_controller(cinfo,</span>
+<span class="lineNum">      59 </span><span class="lineCov">            7367: 		(boolean) (cinfo-&gt;num_scans &gt; 1 || cinfo-&gt;optimize_coding));</span>
+<span class="lineNum">      60 </span><span class="lineCov">            3850:   jinit_c_main_controller(cinfo, FALSE <I><FONT COLOR="#B22222">/* never need full buffer here */</FONT></I>);</span>
+<span class="lineNum">      61 </span>                : 
+<span class="lineNum">      62 </span><span class="lineCov">            3850:   jinit_marker_writer(cinfo);</span>
+<span class="lineNum">      63 </span>                : 
+<span class="lineNum">      64 </span>                :   <I><FONT COLOR="#B22222">/* We can now tell the memory manager to allocate virtual arrays. */</FONT></I>
+<span class="lineNum">      65 </span><span class="lineCov">            3850:   (*cinfo-&gt;mem-&gt;realize_virt_arrays) ((j_common_ptr) cinfo);</span>
+<span class="lineNum">      66 </span>                : 
+<span class="lineNum">      67 </span>                :   <I><FONT COLOR="#B22222">/* Write the datastream header (SOI) immediately.
+<span class="lineNum">      68 </span>                :    * Frame and scan headers are postponed till later.
+<span class="lineNum">      69 </span>                :    * This lets application insert special markers after the SOI.
+<span class="lineNum">      70 </span>                :    */</FONT></I>
+<span class="lineNum">      71 </span><span class="lineCov">            3850:   (*cinfo-&gt;marker-&gt;write_file_header) (cinfo);</span>
+<span class="lineNum">      72 </span><span class="lineCov">            3850: }</span>
+</pre>
+<hr>
+Generated: 2016-04-07&nbsp;17:52 by <a href="http://minormatter.com/zcov">zcov</a><br>
+</body>
+</html>

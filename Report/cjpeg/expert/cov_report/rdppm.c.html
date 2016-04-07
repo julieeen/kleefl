@@ -1,0 +1,599 @@
+<html>
+<head>
+  <script src="sorttable.js"></script>
+  <script src="sourceview.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <title>zcov: /home/vagrant/workspace/proj_libjpeg/cov/rdppm.c</title>
+</head>
+<body>
+<center><h1> zcov: <a href="index.html">/home/vagrant/workspace/proj_libjpeg/cov</a>/<a href="rdppm.c.html">rdppm.c</a> </h1></center>
+<hr>
+
+
+<center>
+<table id="headertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Files:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Taken:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>88.6%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 70&nbsp;/&nbsp;79 </td>
+  </tr>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Generated:</b> </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;17:52 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>97.5%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 77&nbsp;/&nbsp;79 </td>
+  </tr>
+  <tr>
+    <td colspan=2> </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Line&nbsp;Coverage:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>90.4%</b> </td>
+    <td bgcolor=#F0F0FF align=right> 160&nbsp;/&nbsp;177 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<center>
+<table id="fileheadertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Programs:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Runs</b> </td>
+    <td bgcolor=#F0F0FF align=right> 5570 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<pre>
+<span class="lineNum">       1 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">       2 </span>                :  * rdppm.c
+<span class="lineNum">       3 </span>                :  *
+<span class="lineNum">       4 </span>                :  * Copyright (C) 1991-1997, Thomas G. Lane.
+<span class="lineNum">       5 </span>                :  * This file is part of the Independent JPEG Group's software.
+<span class="lineNum">       6 </span>                :  * For conditions of distribution and use, see the accompanying README file.
+<span class="lineNum">       7 </span>                :  *
+<span class="lineNum">       8 </span>                :  * This file contains routines to read input images in PPM/PGM format.
+<span class="lineNum">       9 </span>                :  * The extended 2-byte-per-sample raw PPM/PGM formats are supported.
+<span class="lineNum">      10 </span>                :  * The PBMPLUS library is NOT required to compile this software
+<span class="lineNum">      11 </span>                :  * (but it is highly useful as a set of PPM image manipulation programs).
+<span class="lineNum">      12 </span>                :  *
+<span class="lineNum">      13 </span>                :  * These routines may need modification for non-Unix environments or
+<span class="lineNum">      14 </span>                :  * specialized applications.  As they stand, they assume input from
+<span class="lineNum">      15 </span>                :  * an ordinary stdio stream.  They further assume that reading begins
+<span class="lineNum">      16 </span>                :  * at the start of the file; start_input may need work if the
+<span class="lineNum">      17 </span>                :  * user interface has already read some data (e.g., to determine that
+<span class="lineNum">      18 </span>                :  * the file is indeed PPM format).
+<span class="lineNum">      19 </span>                :  */</FONT></I>
+<span class="lineNum">      20 </span>                : 
+<span class="lineNum">      21 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;cdjpeg.h&quot;</FONT></B>		<I><FONT COLOR="#B22222">/* Common decls for cjpeg/djpeg applications */</FONT></I>
+<span class="lineNum">      22 </span>                : 
+<span class="lineNum">      23 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">PPM_SUPPORTED</FONT>
+<span class="lineNum">      24 </span>                : 
+<span class="lineNum">      25 </span>                : 
+<span class="lineNum">      26 </span>                : <I><FONT COLOR="#B22222">/* Portions of this code are based on the PBMPLUS library, which is:
+<span class="lineNum">      27 </span>                : **
+<span class="lineNum">      28 </span>                : ** Copyright (C) 1988 by Jef Poskanzer.
+<span class="lineNum">      29 </span>                : **
+<span class="lineNum">      30 </span>                : ** Permission to use, copy, modify, and distribute this software and its
+<span class="lineNum">      31 </span>                : ** documentation for any purpose and without fee is hereby granted, provided
+<span class="lineNum">      32 </span>                : ** that the above copyright notice appear in all copies and that both that
+<span class="lineNum">      33 </span>                : ** copyright notice and this permission notice appear in supporting
+<span class="lineNum">      34 </span>                : ** documentation.  This software is provided &quot;as is&quot; without express or
+<span class="lineNum">      35 </span>                : ** implied warranty.
+<span class="lineNum">      36 </span>                : */</FONT></I>
+<span class="lineNum">      37 </span>                : 
+<span class="lineNum">      38 </span>                : 
+<span class="lineNum">      39 </span>                : <I><FONT COLOR="#B22222">/* Macros to deal with unsigned chars as efficiently as compiler allows */</FONT></I>
+<span class="lineNum">      40 </span>                : 
+<span class="lineNum">      41 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">HAVE_UNSIGNED_CHAR</FONT>
+<span class="lineNum">      42 </span>                : <B><FONT COLOR="#228B22">typedef</FONT></B> <B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">char</FONT></B> U_CHAR;
+<span class="lineNum">      43 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <B><FONT COLOR="#0000FF">UCH</FONT></B>(x)	((int) (x))
+<span class="lineNum">      44 </span>                : #<B><FONT COLOR="#5F9EA0">else</FONT></B> <I><FONT COLOR="#B22222">/* !HAVE_UNSIGNED_CHAR */</FONT></I>
+<span class="lineNum">      45 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">CHAR_IS_UNSIGNED</FONT>
+<span class="lineNum">      46 </span>                : <B><FONT COLOR="#228B22">typedef</FONT></B> <B><FONT COLOR="#228B22">char</FONT></B> U_CHAR;
+<span class="lineNum">      47 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <B><FONT COLOR="#0000FF">UCH</FONT></B>(x)	((int) (x))
+<span class="lineNum">      48 </span>                : #<B><FONT COLOR="#5F9EA0">else</FONT></B>
+<span class="lineNum">      49 </span>                : <B><FONT COLOR="#228B22">typedef</FONT></B> <B><FONT COLOR="#228B22">char</FONT></B> U_CHAR;
+<span class="lineNum">      50 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <B><FONT COLOR="#0000FF">UCH</FONT></B>(x)	((int) (x) &amp; 0xFF)
+<span class="lineNum">      51 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      52 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B> <I><FONT COLOR="#B22222">/* HAVE_UNSIGNED_CHAR */</FONT></I>
+<span class="lineNum">      53 </span>                : 
+<span class="lineNum">      54 </span>                : 
+<span class="lineNum">      55 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B>	<B><FONT COLOR="#0000FF">ReadOK</FONT></B>(file,buffer,len)	(JFREAD(file,buffer,len) == ((size_t) (len)))
+<span class="lineNum">      56 </span>                : 
+<span class="lineNum">      57 </span>                : 
+<span class="lineNum">      58 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      59 </span>                :  * On most systems, reading individual bytes with getc() is drastically less
+<span class="lineNum">      60 </span>                :  * efficient than buffering a row at a time with fread().  On PCs, we must
+<span class="lineNum">      61 </span>                :  * allocate the buffer in near data space, because we are assuming small-data
+<span class="lineNum">      62 </span>                :  * memory model, wherein fread() can't reach far memory.  If you need to
+<span class="lineNum">      63 </span>                :  * process very wide images on a PC, you might have to compile in large-memory
+<span class="lineNum">      64 </span>                :  * model, or else replace fread() with a getc() loop --- which will be much
+<span class="lineNum">      65 </span>                :  * slower.
+<span class="lineNum">      66 </span>                :  */</FONT></I>
+<span class="lineNum">      67 </span>                : 
+<span class="lineNum">      68 </span>                : 
+<span class="lineNum">      69 </span>                : <I><FONT COLOR="#B22222">/* Private version of data source object */</FONT></I>
+<span class="lineNum">      70 </span>                : 
+<span class="lineNum">      71 </span>                : <B><FONT COLOR="#228B22">typedef</FONT></B> <B><FONT COLOR="#228B22">struct</FONT></B> {
+<span class="lineNum">      72 </span>                :   <B><FONT COLOR="#228B22">struct</FONT></B> cjpeg_source_struct pub; <I><FONT COLOR="#B22222">/* public fields */</FONT></I>
+<span class="lineNum">      73 </span>                : 
+<span class="lineNum">      74 </span>                :   U_CHAR *iobuffer;		<I><FONT COLOR="#B22222">/* non-FAR pointer to I/O buffer */</FONT></I>
+<span class="lineNum">      75 </span>                :   JSAMPROW pixrow;		<I><FONT COLOR="#B22222">/* FAR pointer to same */</FONT></I>
+<span class="lineNum">      76 </span>                :   size_t buffer_width;		<I><FONT COLOR="#B22222">/* width of I/O buffer */</FONT></I>
+<span class="lineNum">      77 </span>                :   JSAMPLE *rescale;		<I><FONT COLOR="#B22222">/* =&gt; maxval-remapping array, or NULL */</FONT></I>
+<span class="lineNum">      78 </span>                : } ppm_source_struct;
+<span class="lineNum">      79 </span>                : 
+<span class="lineNum">      80 </span>                : <B><FONT COLOR="#228B22">typedef</FONT></B> ppm_source_struct * ppm_source_ptr;
+<span class="lineNum">      81 </span>                : 
+<span class="lineNum">      82 </span>                : 
+<span class="lineNum">      83 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">int</FONT></B>)
+<span class="lineNum">      84 </span><span class="lineCov">           17933: <B><FONT COLOR="#0000FF">pbm_getc</FONT></B> (FILE * infile)</span>
+<span class="lineNum">      85 </span>                : <I><FONT COLOR="#B22222">/* Read next char, skipping over any comments */</FONT></I>
+<span class="lineNum">      86 </span>                : <I><FONT COLOR="#B22222">/* A comment/newline sequence is returned as a newline */</FONT></I>
+<span class="lineNum">      87 </span>                : {
+<span class="lineNum">      88 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> ch;
+<span class="lineNum">      89 </span>                : 
+<span class="lineNum">      90 </span><span class="lineCov">           17933:   ch = getc(infile);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             492: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           17441: branch 1 taken</span>
+</span><span class="lineNum">      91 </span><span class="lineCov">           17933:   <B><FONT COLOR="#A020F0">if</FONT></B> (ch == <B><FONT COLOR="#BC8F8F">'#'</FONT></B>) {</span>
+<span class="lineNum">      92 </span>                :     <B><FONT COLOR="#A020F0">do</FONT></B> {
+<span class="lineNum">      93 </span><span class="lineCov">           10008:       ch = getc(infile);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            9796: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             212: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9516: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             280: branch 3 taken</span>
+</span><span class="lineNum">      94 </span><span class="lineCov">           10008:     } <B><FONT COLOR="#A020F0">while</FONT></B> (ch != <B><FONT COLOR="#BC8F8F">'\n'</FONT></B> &amp;&amp; ch != EOF);</span>
+<span class="lineNum">      95 </span>                :   }
+<span class="lineNum">      96 </span><span class="lineCov">           17933:   <B><FONT COLOR="#A020F0">return</FONT></B> ch;</span>
+<span class="lineNum">      97 </span>                : }
+<span class="lineNum">      98 </span>                : 
+<span class="lineNum">      99 </span>                : 
+<span class="lineNum">     100 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B>)
+<span class="lineNum">     101 </span><span class="lineCov">            7949: <B><FONT COLOR="#0000FF">read_pbm_integer</FONT></B> (j_compress_ptr cinfo, FILE * infile)</span>
+<span class="lineNum">     102 </span>                : <I><FONT COLOR="#B22222">/* Read an unsigned decimal integer from the PPM file */</FONT></I>
+<span class="lineNum">     103 </span>                : <I><FONT COLOR="#B22222">/* Swallows one trailing character after the integer */</FONT></I>
+<span class="lineNum">     104 </span>                : <I><FONT COLOR="#B22222">/* Note that on a 16-bit-int machine, only values up to 64k can be read. */</FONT></I>
+<span class="lineNum">     105 </span>                : <I><FONT COLOR="#B22222">/* This should not be a problem in practice. */</FONT></I>
+<span class="lineNum">     106 </span>                : {
+<span class="lineNum">     107 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> ch;
+<span class="lineNum">     108 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> val;
+<span class="lineNum">     109 </span>                : 
+<span class="lineNum">     110 </span>                :   <I><FONT COLOR="#B22222">/* Skip any leading whitespace */</FONT></I>
+<span class="lineNum">     111 </span>                :   <B><FONT COLOR="#A020F0">do</FONT></B> {
+<span class="lineNum">     112 </span><span class="lineCov">            7949:     ch = pbm_getc(infile);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             306: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            7643: branch 1 taken</span>
+</span><span class="lineNum">     113 </span><span class="lineCov">            7949:     <B><FONT COLOR="#A020F0">if</FONT></B> (ch == EOF)</span>
+<span class="lineNum">     114 </span><span class="lineCov">             306:       ERREXIT(cinfo, JERR_INPUT_EOF);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             134: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            7509: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             182: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            7327: branch 3 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1790: branch 4 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            5537: branch 5 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">              83: branch 6 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            5454: branch 7 taken</span>
+</span><span class="lineNum">     115 </span><span class="lineCov">            7643:   } <B><FONT COLOR="#A020F0">while</FONT></B> (ch == <B><FONT COLOR="#BC8F8F">' '</FONT></B> || ch == <B><FONT COLOR="#BC8F8F">'\t'</FONT></B> || ch == <B><FONT COLOR="#BC8F8F">'\n'</FONT></B> || ch == <B><FONT COLOR="#BC8F8F">'\r'</FONT></B>);</span>
+<span class="lineNum">     116 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            5373: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">              81: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             271: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            5102: branch 3 taken</span>
+</span><span class="lineNum">     117 </span><span class="lineCov">            5454:   <B><FONT COLOR="#A020F0">if</FONT></B> (ch &lt; <B><FONT COLOR="#BC8F8F">'0'</FONT></B> || ch &gt; <B><FONT COLOR="#BC8F8F">'9'</FONT></B>)</span>
+<span class="lineNum">     118 </span><span class="lineCov">             352:     ERREXIT(cinfo, JERR_PPM_NONNUMERIC);</span>
+<span class="lineNum">     119 </span>                : 
+<span class="lineNum">     120 </span><span class="lineCov">            5102:   val = ch - <B><FONT COLOR="#BC8F8F">'0'</FONT></B>;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            7959: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2025: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4882: branch 3 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3077: branch 4 taken</span>
+</span><span class="lineNum">     121 </span><span class="lineCov">           15086:   <B><FONT COLOR="#A020F0">while</FONT></B> ((ch = pbm_getc(infile)) &gt;= <B><FONT COLOR="#BC8F8F">'0'</FONT></B> &amp;&amp; ch &lt;= <B><FONT COLOR="#BC8F8F">'9'</FONT></B>) {</span>
+<span class="lineNum">     122 </span><span class="lineCov">            4882:     val *= 10;</span>
+<span class="lineNum">     123 </span><span class="lineCov">            4882:     val += ch - <B><FONT COLOR="#BC8F8F">'0'</FONT></B>;</span>
+<span class="lineNum">     124 </span>                :   }
+<span class="lineNum">     125 </span><span class="lineCov">            5102:   <B><FONT COLOR="#A020F0">return</FONT></B> val;</span>
+<span class="lineNum">     126 </span>                : }
+<span class="lineNum">     127 </span>                : 
+<span class="lineNum">     128 </span>                : 
+<span class="lineNum">     129 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     130 </span>                :  * Read one row of pixels.
+<span class="lineNum">     131 </span>                :  *
+<span class="lineNum">     132 </span>                :  * We provide several different versions depending on input file format.
+<span class="lineNum">     133 </span>                :  * In all cases, input is scaled to the size of JSAMPLE.
+<span class="lineNum">     134 </span>                :  *
+<span class="lineNum">     135 </span>                :  * A really fast path is provided for reading byte/sample raw files with
+<span class="lineNum">     136 </span>                :  * maxval = MAXJSAMPLE, which is the normal case for 8-bit data.
+<span class="lineNum">     137 </span>                :  */</FONT></I>
+<span class="lineNum">     138 </span>                : 
+<span class="lineNum">     139 </span>                : 
+<span class="lineNum">     140 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(JDIMENSION)
+<span class="lineNum">     141 </span><span class="lineCov">             121: <B><FONT COLOR="#0000FF">get_text_gray_row</FONT></B> (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)</span>
+<span class="lineNum">     142 </span>                : <I><FONT COLOR="#B22222">/* This version is for reading text-format PGM files with any maxval */</FONT></I>
+<span class="lineNum">     143 </span>                : {
+<span class="lineNum">     144 </span><span class="lineCov">             121:   ppm_source_ptr source = (ppm_source_ptr) sinfo;</span>
+<span class="lineNum">     145 </span><span class="lineCov">             121:   FILE * infile = source-&gt;pub.input_file;</span>
+<span class="lineNum">     146 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> JSAMPROW ptr;
+<span class="lineNum">     147 </span><span class="lineCov">             121:   <B><FONT COLOR="#228B22">register</FONT></B> JSAMPLE *rescale = source-&gt;rescale;</span>
+<span class="lineNum">     148 </span>                :   JDIMENSION col;
+<span class="lineNum">     149 </span>                : 
+<span class="lineNum">     150 </span><span class="lineCov">             121:   ptr = source-&gt;pub.buffer[0];</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             299: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">              39: branch 1 taken</span>
+</span><span class="lineNum">     151 </span><span class="lineCov">             338:   <B><FONT COLOR="#A020F0">for</FONT></B> (col = cinfo-&gt;image_width; col &gt; 0; col--) {</span>
+<span class="lineNum">     152 </span><span class="lineCov">             299:     *ptr++ = rescale[read_pbm_integer(cinfo, infile)];</span>
+<span class="lineNum">     153 </span>                :   }
+<span class="lineNum">     154 </span><span class="lineCov">              39:   <B><FONT COLOR="#A020F0">return</FONT></B> 1;</span>
+<span class="lineNum">     155 </span>                : }
+<span class="lineNum">     156 </span>                : 
+<span class="lineNum">     157 </span>                : 
+<span class="lineNum">     158 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(JDIMENSION)
+<span class="lineNum">     159 </span><span class="lineCov">              44: <B><FONT COLOR="#0000FF">get_text_rgb_row</FONT></B> (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)</span>
+<span class="lineNum">     160 </span>                : <I><FONT COLOR="#B22222">/* This version is for reading text-format PPM files with any maxval */</FONT></I>
+<span class="lineNum">     161 </span>                : {
+<span class="lineNum">     162 </span><span class="lineCov">              44:   ppm_source_ptr source = (ppm_source_ptr) sinfo;</span>
+<span class="lineNum">     163 </span><span class="lineCov">              44:   FILE * infile = source-&gt;pub.input_file;</span>
+<span class="lineNum">     164 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> JSAMPROW ptr;
+<span class="lineNum">     165 </span><span class="lineCov">              44:   <B><FONT COLOR="#228B22">register</FONT></B> JSAMPLE *rescale = source-&gt;rescale;</span>
+<span class="lineNum">     166 </span>                :   JDIMENSION col;
+<span class="lineNum">     167 </span>                : 
+<span class="lineNum">     168 </span><span class="lineCov">              44:   ptr = source-&gt;pub.buffer[0];</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">              57: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     169 </span><span class="lineCov">              57:   <B><FONT COLOR="#A020F0">for</FONT></B> (col = cinfo-&gt;image_width; col &gt; 0; col--) {</span>
+<span class="lineNum">     170 </span><span class="lineCov">              57:     *ptr++ = rescale[read_pbm_integer(cinfo, infile)];</span>
+<span class="lineNum">     171 </span><span class="lineCov">              46:     *ptr++ = rescale[read_pbm_integer(cinfo, infile)];</span>
+<span class="lineNum">     172 </span><span class="lineCov">              20:     *ptr++ = rescale[read_pbm_integer(cinfo, infile)];</span>
+<span class="lineNum">     173 </span>                :   }
+<span class="lineNum">     174 </span><span class="lineNoCov">               0:   <B><FONT COLOR="#A020F0">return</FONT></B> 1;</span>
+<span class="lineNum">     175 </span>                : }
+<span class="lineNum">     176 </span>                : 
+<span class="lineNum">     177 </span>                : 
+<span class="lineNum">     178 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(JDIMENSION)
+<span class="lineNum">     179 </span><span class="lineCov">            5177: <B><FONT COLOR="#0000FF">get_scaled_gray_row</FONT></B> (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)</span>
+<span class="lineNum">     180 </span>                : <I><FONT COLOR="#B22222">/* This version is for reading raw-byte-format PGM files with any maxval */</FONT></I>
+<span class="lineNum">     181 </span>                : {
+<span class="lineNum">     182 </span><span class="lineCov">            5177:   ppm_source_ptr source = (ppm_source_ptr) sinfo;</span>
+<span class="lineNum">     183 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> JSAMPROW ptr;
+<span class="lineNum">     184 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> U_CHAR * bufferptr;
+<span class="lineNum">     185 </span><span class="lineCov">            5177:   <B><FONT COLOR="#228B22">register</FONT></B> JSAMPLE *rescale = source-&gt;rescale;</span>
+<span class="lineNum">     186 </span>                :   JDIMENSION col;
+<span class="lineNum">     187 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             185: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4992: branch 2 taken</span>
+</span><span class="lineNum">     188 </span><span class="lineCov">            5177:   <B><FONT COLOR="#A020F0">if</FONT></B> (! ReadOK(source-&gt;pub.input_file, source-&gt;iobuffer, source-&gt;buffer_width))</span>
+<span class="lineNum">     189 </span><span class="lineCov">             185:     ERREXIT(cinfo, JERR_INPUT_EOF);</span>
+<span class="lineNum">     190 </span><span class="lineCov">            4992:   ptr = source-&gt;pub.buffer[0];</span>
+<span class="lineNum">     191 </span><span class="lineCov">            4992:   bufferptr = source-&gt;iobuffer;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           25979: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4992: branch 1 taken</span>
+</span><span class="lineNum">     192 </span><span class="lineCov">           30971:   <B><FONT COLOR="#A020F0">for</FONT></B> (col = cinfo-&gt;image_width; col &gt; 0; col--) {</span>
+<span class="lineNum">     193 </span><span class="lineCov">           25979:     *ptr++ = rescale[UCH(*bufferptr++)];</span>
+<span class="lineNum">     194 </span>                :   }
+<span class="lineNum">     195 </span><span class="lineCov">            4992:   <B><FONT COLOR="#A020F0">return</FONT></B> 1;</span>
+<span class="lineNum">     196 </span>                : }
+<span class="lineNum">     197 </span>                : 
+<span class="lineNum">     198 </span>                : 
+<span class="lineNum">     199 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(JDIMENSION)
+<span class="lineNum">     200 </span><span class="lineCov">            1517: <B><FONT COLOR="#0000FF">get_scaled_rgb_row</FONT></B> (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)</span>
+<span class="lineNum">     201 </span>                : <I><FONT COLOR="#B22222">/* This version is for reading raw-byte-format PPM files with any maxval */</FONT></I>
+<span class="lineNum">     202 </span>                : {
+<span class="lineNum">     203 </span><span class="lineCov">            1517:   ppm_source_ptr source = (ppm_source_ptr) sinfo;</span>
+<span class="lineNum">     204 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> JSAMPROW ptr;
+<span class="lineNum">     205 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> U_CHAR * bufferptr;
+<span class="lineNum">     206 </span><span class="lineCov">            1517:   <B><FONT COLOR="#228B22">register</FONT></B> JSAMPLE *rescale = source-&gt;rescale;</span>
+<span class="lineNum">     207 </span>                :   JDIMENSION col;
+<span class="lineNum">     208 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             169: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1348: branch 2 taken</span>
+</span><span class="lineNum">     209 </span><span class="lineCov">            1517:   <B><FONT COLOR="#A020F0">if</FONT></B> (! ReadOK(source-&gt;pub.input_file, source-&gt;iobuffer, source-&gt;buffer_width))</span>
+<span class="lineNum">     210 </span><span class="lineCov">             169:     ERREXIT(cinfo, JERR_INPUT_EOF);</span>
+<span class="lineNum">     211 </span><span class="lineCov">            1348:   ptr = source-&gt;pub.buffer[0];</span>
+<span class="lineNum">     212 </span><span class="lineCov">            1348:   bufferptr = source-&gt;iobuffer;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            3326: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1348: branch 1 taken</span>
+</span><span class="lineNum">     213 </span><span class="lineCov">            4674:   <B><FONT COLOR="#A020F0">for</FONT></B> (col = cinfo-&gt;image_width; col &gt; 0; col--) {</span>
+<span class="lineNum">     214 </span><span class="lineCov">            3326:     *ptr++ = rescale[UCH(*bufferptr++)];</span>
+<span class="lineNum">     215 </span><span class="lineCov">            3326:     *ptr++ = rescale[UCH(*bufferptr++)];</span>
+<span class="lineNum">     216 </span><span class="lineCov">            3326:     *ptr++ = rescale[UCH(*bufferptr++)];</span>
+<span class="lineNum">     217 </span>                :   }
+<span class="lineNum">     218 </span><span class="lineCov">            1348:   <B><FONT COLOR="#A020F0">return</FONT></B> 1;</span>
+<span class="lineNum">     219 </span>                : }
+<span class="lineNum">     220 </span>                : 
+<span class="lineNum">     221 </span>                : 
+<span class="lineNum">     222 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(JDIMENSION)
+<span class="lineNum">     223 </span><span class="lineNoCov">               0: <B><FONT COLOR="#0000FF">get_raw_row</FONT></B> (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)</span>
+<span class="lineNum">     224 </span>                : <I><FONT COLOR="#B22222">/* This version is for reading raw-byte-format files with maxval = MAXJSAMPLE.
+<span class="lineNum">     225 </span>                :  * In this case we just read right into the JSAMPLE buffer!
+<span class="lineNum">     226 </span>                :  * Note that same code works for PPM and PGM files.
+<span class="lineNum">     227 </span>                :  */</FONT></I>
+<span class="lineNum">     228 </span>                : {
+<span class="lineNum">     229 </span><span class="lineNoCov">               0:   ppm_source_ptr source = (ppm_source_ptr) sinfo;</span>
+<span class="lineNum">     230 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+</span><span class="lineNum">     231 </span><span class="lineNoCov">               0:   <B><FONT COLOR="#A020F0">if</FONT></B> (! ReadOK(source-&gt;pub.input_file, source-&gt;iobuffer, source-&gt;buffer_width))</span>
+<span class="lineNum">     232 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_INPUT_EOF);</span>
+<span class="lineNum">     233 </span><span class="lineNoCov">               0:   <B><FONT COLOR="#A020F0">return</FONT></B> 1;</span>
+<span class="lineNum">     234 </span>                : }
+<span class="lineNum">     235 </span>                : 
+<span class="lineNum">     236 </span>                : 
+<span class="lineNum">     237 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(JDIMENSION)
+<span class="lineNum">     238 </span><span class="lineCov">            1457: <B><FONT COLOR="#0000FF">get_word_gray_row</FONT></B> (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)</span>
+<span class="lineNum">     239 </span>                : <I><FONT COLOR="#B22222">/* This version is for reading raw-word-format PGM files with any maxval */</FONT></I>
+<span class="lineNum">     240 </span>                : {
+<span class="lineNum">     241 </span><span class="lineCov">            1457:   ppm_source_ptr source = (ppm_source_ptr) sinfo;</span>
+<span class="lineNum">     242 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> JSAMPROW ptr;
+<span class="lineNum">     243 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> U_CHAR * bufferptr;
+<span class="lineNum">     244 </span><span class="lineCov">            1457:   <B><FONT COLOR="#228B22">register</FONT></B> JSAMPLE *rescale = source-&gt;rescale;</span>
+<span class="lineNum">     245 </span>                :   JDIMENSION col;
+<span class="lineNum">     246 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             135: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1322: branch 2 taken</span>
+</span><span class="lineNum">     247 </span><span class="lineCov">            1457:   <B><FONT COLOR="#A020F0">if</FONT></B> (! ReadOK(source-&gt;pub.input_file, source-&gt;iobuffer, source-&gt;buffer_width))</span>
+<span class="lineNum">     248 </span><span class="lineCov">             135:     ERREXIT(cinfo, JERR_INPUT_EOF);</span>
+<span class="lineNum">     249 </span><span class="lineCov">            1322:   ptr = source-&gt;pub.buffer[0];</span>
+<span class="lineNum">     250 </span><span class="lineCov">            1322:   bufferptr = source-&gt;iobuffer;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            3808: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1322: branch 1 taken</span>
+</span><span class="lineNum">     251 </span><span class="lineCov">            5130:   <B><FONT COLOR="#A020F0">for</FONT></B> (col = cinfo-&gt;image_width; col &gt; 0; col--) {</span>
+<span class="lineNum">     252 </span>                :     <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> temp;
+<span class="lineNum">     253 </span><span class="lineCov">            3808:     temp  = UCH(*bufferptr++);</span>
+<span class="lineNum">     254 </span><span class="lineCov">            3808:     temp |= UCH(*bufferptr++) &lt;&lt; 8;</span>
+<span class="lineNum">     255 </span><span class="lineCov">            3808:     *ptr++ = rescale[temp];</span>
+<span class="lineNum">     256 </span>                :   }
+<span class="lineNum">     257 </span><span class="lineCov">            1322:   <B><FONT COLOR="#A020F0">return</FONT></B> 1;</span>
+<span class="lineNum">     258 </span>                : }
+<span class="lineNum">     259 </span>                : 
+<span class="lineNum">     260 </span>                : 
+<span class="lineNum">     261 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(JDIMENSION)
+<span class="lineNum">     262 </span><span class="lineCov">             555: <B><FONT COLOR="#0000FF">get_word_rgb_row</FONT></B> (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)</span>
+<span class="lineNum">     263 </span>                : <I><FONT COLOR="#B22222">/* This version is for reading raw-word-format PPM files with any maxval */</FONT></I>
+<span class="lineNum">     264 </span>                : {
+<span class="lineNum">     265 </span><span class="lineCov">             555:   ppm_source_ptr source = (ppm_source_ptr) sinfo;</span>
+<span class="lineNum">     266 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> JSAMPROW ptr;
+<span class="lineNum">     267 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> U_CHAR * bufferptr;
+<span class="lineNum">     268 </span><span class="lineCov">             555:   <B><FONT COLOR="#228B22">register</FONT></B> JSAMPLE *rescale = source-&gt;rescale;</span>
+<span class="lineNum">     269 </span>                :   JDIMENSION col;
+<span class="lineNum">     270 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             120: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             435: branch 2 taken</span>
+</span><span class="lineNum">     271 </span><span class="lineCov">             555:   <B><FONT COLOR="#A020F0">if</FONT></B> (! ReadOK(source-&gt;pub.input_file, source-&gt;iobuffer, source-&gt;buffer_width))</span>
+<span class="lineNum">     272 </span><span class="lineCov">             120:     ERREXIT(cinfo, JERR_INPUT_EOF);</span>
+<span class="lineNum">     273 </span><span class="lineCov">             435:   ptr = source-&gt;pub.buffer[0];</span>
+<span class="lineNum">     274 </span><span class="lineCov">             435:   bufferptr = source-&gt;iobuffer;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1167: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             435: branch 1 taken</span>
+</span><span class="lineNum">     275 </span><span class="lineCov">            1602:   <B><FONT COLOR="#A020F0">for</FONT></B> (col = cinfo-&gt;image_width; col &gt; 0; col--) {</span>
+<span class="lineNum">     276 </span>                :     <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> temp;
+<span class="lineNum">     277 </span><span class="lineCov">            1167:     temp  = UCH(*bufferptr++);</span>
+<span class="lineNum">     278 </span><span class="lineCov">            1167:     temp |= UCH(*bufferptr++) &lt;&lt; 8;</span>
+<span class="lineNum">     279 </span><span class="lineCov">            1167:     *ptr++ = rescale[temp];</span>
+<span class="lineNum">     280 </span><span class="lineCov">            1167:     temp  = UCH(*bufferptr++);</span>
+<span class="lineNum">     281 </span><span class="lineCov">            1167:     temp |= UCH(*bufferptr++) &lt;&lt; 8;</span>
+<span class="lineNum">     282 </span><span class="lineCov">            1167:     *ptr++ = rescale[temp];</span>
+<span class="lineNum">     283 </span><span class="lineCov">            1167:     temp  = UCH(*bufferptr++);</span>
+<span class="lineNum">     284 </span><span class="lineCov">            1167:     temp |= UCH(*bufferptr++) &lt;&lt; 8;</span>
+<span class="lineNum">     285 </span><span class="lineCov">            1167:     *ptr++ = rescale[temp];</span>
+<span class="lineNum">     286 </span>                :   }
+<span class="lineNum">     287 </span><span class="lineCov">             435:   <B><FONT COLOR="#A020F0">return</FONT></B> 1;</span>
+<span class="lineNum">     288 </span>                : }
+<span class="lineNum">     289 </span>                : 
+<span class="lineNum">     290 </span>                : 
+<span class="lineNum">     291 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     292 </span>                :  * Read the file header; return image size and component count.
+<span class="lineNum">     293 </span>                :  */</FONT></I>
+<span class="lineNum">     294 </span>                : 
+<span class="lineNum">     295 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     296 </span><span class="lineCov">            2029: <B><FONT COLOR="#0000FF">start_input_ppm</FONT></B> (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)</span>
+<span class="lineNum">     297 </span>                : {
+<span class="lineNum">     298 </span><span class="lineCov">            2029:   ppm_source_ptr source = (ppm_source_ptr) sinfo;</span>
+<span class="lineNum">     299 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> c;
+<span class="lineNum">     300 </span>                :   <B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> w, h, maxval;
+<span class="lineNum">     301 </span>                :   boolean need_iobuffer, use_raw_buffer, need_rescale;
+<span class="lineNum">     302 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2029: branch 2 taken</span>
+</span><span class="lineNum">     303 </span><span class="lineCov">            2029:   <B><FONT COLOR="#A020F0">if</FONT></B> (getc(source-&gt;pub.input_file) != <B><FONT COLOR="#BC8F8F">'P'</FONT></B>)</span>
+<span class="lineNum">     304 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_PPM_NOT);</span>
+<span class="lineNum">     305 </span>                : 
+<span class="lineNum">     306 </span><span class="lineCov">            2029:   c = getc(source-&gt;pub.input_file); <I><FONT COLOR="#B22222">/* subformat discriminator character */</FONT></I></span>
+<span class="lineNum">     307 </span>                : 
+<span class="lineNum">     308 </span>                :   <I><FONT COLOR="#B22222">/* detect unsupported variants (ie, PBM) before trying to read header */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            2001: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">              28: branch 1 taken</span>
+</span><span class="lineNum">     309 </span><span class="lineCov">            2029:   <B><FONT COLOR="#A020F0">switch</FONT></B> (c) {</span>
+<span class="lineNum">     310 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#BC8F8F">'2'</FONT></B>:			<I><FONT COLOR="#B22222">/* it's a text-format PGM file */</FONT></I>
+<span class="lineNum">     311 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#BC8F8F">'3'</FONT></B>:			<I><FONT COLOR="#B22222">/* it's a text-format PPM file */</FONT></I>
+<span class="lineNum">     312 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#BC8F8F">'5'</FONT></B>:			<I><FONT COLOR="#B22222">/* it's a raw-format PGM file */</FONT></I>
+<span class="lineNum">     313 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#BC8F8F">'6'</FONT></B>:			<I><FONT COLOR="#B22222">/* it's a raw-format PPM file */</FONT></I>
+<span class="lineNum">     314 </span><span class="lineCov">            2001:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     315 </span>                :   <B><FONT COLOR="#5F9EA0">default</FONT></B>:
+<span class="lineNum">     316 </span><span class="lineCov">              28:     ERREXIT(cinfo, JERR_PPM_NOT);</span>
+<span class="lineNum">     317 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     318 </span>                :   }
+<span class="lineNum">     319 </span>                : 
+<span class="lineNum">     320 </span>                :   <I><FONT COLOR="#B22222">/* fetch the remaining header info */</FONT></I>
+<span class="lineNum">     321 </span><span class="lineCov">            2001:   w = read_pbm_integer(cinfo, source-&gt;pub.input_file);</span>
+<span class="lineNum">     322 </span><span class="lineCov">            1776:   h = read_pbm_integer(cinfo, source-&gt;pub.input_file);</span>
+<span class="lineNum">     323 </span><span class="lineCov">            1561:   maxval = read_pbm_integer(cinfo, source-&gt;pub.input_file);</span>
+<span class="lineNum">     324 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1455: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">              14: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1440: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">              15: branch 3 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">              14: branch 4 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1426: branch 5 taken</span>
+</span><span class="lineNum">     325 </span><span class="lineCov">            1469:   <B><FONT COLOR="#A020F0">if</FONT></B> (w &lt;= 0 || h &lt;= 0 || maxval &lt;= 0) <I><FONT COLOR="#B22222">/* error check */</FONT></I></span>
+<span class="lineNum">     326 </span><span class="lineCov">              43:     ERREXIT(cinfo, JERR_PPM_NOT);</span>
+<span class="lineNum">     327 </span>                : 
+<span class="lineNum">     328 </span><span class="lineCov">            1426:   cinfo-&gt;data_precision = BITS_IN_JSAMPLE; <I><FONT COLOR="#B22222">/* we always rescale data to this */</FONT></I></span>
+<span class="lineNum">     329 </span><span class="lineCov">            1426:   cinfo-&gt;image_width = (JDIMENSION) w;</span>
+<span class="lineNum">     330 </span><span class="lineCov">            1426:   cinfo-&gt;image_height = (JDIMENSION) h;</span>
+<span class="lineNum">     331 </span>                : 
+<span class="lineNum">     332 </span>                :   <I><FONT COLOR="#B22222">/* initialize flags to most common settings */</FONT></I>
+<span class="lineNum">     333 </span><span class="lineCov">            1426:   need_iobuffer = TRUE;		<I><FONT COLOR="#B22222">/* do we need an I/O buffer? */</FONT></I></span>
+<span class="lineNum">     334 </span><span class="lineCov">            1426:   use_raw_buffer = FALSE;	<I><FONT COLOR="#B22222">/* do we map input buffer onto I/O buffer? */</FONT></I></span>
+<span class="lineNum">     335 </span><span class="lineCov">            1426:   need_rescale = TRUE;		<I><FONT COLOR="#B22222">/* do we need a rescale array? */</FONT></I></span>
+<span class="lineNum">     336 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">              94: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">              62: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             883: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             387: branch 3 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 4 not taken</span>
+</span><span class="lineNum">     337 </span><span class="lineCov">            1426:   <B><FONT COLOR="#A020F0">switch</FONT></B> (c) {</span>
+<span class="lineNum">     338 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#BC8F8F">'2'</FONT></B>:			<I><FONT COLOR="#B22222">/* it's a text-format PGM file */</FONT></I>
+<span class="lineNum">     339 </span><span class="lineCov">              94:     cinfo-&gt;input_components = 1;</span>
+<span class="lineNum">     340 </span><span class="lineCov">              94:     cinfo-&gt;in_color_space = JCS_GRAYSCALE;</span>
+<span class="lineNum">     341 </span><span class="lineCov">              94:     TRACEMS2(cinfo, 1, JTRC_PGM_TEXT, w, h);</span>
+<span class="lineNum">     342 </span><span class="lineCov">              94:     source-&gt;pub.get_pixel_rows = get_text_gray_row;</span>
+<span class="lineNum">     343 </span><span class="lineCov">              94:     need_iobuffer = FALSE;</span>
+<span class="lineNum">     344 </span><span class="lineCov">              94:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     345 </span>                : 
+<span class="lineNum">     346 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#BC8F8F">'3'</FONT></B>:			<I><FONT COLOR="#B22222">/* it's a text-format PPM file */</FONT></I>
+<span class="lineNum">     347 </span><span class="lineCov">              62:     cinfo-&gt;input_components = 3;</span>
+<span class="lineNum">     348 </span><span class="lineCov">              62:     cinfo-&gt;in_color_space = JCS_RGB;</span>
+<span class="lineNum">     349 </span><span class="lineCov">              62:     TRACEMS2(cinfo, 1, JTRC_PPM_TEXT, w, h);</span>
+<span class="lineNum">     350 </span><span class="lineCov">              62:     source-&gt;pub.get_pixel_rows = get_text_rgb_row;</span>
+<span class="lineNum">     351 </span><span class="lineCov">              62:     need_iobuffer = FALSE;</span>
+<span class="lineNum">     352 </span><span class="lineCov">              62:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     353 </span>                : 
+<span class="lineNum">     354 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#BC8F8F">'5'</FONT></B>:			<I><FONT COLOR="#B22222">/* it's a raw-format PGM file */</FONT></I>
+<span class="lineNum">     355 </span><span class="lineCov">             883:     cinfo-&gt;input_components = 1;</span>
+<span class="lineNum">     356 </span><span class="lineCov">             883:     cinfo-&gt;in_color_space = JCS_GRAYSCALE;</span>
+<span class="lineNum">     357 </span><span class="lineCov">             883:     TRACEMS2(cinfo, 1, JTRC_PGM, w, h);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             222: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             661: branch 1 taken</span>
+</span><span class="lineNum">     358 </span><span class="lineCov">             883:     <B><FONT COLOR="#A020F0">if</FONT></B> (maxval &gt; 255) {</span>
+<span class="lineNum">     359 </span><span class="lineCov">             222:       source-&gt;pub.get_pixel_rows = get_word_gray_row;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             661: branch 1 taken</span>
+</span><span class="lineNum">     360 </span><span class="lineCov">             661:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (maxval == MAXJSAMPLE &amp;&amp; SIZEOF(JSAMPLE) == SIZEOF(U_CHAR)) {</span>
+<span class="lineNum">     361 </span><span class="lineNoCov">               0:       source-&gt;pub.get_pixel_rows = get_raw_row;</span>
+<span class="lineNum">     362 </span><span class="lineNoCov">               0:       use_raw_buffer = TRUE;</span>
+<span class="lineNum">     363 </span><span class="lineNoCov">               0:       need_rescale = FALSE;</span>
+<span class="lineNum">     364 </span>                :     } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     365 </span><span class="lineCov">             661:       source-&gt;pub.get_pixel_rows = get_scaled_gray_row;</span>
+<span class="lineNum">     366 </span>                :     }
+<span class="lineNum">     367 </span><span class="lineCov">             883:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     368 </span>                : 
+<span class="lineNum">     369 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#BC8F8F">'6'</FONT></B>:			<I><FONT COLOR="#B22222">/* it's a raw-format PPM file */</FONT></I>
+<span class="lineNum">     370 </span><span class="lineCov">             387:     cinfo-&gt;input_components = 3;</span>
+<span class="lineNum">     371 </span><span class="lineCov">             387:     cinfo-&gt;in_color_space = JCS_RGB;</span>
+<span class="lineNum">     372 </span><span class="lineCov">             387:     TRACEMS2(cinfo, 1, JTRC_PPM, w, h);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             164: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             223: branch 1 taken</span>
+</span><span class="lineNum">     373 </span><span class="lineCov">             387:     <B><FONT COLOR="#A020F0">if</FONT></B> (maxval &gt; 255) {</span>
+<span class="lineNum">     374 </span><span class="lineCov">             164:       source-&gt;pub.get_pixel_rows = get_word_rgb_row;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             223: branch 1 taken</span>
+</span><span class="lineNum">     375 </span><span class="lineCov">             223:     } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (maxval == MAXJSAMPLE &amp;&amp; SIZEOF(JSAMPLE) == SIZEOF(U_CHAR)) {</span>
+<span class="lineNum">     376 </span><span class="lineNoCov">               0:       source-&gt;pub.get_pixel_rows = get_raw_row;</span>
+<span class="lineNum">     377 </span><span class="lineNoCov">               0:       use_raw_buffer = TRUE;</span>
+<span class="lineNum">     378 </span><span class="lineNoCov">               0:       need_rescale = FALSE;</span>
+<span class="lineNum">     379 </span>                :     } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     380 </span><span class="lineCov">             223:       source-&gt;pub.get_pixel_rows = get_scaled_rgb_row;</span>
+<span class="lineNum">     381 </span>                :     }
+<span class="lineNum">     382 </span><span class="lineCov">             387:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     383 </span>                :   }
+<span class="lineNum">     384 </span>                : 
+<span class="lineNum">     385 </span>                :   <I><FONT COLOR="#B22222">/* Allocate space for I/O buffer: 1 or 3 bytes or words/pixel. */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1270: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             156: branch 1 taken</span>
+</span><span class="lineNum">     386 </span><span class="lineCov">            1426:   <B><FONT COLOR="#A020F0">if</FONT></B> (need_iobuffer) {</span>
+<span class="lineNum">     387 </span><span class="lineCov">            2540:     source-&gt;buffer_width = (size_t) w * cinfo-&gt;input_components *</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             884: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             386: branch 1 taken</span>
+</span><span class="lineNum">     388 </span><span class="lineCov">            1270:       ((maxval&lt;=255) ? SIZEOF(U_CHAR) : (2*SIZEOF(U_CHAR)));</span>
+<span class="lineNum">     389 </span><span class="lineCov">            1266:     source-&gt;iobuffer = (U_CHAR *)</span>
+<span class="lineNum">     390 </span><span class="lineCov">            1270:       (*cinfo-&gt;mem-&gt;alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
+<span class="lineNum">     391 </span>                : 				  source-&gt;buffer_width);
+<span class="lineNum">     392 </span>                :   }
+<span class="lineNum">     393 </span>                : 
+<span class="lineNum">     394 </span>                :   <I><FONT COLOR="#B22222">/* Create compressor input buffer. */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1422: branch 1 taken</span>
+</span><span class="lineNum">     395 </span><span class="lineCov">            1422:   <B><FONT COLOR="#A020F0">if</FONT></B> (use_raw_buffer) {</span>
+<span class="lineNum">     396 </span>                :     <I><FONT COLOR="#B22222">/* For unscaled raw-input case, we can just map it onto the I/O buffer. */</FONT></I>
+<span class="lineNum">     397 </span>                :     <I><FONT COLOR="#B22222">/* Synthesize a JSAMPARRAY pointer structure */</FONT></I>
+<span class="lineNum">     398 </span>                :     <I><FONT COLOR="#B22222">/* Cast here implies near-&gt;far pointer conversion on PCs */</FONT></I>
+<span class="lineNum">     399 </span><span class="lineNoCov">               0:     source-&gt;pixrow = (JSAMPROW) source-&gt;iobuffer;</span>
+<span class="lineNum">     400 </span><span class="lineNoCov">               0:     source-&gt;pub.buffer = &amp; source-&gt;pixrow;</span>
+<span class="lineNum">     401 </span><span class="lineNoCov">               0:     source-&gt;pub.buffer_height = 1;</span>
+<span class="lineNum">     402 </span>                :   } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     403 </span>                :     <I><FONT COLOR="#B22222">/* Need to translate anyway, so make a separate sample buffer. */</FONT></I>
+<span class="lineNum">     404 </span><span class="lineCov">            2830:     source-&gt;pub.buffer = (*cinfo-&gt;mem-&gt;alloc_sarray)</span>
+<span class="lineNum">     405 </span><span class="lineCov">            2844:       ((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
+<span class="lineNum">     406 </span><span class="lineCov">            1422:        (JDIMENSION) w * cinfo-&gt;input_components, (JDIMENSION) 1);</span>
+<span class="lineNum">     407 </span><span class="lineCov">            1408:     source-&gt;pub.buffer_height = 1;</span>
+<span class="lineNum">     408 </span>                :   }
+<span class="lineNum">     409 </span>                : 
+<span class="lineNum">     410 </span>                :   <I><FONT COLOR="#B22222">/* Compute the rescaling array if required. */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1408: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     411 </span><span class="lineCov">            1408:   <B><FONT COLOR="#A020F0">if</FONT></B> (need_rescale) {</span>
+<span class="lineNum">     412 </span>                :     INT32 val, half_maxval;
+<span class="lineNum">     413 </span>                : 
+<span class="lineNum">     414 </span>                :     <I><FONT COLOR="#B22222">/* On 16-bit-int machines we have to be careful of maxval = 65535 */</FONT></I>
+<span class="lineNum">     415 </span><span class="lineCov">            1391:     source-&gt;rescale = (JSAMPLE *)</span>
+<span class="lineNum">     416 </span><span class="lineCov">            2816:       (*cinfo-&gt;mem-&gt;alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
+<span class="lineNum">     417 </span><span class="lineCov">            1408: 				  (size_t) (((<B><FONT COLOR="#228B22">long</FONT></B>) maxval + 1L) * SIZEOF(JSAMPLE)));</span>
+<span class="lineNum">     418 </span><span class="lineCov">            1391:     half_maxval = maxval / 2;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">      1854000668: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1391: branch 1 taken</span>
+</span><span class="lineNum">     419 </span><span class="lineCov">      1854002059:     <B><FONT COLOR="#A020F0">for</FONT></B> (val = 0; val &lt;= (INT32) maxval; val++) {</span>
+<span class="lineNum">     420 </span>                :       <I><FONT COLOR="#B22222">/* The multiplication here must be done in 32 bits to avoid overflow */</FONT></I>
+<span class="lineNum">     421 </span><span class="lineCov">      1854000668:       source-&gt;rescale[val] = (JSAMPLE) ((val*MAXJSAMPLE + half_maxval)/maxval);</span>
+<span class="lineNum">     422 </span>                :     }
+<span class="lineNum">     423 </span>                :   }
+<span class="lineNum">     424 </span><span class="lineCov">            1391: }</span>
+<span class="lineNum">     425 </span>                : 
+<span class="lineNum">     426 </span>                : 
+<span class="lineNum">     427 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     428 </span>                :  * Finish up at the end of the file.
+<span class="lineNum">     429 </span>                :  */</FONT></I>
+<span class="lineNum">     430 </span>                : 
+<span class="lineNum">     431 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     432 </span><span class="lineCov">             594: <B><FONT COLOR="#0000FF">finish_input_ppm</FONT></B> (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)</span>
+<span class="lineNum">     433 </span>                : {
+<span class="lineNum">     434 </span>                :   <I><FONT COLOR="#B22222">/* no work */</FONT></I>
+<span class="lineNum">     435 </span><span class="lineCov">             594: }</span>
+<span class="lineNum">     436 </span>                : 
+<span class="lineNum">     437 </span>                : 
+<span class="lineNum">     438 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     439 </span>                :  * The module selection routine for PPM format input.
+<span class="lineNum">     440 </span>                :  */</FONT></I>
+<span class="lineNum">     441 </span>                : 
+<span class="lineNum">     442 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(cjpeg_source_ptr)
+<span class="lineNum">     443 </span><span class="lineCov">            2029: <B><FONT COLOR="#0000FF">jinit_read_ppm</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     444 </span>                : {
+<span class="lineNum">     445 </span>                :   ppm_source_ptr source;
+<span class="lineNum">     446 </span>                : 
+<span class="lineNum">     447 </span>                :   <I><FONT COLOR="#B22222">/* Create module interface object */</FONT></I>
+<span class="lineNum">     448 </span><span class="lineCov">            2029:   source = (ppm_source_ptr)</span>
+<span class="lineNum">     449 </span><span class="lineCov">            2029:       (*cinfo-&gt;mem-&gt;alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
+<span class="lineNum">     450 </span>                : 				  SIZEOF(ppm_source_struct));
+<span class="lineNum">     451 </span>                :   <I><FONT COLOR="#B22222">/* Fill in method ptrs, except get_pixel_rows which start_input sets */</FONT></I>
+<span class="lineNum">     452 </span><span class="lineCov">            2029:   source-&gt;pub.start_input = start_input_ppm;</span>
+<span class="lineNum">     453 </span><span class="lineCov">            2029:   source-&gt;pub.finish_input = finish_input_ppm;</span>
+<span class="lineNum">     454 </span>                : 
+<span class="lineNum">     455 </span><span class="lineCov">            2029:   <B><FONT COLOR="#A020F0">return</FONT></B> (cjpeg_source_ptr) source;</span>
+<span class="lineNum">     456 </span>                : }
+<span class="lineNum">     457 </span>                : 
+<span class="lineNum">     458 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B> <I><FONT COLOR="#B22222">/* PPM_SUPPORTED */</FONT></I>
+</pre>
+<hr>
+Generated: 2016-04-07&nbsp;17:52 by <a href="http://minormatter.com/zcov">zcov</a><br>
+</body>
+</html>

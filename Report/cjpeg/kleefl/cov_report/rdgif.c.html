@@ -1,0 +1,100 @@
+<html>
+<head>
+  <script src="sorttable.js"></script>
+  <script src="sourceview.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <title>zcov: /home/vagrant/workspace/proj_libjpeg/cov/rdgif.c</title>
+</head>
+<body>
+<center><h1> zcov: <a href="index.html">/home/vagrant/workspace/proj_libjpeg/cov</a>/<a href="rdgif.c.html">rdgif.c</a> </h1></center>
+<hr>
+
+
+<center>
+<table id="headertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Files:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Taken:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>0.0%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 0&nbsp;/&nbsp;0 </td>
+  </tr>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Generated:</b> </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;12:37 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>0.0%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 0&nbsp;/&nbsp;0 </td>
+  </tr>
+  <tr>
+    <td colspan=2> </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Line&nbsp;Coverage:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>100.0%</b> </td>
+    <td bgcolor=#F0F0FF align=right> 3&nbsp;/&nbsp;3 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<center>
+<table id="fileheadertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Programs:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Runs</b> </td>
+    <td bgcolor=#F0F0FF align=right> 13685 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<pre>
+<span class="lineNum">       1 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">       2 </span>                :  * rdgif.c
+<span class="lineNum">       3 </span>                :  *
+<span class="lineNum">       4 </span>                :  * Copyright (C) 1991-1997, Thomas G. Lane.
+<span class="lineNum">       5 </span>                :  * This file is part of the Independent JPEG Group's software.
+<span class="lineNum">       6 </span>                :  * For conditions of distribution and use, see the accompanying README file.
+<span class="lineNum">       7 </span>                :  *
+<span class="lineNum">       8 </span>                :  * This file contains routines to read input images in GIF format.
+<span class="lineNum">       9 </span>                :  *
+<span class="lineNum">      10 </span>                :  *****************************************************************************
+<span class="lineNum">      11 </span>                :  * NOTE: to avoid entanglements with Unisys' patent on LZW compression,      *
+<span class="lineNum">      12 </span>                :  * the ability to read GIF files has been removed from the IJG distribution. *
+<span class="lineNum">      13 </span>                :  * Sorry about that.                                                         *
+<span class="lineNum">      14 </span>                :  *****************************************************************************
+<span class="lineNum">      15 </span>                :  *
+<span class="lineNum">      16 </span>                :  * We are required to state that
+<span class="lineNum">      17 </span>                :  *    &quot;The Graphics Interchange Format(c) is the Copyright property of
+<span class="lineNum">      18 </span>                :  *    CompuServe Incorporated. GIF(sm) is a Service Mark property of
+<span class="lineNum">      19 </span>                :  *    CompuServe Incorporated.&quot;
+<span class="lineNum">      20 </span>                :  */</FONT></I>
+<span class="lineNum">      21 </span>                : 
+<span class="lineNum">      22 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;cdjpeg.h&quot;</FONT></B>		<I><FONT COLOR="#B22222">/* Common decls for cjpeg/djpeg applications */</FONT></I>
+<span class="lineNum">      23 </span>                : 
+<span class="lineNum">      24 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">GIF_SUPPORTED</FONT>
+<span class="lineNum">      25 </span>                : 
+<span class="lineNum">      26 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      27 </span>                :  * The module selection routine for GIF format input.
+<span class="lineNum">      28 </span>                :  */</FONT></I>
+<span class="lineNum">      29 </span>                : 
+<span class="lineNum">      30 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(cjpeg_source_ptr)
+<span class="lineNum">      31 </span><span class="lineCov">              43: <B><FONT COLOR="#0000FF">jinit_read_gif</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">      32 </span>                : {
+<span class="lineNum">      33 </span><span class="lineCov">              43:   fprintf(stderr, <B><FONT COLOR="#BC8F8F">&quot;GIF input is unsupported for legal reasons.  Sorry.\n&quot;</FONT></B>);</span>
+<span class="lineNum">      34 </span><span class="lineCov">              43:   exit(EXIT_FAILURE);</span>
+<span class="lineNum">      35 </span>                :   <B><FONT COLOR="#A020F0">return</FONT></B> NULL;			<I><FONT COLOR="#B22222">/* keep compiler happy */</FONT></I>
+<span class="lineNum">      36 </span>                : }
+<span class="lineNum">      37 </span>                : 
+<span class="lineNum">      38 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B> <I><FONT COLOR="#B22222">/* GIF_SUPPORTED */</FONT></I>
+</pre>
+<hr>
+Generated: 2016-04-07&nbsp;12:37 by <a href="http://minormatter.com/zcov">zcov</a><br>
+</body>
+</html>

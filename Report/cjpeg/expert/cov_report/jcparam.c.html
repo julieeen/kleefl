@@ -1,0 +1,756 @@
+<html>
+<head>
+  <script src="sorttable.js"></script>
+  <script src="sourceview.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <title>zcov: /home/vagrant/workspace/proj_libjpeg/cov/jcparam.c</title>
+</head>
+<body>
+<center><h1> zcov: <a href="index.html">/home/vagrant/workspace/proj_libjpeg/cov</a>/<a href="jcparam.c.html">jcparam.c</a> </h1></center>
+<hr>
+
+
+<center>
+<table id="headertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Files:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Taken:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>56.0%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 47&nbsp;/&nbsp;84 </td>
+  </tr>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Generated:</b> </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;17:52 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>90.5%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 76&nbsp;/&nbsp;84 </td>
+  </tr>
+  <tr>
+    <td colspan=2> </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Line&nbsp;Coverage:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>77.9%</b> </td>
+    <td bgcolor=#F0F0FF align=right> 162&nbsp;/&nbsp;208 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<center>
+<table id="fileheadertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Programs:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Runs</b> </td>
+    <td bgcolor=#F0F0FF align=right> 5570 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<pre>
+<span class="lineNum">       1 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">       2 </span>                :  * jcparam.c
+<span class="lineNum">       3 </span>                :  *
+<span class="lineNum">       4 </span>                :  * Copyright (C) 1991-1998, Thomas G. Lane.
+<span class="lineNum">       5 </span>                :  * This file is part of the Independent JPEG Group's software.
+<span class="lineNum">       6 </span>                :  * For conditions of distribution and use, see the accompanying README file.
+<span class="lineNum">       7 </span>                :  *
+<span class="lineNum">       8 </span>                :  * This file contains optional default-setting code for the JPEG compressor.
+<span class="lineNum">       9 </span>                :  * Applications do not have to use this file, but those that don't use it
+<span class="lineNum">      10 </span>                :  * must know a lot more about the innards of the JPEG code.
+<span class="lineNum">      11 </span>                :  */</FONT></I>
+<span class="lineNum">      12 </span>                : 
+<span class="lineNum">      13 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">JPEG_INTERNALS</FONT>
+<span class="lineNum">      14 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jinclude.h&quot;</FONT></B>
+<span class="lineNum">      15 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jpeglib.h&quot;</FONT></B>
+<span class="lineNum">      16 </span>                : 
+<span class="lineNum">      17 </span>                : 
+<span class="lineNum">      18 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      19 </span>                :  * Quantization table setup routines
+<span class="lineNum">      20 </span>                :  */</FONT></I>
+<span class="lineNum">      21 </span>                : 
+<span class="lineNum">      22 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">      23 </span><span class="lineCov">           19116: <B><FONT COLOR="#0000FF">jpeg_add_quant_table</FONT></B> (j_compress_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> which_tbl,</span>
+<span class="lineNum">      24 </span>                : 		      <B><FONT COLOR="#228B22">const</FONT></B> <B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> *basic_table,
+<span class="lineNum">      25 </span>                : 		      <B><FONT COLOR="#228B22">int</FONT></B> scale_factor, boolean force_baseline)
+<span class="lineNum">      26 </span>                : <I><FONT COLOR="#B22222">/* Define a quantization table equal to the basic_table times
+<span class="lineNum">      27 </span>                :  * a scale factor (given as a percentage).
+<span class="lineNum">      28 </span>                :  * If force_baseline is TRUE, the computed quantization table entries
+<span class="lineNum">      29 </span>                :  * are limited to 1..255 for JPEG baseline compatibility.
+<span class="lineNum">      30 </span>                :  */</FONT></I>
+<span class="lineNum">      31 </span>                : {
+<span class="lineNum">      32 </span>                :   JQUANT_TBL ** qtblptr;
+<span class="lineNum">      33 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> i;
+<span class="lineNum">      34 </span>                :   <B><FONT COLOR="#228B22">long</FONT></B> temp;
+<span class="lineNum">      35 </span>                : 
+<span class="lineNum">      36 </span>                :   <I><FONT COLOR="#B22222">/* Safety check to ensure start_compress not called yet. */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           19116: branch 1 taken</span>
+</span><span class="lineNum">      37 </span><span class="lineCov">           19116:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;global_state != CSTATE_START)</span>
+<span class="lineNum">      38 </span><span class="lineNoCov">               0:     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo-&gt;global_state);</span>
+<span class="lineNum">      39 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           19116: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           19116: branch 3 taken</span>
+</span><span class="lineNum">      40 </span><span class="lineCov">           19116:   <B><FONT COLOR="#A020F0">if</FONT></B> (which_tbl &lt; 0 || which_tbl &gt;= NUM_QUANT_TBLS)</span>
+<span class="lineNum">      41 </span><span class="lineNoCov">               0:     ERREXIT1(cinfo, JERR_DQT_INDEX, which_tbl);</span>
+<span class="lineNum">      42 </span>                : 
+<span class="lineNum">      43 </span><span class="lineCov">           19116:   qtblptr = &amp; cinfo-&gt;quant_tbl_ptrs[which_tbl];</span>
+<span class="lineNum">      44 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           11140: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            7976: branch 1 taken</span>
+</span><span class="lineNum">      45 </span><span class="lineCov">           19116:   <B><FONT COLOR="#A020F0">if</FONT></B> (*qtblptr == NULL)</span>
+<span class="lineNum">      46 </span><span class="lineCov">           11140:     *qtblptr = jpeg_alloc_quant_table((j_common_ptr) cinfo);</span>
+<span class="lineNum">      47 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">         1223424: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           19116: branch 1 taken</span>
+</span><span class="lineNum">      48 </span><span class="lineCov">         1242540:   <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; DCTSIZE2; i++) {</span>
+<span class="lineNum">      49 </span><span class="lineCov">         1223424:     temp = ((<B><FONT COLOR="#228B22">long</FONT></B>) basic_table[i] * scale_factor + 50L) / 100L;</span>
+<span class="lineNum">      50 </span>                :     <I><FONT COLOR="#B22222">/* limit the values to the valid range */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">         1223424: branch 1 taken</span>
+</span><span class="lineNum">      51 </span><span class="lineCov">         1223424:     <B><FONT COLOR="#A020F0">if</FONT></B> (temp &lt;= 0L) temp = 1L;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">         1223424: branch 1 taken</span>
+</span><span class="lineNum">      52 </span><span class="lineCov">         1223424:     <B><FONT COLOR="#A020F0">if</FONT></B> (temp &gt; 32767L) temp = 32767L; <I><FONT COLOR="#B22222">/* max quantizer needed for 12 bits */</FONT></I></span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          749952: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          473472: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          749952: branch 3 taken</span>
+</span><span class="lineNum">      53 </span><span class="lineCov">         1223424:     <B><FONT COLOR="#A020F0">if</FONT></B> (force_baseline &amp;&amp; temp &gt; 255L)</span>
+<span class="lineNum">      54 </span><span class="lineNoCov">               0:       temp = 255L;		<I><FONT COLOR="#B22222">/* limit to baseline range if requested */</FONT></I></span>
+<span class="lineNum">      55 </span><span class="lineCov">         1223424:     (*qtblptr)-&gt;quantval[i] = (UINT16) temp;</span>
+<span class="lineNum">      56 </span>                :   }
+<span class="lineNum">      57 </span>                : 
+<span class="lineNum">      58 </span>                :   <I><FONT COLOR="#B22222">/* Initialize sent_table FALSE so table will be written to JPEG file. */</FONT></I>
+<span class="lineNum">      59 </span><span class="lineCov">           19116:   (*qtblptr)-&gt;sent_table = FALSE;</span>
+<span class="lineNum">      60 </span><span class="lineCov">           19116: }</span>
+<span class="lineNum">      61 </span>                : 
+<span class="lineNum">      62 </span>                : 
+<span class="lineNum">      63 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">      64 </span><span class="lineCov">            9558: <B><FONT COLOR="#0000FF">jpeg_set_linear_quality</FONT></B> (j_compress_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> scale_factor,</span>
+<span class="lineNum">      65 </span>                : 			 boolean force_baseline)
+<span class="lineNum">      66 </span>                : <I><FONT COLOR="#B22222">/* Set or change the 'quality' (quantization) setting, using default tables
+<span class="lineNum">      67 </span>                :  * and a straight percentage-scaling quality scale.  In most cases it's better
+<span class="lineNum">      68 </span>                :  * to use jpeg_set_quality (below); this entry point is provided for
+<span class="lineNum">      69 </span>                :  * applications that insist on a linear percentage scaling.
+<span class="lineNum">      70 </span>                :  */</FONT></I>
+<span class="lineNum">      71 </span>                : {
+<span class="lineNum">      72 </span>                :   <I><FONT COLOR="#B22222">/* These are the sample quantization tables given in JPEG spec section K.1.
+<span class="lineNum">      73 </span>                :    * The spec says that the values given produce &quot;good&quot; quality, and
+<span class="lineNum">      74 </span>                :    * when divided by 2, &quot;very good&quot; quality.
+<span class="lineNum">      75 </span>                :    */</FONT></I>
+<span class="lineNum">      76 </span>                :   <B><FONT COLOR="#228B22">static</FONT></B> <B><FONT COLOR="#228B22">const</FONT></B> <B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> std_luminance_quant_tbl[DCTSIZE2] = {
+<span class="lineNum">      77 </span>                :     16,  11,  10,  16,  24,  40,  51,  61,
+<span class="lineNum">      78 </span>                :     12,  12,  14,  19,  26,  58,  60,  55,
+<span class="lineNum">      79 </span>                :     14,  13,  16,  24,  40,  57,  69,  56,
+<span class="lineNum">      80 </span>                :     14,  17,  22,  29,  51,  87,  80,  62,
+<span class="lineNum">      81 </span>                :     18,  22,  37,  56,  68, 109, 103,  77,
+<span class="lineNum">      82 </span>                :     24,  35,  55,  64,  81, 104, 113,  92,
+<span class="lineNum">      83 </span>                :     49,  64,  78,  87, 103, 121, 120, 101,
+<span class="lineNum">      84 </span>                :     72,  92,  95,  98, 112, 100, 103,  99
+<span class="lineNum">      85 </span>                :   };
+<span class="lineNum">      86 </span>                :   <B><FONT COLOR="#228B22">static</FONT></B> <B><FONT COLOR="#228B22">const</FONT></B> <B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> std_chrominance_quant_tbl[DCTSIZE2] = {
+<span class="lineNum">      87 </span>                :     17,  18,  24,  47,  99,  99,  99,  99,
+<span class="lineNum">      88 </span>                :     18,  21,  26,  66,  99,  99,  99,  99,
+<span class="lineNum">      89 </span>                :     24,  26,  56,  99,  99,  99,  99,  99,
+<span class="lineNum">      90 </span>                :     47,  66,  99,  99,  99,  99,  99,  99,
+<span class="lineNum">      91 </span>                :     99,  99,  99,  99,  99,  99,  99,  99,
+<span class="lineNum">      92 </span>                :     99,  99,  99,  99,  99,  99,  99,  99,
+<span class="lineNum">      93 </span>                :     99,  99,  99,  99,  99,  99,  99,  99,
+<span class="lineNum">      94 </span>                :     99,  99,  99,  99,  99,  99,  99,  99
+<span class="lineNum">      95 </span>                :   };
+<span class="lineNum">      96 </span>                : 
+<span class="lineNum">      97 </span>                :   <I><FONT COLOR="#B22222">/* Set up two quantization tables using the specified scaling */</FONT></I>
+<span class="lineNum">      98 </span><span class="lineCov">            9558:   jpeg_add_quant_table(cinfo, 0, std_luminance_quant_tbl,</span>
+<span class="lineNum">      99 </span>                : 		       scale_factor, force_baseline);
+<span class="lineNum">     100 </span><span class="lineCov">            9558:   jpeg_add_quant_table(cinfo, 1, std_chrominance_quant_tbl,</span>
+<span class="lineNum">     101 </span>                : 		       scale_factor, force_baseline);
+<span class="lineNum">     102 </span><span class="lineCov">            9558: }</span>
+<span class="lineNum">     103 </span>                : 
+<span class="lineNum">     104 </span>                : 
+<span class="lineNum">     105 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">int</FONT></B>)
+<span class="lineNum">     106 </span><span class="lineCov">           10222: <B><FONT COLOR="#0000FF">jpeg_quality_scaling</FONT></B> (<B><FONT COLOR="#228B22">int</FONT></B> quality)</span>
+<span class="lineNum">     107 </span>                : <I><FONT COLOR="#B22222">/* Convert a user-specified quality rating to a percentage scaling factor
+<span class="lineNum">     108 </span>                :  * for an underlying quantization table, using our recommended scaling curve.
+<span class="lineNum">     109 </span>                :  * The input 'quality' factor should be 0 (terrible) to 100 (very good).
+<span class="lineNum">     110 </span>                :  */</FONT></I>
+<span class="lineNum">     111 </span>                : {
+<span class="lineNum">     112 </span>                :   <I><FONT COLOR="#B22222">/* Safety limit on quality factor.  Convert 0 to 1 to avoid zero divide. */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           10222: branch 1 taken</span>
+</span><span class="lineNum">     113 </span><span class="lineCov">           10222:   <B><FONT COLOR="#A020F0">if</FONT></B> (quality &lt;= 0) quality = 1;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           10222: branch 1 taken</span>
+</span><span class="lineNum">     114 </span><span class="lineCov">           10222:   <B><FONT COLOR="#A020F0">if</FONT></B> (quality &gt; 100) quality = 100;</span>
+<span class="lineNum">     115 </span>                : 
+<span class="lineNum">     116 </span>                :   <I><FONT COLOR="#B22222">/* The basic table is used as-is (scaling 100) for a quality of 50.
+<span class="lineNum">     117 </span>                :    * Qualities 50..100 are converted to scaling percentage 200 - 2*Q;
+<span class="lineNum">     118 </span>                :    * note that at Q=100 the scaling is 0, which will cause jpeg_add_quant_table
+<span class="lineNum">     119 </span>                :    * to make all the table entries 1 (hence, minimum quantization loss).
+<span class="lineNum">     120 </span>                :    * Qualities 1..50 are converted to scaling percentage 5000/Q.
+<span class="lineNum">     121 </span>                :    */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             939: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9283: branch 1 taken</span>
+</span><span class="lineNum">     122 </span><span class="lineCov">           10222:   <B><FONT COLOR="#A020F0">if</FONT></B> (quality &lt; 50)</span>
+<span class="lineNum">     123 </span><span class="lineCov">             939:     quality = 5000 / quality;</span>
+<span class="lineNum">     124 </span>                :   <B><FONT COLOR="#A020F0">else</FONT></B>
+<span class="lineNum">     125 </span><span class="lineCov">            9283:     quality = 200 - quality*2;</span>
+<span class="lineNum">     126 </span>                : 
+<span class="lineNum">     127 </span><span class="lineCov">           10222:   <B><FONT COLOR="#A020F0">return</FONT></B> quality;</span>
+<span class="lineNum">     128 </span>                : }
+<span class="lineNum">     129 </span>                : 
+<span class="lineNum">     130 </span>                : 
+<span class="lineNum">     131 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     132 </span><span class="lineCov">            9558: <B><FONT COLOR="#0000FF">jpeg_set_quality</FONT></B> (j_compress_ptr cinfo, <B><FONT COLOR="#228B22">int</FONT></B> quality, boolean force_baseline)</span>
+<span class="lineNum">     133 </span>                : <I><FONT COLOR="#B22222">/* Set or change the 'quality' (quantization) setting, using default tables.
+<span class="lineNum">     134 </span>                :  * This is the standard quality-adjusting entry point for typical user
+<span class="lineNum">     135 </span>                :  * interfaces; only those who want detailed control over quantization tables
+<span class="lineNum">     136 </span>                :  * would use the preceding three routines directly.
+<span class="lineNum">     137 </span>                :  */</FONT></I>
+<span class="lineNum">     138 </span>                : {
+<span class="lineNum">     139 </span>                :   <I><FONT COLOR="#B22222">/* Convert user 0-100 rating to percentage scaling */</FONT></I>
+<span class="lineNum">     140 </span><span class="lineCov">            9558:   quality = jpeg_quality_scaling(quality);</span>
+<span class="lineNum">     141 </span>                : 
+<span class="lineNum">     142 </span>                :   <I><FONT COLOR="#B22222">/* Set up standard quality tables */</FONT></I>
+<span class="lineNum">     143 </span><span class="lineCov">            9558:   jpeg_set_linear_quality(cinfo, quality, force_baseline);</span>
+<span class="lineNum">     144 </span><span class="lineCov">            9558: }</span>
+<span class="lineNum">     145 </span>                : 
+<span class="lineNum">     146 </span>                : 
+<span class="lineNum">     147 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     148 </span>                :  * Huffman table setup routines
+<span class="lineNum">     149 </span>                :  */</FONT></I>
+<span class="lineNum">     150 </span>                : 
+<span class="lineNum">     151 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     152 </span><span class="lineCov">           22280: <B><FONT COLOR="#0000FF">add_huff_table</FONT></B> (j_compress_ptr cinfo,</span>
+<span class="lineNum">     153 </span>                : 		JHUFF_TBL **htblptr, <B><FONT COLOR="#228B22">const</FONT></B> UINT8 *bits, <B><FONT COLOR="#228B22">const</FONT></B> UINT8 *val)
+<span class="lineNum">     154 </span>                : <I><FONT COLOR="#B22222">/* Define a Huffman table */</FONT></I>
+<span class="lineNum">     155 </span>                : {
+<span class="lineNum">     156 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> nsymbols, len;
+<span class="lineNum">     157 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           22280: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     158 </span><span class="lineCov">           22280:   <B><FONT COLOR="#A020F0">if</FONT></B> (*htblptr == NULL)</span>
+<span class="lineNum">     159 </span><span class="lineCov">           22280:     *htblptr = jpeg_alloc_huff_table((j_common_ptr) cinfo);</span>
+<span class="lineNum">     160 </span>                : 
+<span class="lineNum">     161 </span>                :   <I><FONT COLOR="#B22222">/* Copy the number-of-symbols-of-each-code-length counts */</FONT></I>
+<span class="lineNum">     162 </span><span class="lineCov">           22280:   MEMCOPY((*htblptr)-&gt;bits, bits, SIZEOF((*htblptr)-&gt;bits));</span>
+<span class="lineNum">     163 </span>                : 
+<span class="lineNum">     164 </span>                :   <I><FONT COLOR="#B22222">/* Validate the counts.  We do this here mainly so we can copy the right
+<span class="lineNum">     165 </span>                :    * number of symbols from the val[] array, without risking marching off
+<span class="lineNum">     166 </span>                :    * the end of memory.  jchuff.c will do a more thorough test later.
+<span class="lineNum">     167 </span>                :    */</FONT></I>
+<span class="lineNum">     168 </span><span class="lineCov">           22280:   nsymbols = 0;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          356480: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           22280: branch 1 taken</span>
+</span><span class="lineNum">     169 </span><span class="lineCov">          378760:   <B><FONT COLOR="#A020F0">for</FONT></B> (len = 1; len &lt;= 16; len++)</span>
+<span class="lineNum">     170 </span><span class="lineCov">          356480:     nsymbols += bits[len];</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           22280: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           22280: branch 3 taken</span>
+</span><span class="lineNum">     171 </span><span class="lineCov">           22280:   <B><FONT COLOR="#A020F0">if</FONT></B> (nsymbols &lt; 1 || nsymbols &gt; 256)</span>
+<span class="lineNum">     172 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_BAD_HUFF_TABLE);</span>
+<span class="lineNum">     173 </span>                : 
+<span class="lineNum">     174 </span><span class="lineCov">           22280:   MEMCOPY((*htblptr)-&gt;huffval, val, nsymbols * SIZEOF(UINT8));</span>
+<span class="lineNum">     175 </span>                : 
+<span class="lineNum">     176 </span>                :   <I><FONT COLOR="#B22222">/* Initialize sent_table FALSE so table will be written to JPEG file. */</FONT></I>
+<span class="lineNum">     177 </span><span class="lineCov">           22280:   (*htblptr)-&gt;sent_table = FALSE;</span>
+<span class="lineNum">     178 </span><span class="lineCov">           22280: }</span>
+<span class="lineNum">     179 </span>                : 
+<span class="lineNum">     180 </span>                : 
+<span class="lineNum">     181 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     182 </span><span class="lineCov">            5570: <B><FONT COLOR="#0000FF">std_huff_tables</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     183 </span>                : <I><FONT COLOR="#B22222">/* Set up the standard Huffman tables (cf. JPEG standard section K.3) */</FONT></I>
+<span class="lineNum">     184 </span>                : <I><FONT COLOR="#B22222">/* IMPORTANT: these are only valid for 8-bit data precision! */</FONT></I>
+<span class="lineNum">     185 </span>                : {
+<span class="lineNum">     186 </span>                :   <B><FONT COLOR="#228B22">static</FONT></B> <B><FONT COLOR="#228B22">const</FONT></B> UINT8 bits_dc_luminance[17] =
+<span class="lineNum">     187 </span>                :     { <I><FONT COLOR="#B22222">/* 0-base */</FONT></I> 0, 0, 1, 5, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0 };
+<span class="lineNum">     188 </span>                :   <B><FONT COLOR="#228B22">static</FONT></B> <B><FONT COLOR="#228B22">const</FONT></B> UINT8 val_dc_luminance[] =
+<span class="lineNum">     189 </span>                :     { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+<span class="lineNum">     190 </span>                :   
+<span class="lineNum">     191 </span>                :   <B><FONT COLOR="#228B22">static</FONT></B> <B><FONT COLOR="#228B22">const</FONT></B> UINT8 bits_dc_chrominance[17] =
+<span class="lineNum">     192 </span>                :     { <I><FONT COLOR="#B22222">/* 0-base */</FONT></I> 0, 0, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 };
+<span class="lineNum">     193 </span>                :   <B><FONT COLOR="#228B22">static</FONT></B> <B><FONT COLOR="#228B22">const</FONT></B> UINT8 val_dc_chrominance[] =
+<span class="lineNum">     194 </span>                :     { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+<span class="lineNum">     195 </span>                :   
+<span class="lineNum">     196 </span>                :   <B><FONT COLOR="#228B22">static</FONT></B> <B><FONT COLOR="#228B22">const</FONT></B> UINT8 bits_ac_luminance[17] =
+<span class="lineNum">     197 </span>                :     { <I><FONT COLOR="#B22222">/* 0-base */</FONT></I> 0, 0, 2, 1, 3, 3, 2, 4, 3, 5, 5, 4, 4, 0, 0, 1, 0x7d };
+<span class="lineNum">     198 </span>                :   <B><FONT COLOR="#228B22">static</FONT></B> <B><FONT COLOR="#228B22">const</FONT></B> UINT8 val_ac_luminance[] =
+<span class="lineNum">     199 </span>                :     { 0x01, 0x02, 0x03, 0x00, 0x04, 0x11, 0x05, 0x12,
+<span class="lineNum">     200 </span>                :       0x21, 0x31, 0x41, 0x06, 0x13, 0x51, 0x61, 0x07,
+<span class="lineNum">     201 </span>                :       0x22, 0x71, 0x14, 0x32, 0x81, 0x91, 0xa1, 0x08,
+<span class="lineNum">     202 </span>                :       0x23, 0x42, 0xb1, 0xc1, 0x15, 0x52, 0xd1, 0xf0,
+<span class="lineNum">     203 </span>                :       0x24, 0x33, 0x62, 0x72, 0x82, 0x09, 0x0a, 0x16,
+<span class="lineNum">     204 </span>                :       0x17, 0x18, 0x19, 0x1a, 0x25, 0x26, 0x27, 0x28,
+<span class="lineNum">     205 </span>                :       0x29, 0x2a, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
+<span class="lineNum">     206 </span>                :       0x3a, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49,
+<span class="lineNum">     207 </span>                :       0x4a, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59,
+<span class="lineNum">     208 </span>                :       0x5a, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69,
+<span class="lineNum">     209 </span>                :       0x6a, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79,
+<span class="lineNum">     210 </span>                :       0x7a, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89,
+<span class="lineNum">     211 </span>                :       0x8a, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98,
+<span class="lineNum">     212 </span>                :       0x99, 0x9a, 0xa2, 0xa3, 0xa4, 0xa5, 0xa6, 0xa7,
+<span class="lineNum">     213 </span>                :       0xa8, 0xa9, 0xaa, 0xb2, 0xb3, 0xb4, 0xb5, 0xb6,
+<span class="lineNum">     214 </span>                :       0xb7, 0xb8, 0xb9, 0xba, 0xc2, 0xc3, 0xc4, 0xc5,
+<span class="lineNum">     215 </span>                :       0xc6, 0xc7, 0xc8, 0xc9, 0xca, 0xd2, 0xd3, 0xd4,
+<span class="lineNum">     216 </span>                :       0xd5, 0xd6, 0xd7, 0xd8, 0xd9, 0xda, 0xe1, 0xe2,
+<span class="lineNum">     217 </span>                :       0xe3, 0xe4, 0xe5, 0xe6, 0xe7, 0xe8, 0xe9, 0xea,
+<span class="lineNum">     218 </span>                :       0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8,
+<span class="lineNum">     219 </span>                :       0xf9, 0xfa };
+<span class="lineNum">     220 </span>                :   
+<span class="lineNum">     221 </span>                :   <B><FONT COLOR="#228B22">static</FONT></B> <B><FONT COLOR="#228B22">const</FONT></B> UINT8 bits_ac_chrominance[17] =
+<span class="lineNum">     222 </span>                :     { <I><FONT COLOR="#B22222">/* 0-base */</FONT></I> 0, 0, 2, 1, 2, 4, 4, 3, 4, 7, 5, 4, 4, 0, 1, 2, 0x77 };
+<span class="lineNum">     223 </span>                :   <B><FONT COLOR="#228B22">static</FONT></B> <B><FONT COLOR="#228B22">const</FONT></B> UINT8 val_ac_chrominance[] =
+<span class="lineNum">     224 </span>                :     { 0x00, 0x01, 0x02, 0x03, 0x11, 0x04, 0x05, 0x21,
+<span class="lineNum">     225 </span>                :       0x31, 0x06, 0x12, 0x41, 0x51, 0x07, 0x61, 0x71,
+<span class="lineNum">     226 </span>                :       0x13, 0x22, 0x32, 0x81, 0x08, 0x14, 0x42, 0x91,
+<span class="lineNum">     227 </span>                :       0xa1, 0xb1, 0xc1, 0x09, 0x23, 0x33, 0x52, 0xf0,
+<span class="lineNum">     228 </span>                :       0x15, 0x62, 0x72, 0xd1, 0x0a, 0x16, 0x24, 0x34,
+<span class="lineNum">     229 </span>                :       0xe1, 0x25, 0xf1, 0x17, 0x18, 0x19, 0x1a, 0x26,
+<span class="lineNum">     230 </span>                :       0x27, 0x28, 0x29, 0x2a, 0x35, 0x36, 0x37, 0x38,
+<span class="lineNum">     231 </span>                :       0x39, 0x3a, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,
+<span class="lineNum">     232 </span>                :       0x49, 0x4a, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
+<span class="lineNum">     233 </span>                :       0x59, 0x5a, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68,
+<span class="lineNum">     234 </span>                :       0x69, 0x6a, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78,
+<span class="lineNum">     235 </span>                :       0x79, 0x7a, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87,
+<span class="lineNum">     236 </span>                :       0x88, 0x89, 0x8a, 0x92, 0x93, 0x94, 0x95, 0x96,
+<span class="lineNum">     237 </span>                :       0x97, 0x98, 0x99, 0x9a, 0xa2, 0xa3, 0xa4, 0xa5,
+<span class="lineNum">     238 </span>                :       0xa6, 0xa7, 0xa8, 0xa9, 0xaa, 0xb2, 0xb3, 0xb4,
+<span class="lineNum">     239 </span>                :       0xb5, 0xb6, 0xb7, 0xb8, 0xb9, 0xba, 0xc2, 0xc3,
+<span class="lineNum">     240 </span>                :       0xc4, 0xc5, 0xc6, 0xc7, 0xc8, 0xc9, 0xca, 0xd2,
+<span class="lineNum">     241 </span>                :       0xd3, 0xd4, 0xd5, 0xd6, 0xd7, 0xd8, 0xd9, 0xda,
+<span class="lineNum">     242 </span>                :       0xe2, 0xe3, 0xe4, 0xe5, 0xe6, 0xe7, 0xe8, 0xe9,
+<span class="lineNum">     243 </span>                :       0xea, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8,
+<span class="lineNum">     244 </span>                :       0xf9, 0xfa };
+<span class="lineNum">     245 </span>                :   
+<span class="lineNum">     246 </span><span class="lineCov">            5570:   add_huff_table(cinfo, &amp;cinfo-&gt;dc_huff_tbl_ptrs[0],</span>
+<span class="lineNum">     247 </span>                : 		 bits_dc_luminance, val_dc_luminance);
+<span class="lineNum">     248 </span><span class="lineCov">            5570:   add_huff_table(cinfo, &amp;cinfo-&gt;ac_huff_tbl_ptrs[0],</span>
+<span class="lineNum">     249 </span>                : 		 bits_ac_luminance, val_ac_luminance);
+<span class="lineNum">     250 </span><span class="lineCov">            5570:   add_huff_table(cinfo, &amp;cinfo-&gt;dc_huff_tbl_ptrs[1],</span>
+<span class="lineNum">     251 </span>                : 		 bits_dc_chrominance, val_dc_chrominance);
+<span class="lineNum">     252 </span><span class="lineCov">            5570:   add_huff_table(cinfo, &amp;cinfo-&gt;ac_huff_tbl_ptrs[1],</span>
+<span class="lineNum">     253 </span>                : 		 bits_ac_chrominance, val_ac_chrominance);
+<span class="lineNum">     254 </span><span class="lineCov">            5570: }</span>
+<span class="lineNum">     255 </span>                : 
+<span class="lineNum">     256 </span>                : 
+<span class="lineNum">     257 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     258 </span>                :  * Default parameter setup for compression.
+<span class="lineNum">     259 </span>                :  *
+<span class="lineNum">     260 </span>                :  * Applications that don't choose to use this routine must do their
+<span class="lineNum">     261 </span>                :  * own setup of all these parameters.  Alternately, you can call this
+<span class="lineNum">     262 </span>                :  * to establish defaults and then alter parameters selectively.  This
+<span class="lineNum">     263 </span>                :  * is the recommended approach since, if we add any new parameters,
+<span class="lineNum">     264 </span>                :  * your code will still work (they'll be set to reasonable defaults).
+<span class="lineNum">     265 </span>                :  */</FONT></I>
+<span class="lineNum">     266 </span>                : 
+<span class="lineNum">     267 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     268 </span><span class="lineCov">            5570: <B><FONT COLOR="#0000FF">jpeg_set_defaults</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     269 </span>                : {
+<span class="lineNum">     270 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> i;
+<span class="lineNum">     271 </span>                : 
+<span class="lineNum">     272 </span>                :   <I><FONT COLOR="#B22222">/* Safety check to ensure start_compress not called yet. */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            5570: branch 1 taken</span>
+</span><span class="lineNum">     273 </span><span class="lineCov">            5570:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;global_state != CSTATE_START)</span>
+<span class="lineNum">     274 </span><span class="lineNoCov">               0:     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo-&gt;global_state);</span>
+<span class="lineNum">     275 </span>                : 
+<span class="lineNum">     276 </span>                :   <I><FONT COLOR="#B22222">/* Allocate comp_info array large enough for maximum component count.
+<span class="lineNum">     277 </span>                :    * Array is made permanent in case application wants to compress
+<span class="lineNum">     278 </span>                :    * multiple images at same param settings.
+<span class="lineNum">     279 </span>                :    */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            5570: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     280 </span><span class="lineCov">            5570:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;comp_info == NULL)</span>
+<span class="lineNum">     281 </span><span class="lineCov">            5570:     cinfo-&gt;comp_info = (jpeg_component_info *)</span>
+<span class="lineNum">     282 </span><span class="lineCov">            5570:       (*cinfo-&gt;mem-&gt;alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,</span>
+<span class="lineNum">     283 </span>                : 				  MAX_COMPONENTS * SIZEOF(jpeg_component_info));
+<span class="lineNum">     284 </span>                : 
+<span class="lineNum">     285 </span>                :   <I><FONT COLOR="#B22222">/* Initialize everything not dependent on the color space */</FONT></I>
+<span class="lineNum">     286 </span>                : 
+<span class="lineNum">     287 </span><span class="lineCov">            5570:   cinfo-&gt;data_precision = BITS_IN_JSAMPLE;</span>
+<span class="lineNum">     288 </span>                :   <I><FONT COLOR="#B22222">/* Set up two quantization tables using default quality of 75 */</FONT></I>
+<span class="lineNum">     289 </span><span class="lineCov">            5570:   jpeg_set_quality(cinfo, 75, TRUE);</span>
+<span class="lineNum">     290 </span>                :   <I><FONT COLOR="#B22222">/* Set up two Huffman tables */</FONT></I>
+<span class="lineNum">     291 </span><span class="lineCov">            5570:   std_huff_tables(cinfo);</span>
+<span class="lineNum">     292 </span>                : 
+<span class="lineNum">     293 </span>                :   <I><FONT COLOR="#B22222">/* Initialize default arithmetic coding conditioning */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           89120: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            5570: branch 1 taken</span>
+</span><span class="lineNum">     294 </span><span class="lineCov">           94690:   <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; NUM_ARITH_TBLS; i++) {</span>
+<span class="lineNum">     295 </span><span class="lineCov">           89120:     cinfo-&gt;arith_dc_L[i] = 0;</span>
+<span class="lineNum">     296 </span><span class="lineCov">           89120:     cinfo-&gt;arith_dc_U[i] = 1;</span>
+<span class="lineNum">     297 </span><span class="lineCov">           89120:     cinfo-&gt;arith_ac_K[i] = 5;</span>
+<span class="lineNum">     298 </span>                :   }
+<span class="lineNum">     299 </span>                : 
+<span class="lineNum">     300 </span>                :   <I><FONT COLOR="#B22222">/* Default is no multiple-scan output */</FONT></I>
+<span class="lineNum">     301 </span><span class="lineCov">            5570:   cinfo-&gt;scan_info = NULL;</span>
+<span class="lineNum">     302 </span><span class="lineCov">            5570:   cinfo-&gt;num_scans = 0;</span>
+<span class="lineNum">     303 </span>                : 
+<span class="lineNum">     304 </span>                :   <I><FONT COLOR="#B22222">/* Expect normal source image, not raw downsampled data */</FONT></I>
+<span class="lineNum">     305 </span><span class="lineCov">            5570:   cinfo-&gt;raw_data_in = FALSE;</span>
+<span class="lineNum">     306 </span>                : 
+<span class="lineNum">     307 </span>                :   <I><FONT COLOR="#B22222">/* Use Huffman coding, not arithmetic coding, by default */</FONT></I>
+<span class="lineNum">     308 </span><span class="lineCov">            5570:   cinfo-&gt;arith_code = FALSE;</span>
+<span class="lineNum">     309 </span>                : 
+<span class="lineNum">     310 </span>                :   <I><FONT COLOR="#B22222">/* By default, don't do extra passes to optimize entropy coding */</FONT></I>
+<span class="lineNum">     311 </span><span class="lineCov">            5570:   cinfo-&gt;optimize_coding = FALSE;</span>
+<span class="lineNum">     312 </span>                :   <I><FONT COLOR="#B22222">/* The standard Huffman tables are only valid for 8-bit data precision.
+<span class="lineNum">     313 </span>                :    * If the precision is higher, force optimization on so that usable
+<span class="lineNum">     314 </span>                :    * tables will be computed.  This test can be removed if default tables
+<span class="lineNum">     315 </span>                :    * are supplied that are valid for the desired precision.
+<span class="lineNum">     316 </span>                :    */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            5570: branch 1 taken</span>
+</span><span class="lineNum">     317 </span><span class="lineCov">            5570:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;data_precision &gt; 8)</span>
+<span class="lineNum">     318 </span><span class="lineNoCov">               0:     cinfo-&gt;optimize_coding = TRUE;</span>
+<span class="lineNum">     319 </span>                : 
+<span class="lineNum">     320 </span>                :   <I><FONT COLOR="#B22222">/* By default, use the simpler non-cosited sampling alignment */</FONT></I>
+<span class="lineNum">     321 </span><span class="lineCov">            5570:   cinfo-&gt;CCIR601_sampling = FALSE;</span>
+<span class="lineNum">     322 </span>                : 
+<span class="lineNum">     323 </span>                :   <I><FONT COLOR="#B22222">/* No input smoothing */</FONT></I>
+<span class="lineNum">     324 </span><span class="lineCov">            5570:   cinfo-&gt;smoothing_factor = 0;</span>
+<span class="lineNum">     325 </span>                : 
+<span class="lineNum">     326 </span>                :   <I><FONT COLOR="#B22222">/* DCT algorithm preference */</FONT></I>
+<span class="lineNum">     327 </span><span class="lineCov">            5570:   cinfo-&gt;dct_method = JDCT_DEFAULT;</span>
+<span class="lineNum">     328 </span>                : 
+<span class="lineNum">     329 </span>                :   <I><FONT COLOR="#B22222">/* No restart markers */</FONT></I>
+<span class="lineNum">     330 </span><span class="lineCov">            5570:   cinfo-&gt;restart_interval = 0;</span>
+<span class="lineNum">     331 </span><span class="lineCov">            5570:   cinfo-&gt;restart_in_rows = 0;</span>
+<span class="lineNum">     332 </span>                : 
+<span class="lineNum">     333 </span>                :   <I><FONT COLOR="#B22222">/* Fill in default JFIF marker parameters.  Note that whether the marker
+<span class="lineNum">     334 </span>                :    * will actually be written is determined by jpeg_set_colorspace.
+<span class="lineNum">     335 </span>                :    *
+<span class="lineNum">     336 </span>                :    * By default, the library emits JFIF version code 1.01.
+<span class="lineNum">     337 </span>                :    * An application that wants to emit JFIF 1.02 extension markers should set
+<span class="lineNum">     338 </span>                :    * JFIF_minor_version to 2.  We could probably get away with just defaulting
+<span class="lineNum">     339 </span>                :    * to 1.02, but there may still be some decoders in use that will complain
+<span class="lineNum">     340 </span>                :    * about that; saying 1.01 should minimize compatibility problems.
+<span class="lineNum">     341 </span>                :    */</FONT></I>
+<span class="lineNum">     342 </span><span class="lineCov">            5570:   cinfo-&gt;JFIF_major_version = 1; <I><FONT COLOR="#B22222">/* Default JFIF version = 1.01 */</FONT></I></span>
+<span class="lineNum">     343 </span><span class="lineCov">            5570:   cinfo-&gt;JFIF_minor_version = 1;</span>
+<span class="lineNum">     344 </span><span class="lineCov">            5570:   cinfo-&gt;density_unit = 0;	<I><FONT COLOR="#B22222">/* Pixel size is unknown by default */</FONT></I></span>
+<span class="lineNum">     345 </span><span class="lineCov">            5570:   cinfo-&gt;X_density = 1;		<I><FONT COLOR="#B22222">/* Pixel aspect ratio is square by default */</FONT></I></span>
+<span class="lineNum">     346 </span><span class="lineCov">            5570:   cinfo-&gt;Y_density = 1;</span>
+<span class="lineNum">     347 </span>                : 
+<span class="lineNum">     348 </span>                :   <I><FONT COLOR="#B22222">/* Choose JPEG colorspace based on input space, set defaults accordingly */</FONT></I>
+<span class="lineNum">     349 </span>                : 
+<span class="lineNum">     350 </span><span class="lineCov">            5570:   jpeg_default_colorspace(cinfo);</span>
+<span class="lineNum">     351 </span><span class="lineCov">            5570: }</span>
+<span class="lineNum">     352 </span>                : 
+<span class="lineNum">     353 </span>                : 
+<span class="lineNum">     354 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     355 </span>                :  * Select an appropriate JPEG colorspace for in_color_space.
+<span class="lineNum">     356 </span>                :  */</FONT></I>
+<span class="lineNum">     357 </span>                : 
+<span class="lineNum">     358 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     359 </span><span class="lineCov">            9558: <B><FONT COLOR="#0000FF">jpeg_default_colorspace</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     360 </span>                : {
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1644: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            7914: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 4 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 5 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 6 not taken</span>
+</span><span class="lineNum">     361 </span><span class="lineCov">            9558:   <B><FONT COLOR="#A020F0">switch</FONT></B> (cinfo-&gt;in_color_space) {</span>
+<span class="lineNum">     362 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">JCS_GRAYSCALE</FONT></B>:
+<span class="lineNum">     363 </span><span class="lineCov">            1644:     jpeg_set_colorspace(cinfo, JCS_GRAYSCALE);</span>
+<span class="lineNum">     364 </span><span class="lineCov">            1644:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     365 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">JCS_RGB</FONT></B>:
+<span class="lineNum">     366 </span><span class="lineCov">            7914:     jpeg_set_colorspace(cinfo, JCS_YCbCr);</span>
+<span class="lineNum">     367 </span><span class="lineCov">            7914:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     368 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">JCS_YCbCr</FONT></B>:
+<span class="lineNum">     369 </span><span class="lineNoCov">               0:     jpeg_set_colorspace(cinfo, JCS_YCbCr);</span>
+<span class="lineNum">     370 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     371 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">JCS_CMYK</FONT></B>:
+<span class="lineNum">     372 </span><span class="lineNoCov">               0:     jpeg_set_colorspace(cinfo, JCS_CMYK); <I><FONT COLOR="#B22222">/* By default, no translation */</FONT></I></span>
+<span class="lineNum">     373 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     374 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">JCS_YCCK</FONT></B>:
+<span class="lineNum">     375 </span><span class="lineNoCov">               0:     jpeg_set_colorspace(cinfo, JCS_YCCK);</span>
+<span class="lineNum">     376 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     377 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">JCS_UNKNOWN</FONT></B>:
+<span class="lineNum">     378 </span><span class="lineNoCov">               0:     jpeg_set_colorspace(cinfo, JCS_UNKNOWN);</span>
+<span class="lineNum">     379 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     380 </span>                :   <B><FONT COLOR="#5F9EA0">default</FONT></B>:
+<span class="lineNum">     381 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_BAD_IN_COLORSPACE);</span>
+<span class="lineNum">     382 </span>                :   }
+<span class="lineNum">     383 </span><span class="lineCov">            9558: }</span>
+<span class="lineNum">     384 </span>                : 
+<span class="lineNum">     385 </span>                : 
+<span class="lineNum">     386 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     387 </span>                :  * Set the JPEG colorspace, and choose colorspace-dependent default values.
+<span class="lineNum">     388 </span>                :  */</FONT></I>
+<span class="lineNum">     389 </span>                : 
+<span class="lineNum">     390 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     391 </span><span class="lineCov">           10213: <B><FONT COLOR="#0000FF">jpeg_set_colorspace</FONT></B> (j_compress_ptr cinfo, J_COLOR_SPACE colorspace)</span>
+<span class="lineNum">     392 </span>                : {
+<span class="lineNum">     393 </span>                :   jpeg_component_info * compptr;
+<span class="lineNum">     394 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> ci;
+<span class="lineNum">     395 </span>                : 
+<span class="lineNum">     396 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <B><FONT COLOR="#0000FF">SET_COMP</FONT></B>(index,id,hsamp,vsamp,quant,dctbl,actbl)  \
+<span class="lineNum">     397 </span>                :   (compptr = &amp;cinfo-&gt;comp_info[index], \
+<span class="lineNum">     398 </span>                :    compptr-&gt;component_id = (id), \
+<span class="lineNum">     399 </span>                :    compptr-&gt;h_samp_factor = (hsamp), \
+<span class="lineNum">     400 </span>                :    compptr-&gt;v_samp_factor = (vsamp), \
+<span class="lineNum">     401 </span>                :    compptr-&gt;quant_tbl_no = (quant), \
+<span class="lineNum">     402 </span>                :    compptr-&gt;dc_tbl_no = (dctbl), \
+<span class="lineNum">     403 </span>                :    compptr-&gt;ac_tbl_no = (actbl) )
+<span class="lineNum">     404 </span>                : 
+<span class="lineNum">     405 </span>                :   <I><FONT COLOR="#B22222">/* Safety check to ensure start_compress not called yet. */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           10213: branch 1 taken</span>
+</span><span class="lineNum">     406 </span><span class="lineCov">           10213:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;global_state != CSTATE_START)</span>
+<span class="lineNum">     407 </span><span class="lineNoCov">               0:     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo-&gt;global_state);</span>
+<span class="lineNum">     408 </span>                : 
+<span class="lineNum">     409 </span>                :   <I><FONT COLOR="#B22222">/* For all colorspaces, we use Q and Huff tables 0 for luminance components,
+<span class="lineNum">     410 </span>                :    * tables 1 for chrominance components.
+<span class="lineNum">     411 </span>                :    */</FONT></I>
+<span class="lineNum">     412 </span>                : 
+<span class="lineNum">     413 </span><span class="lineCov">           10213:   cinfo-&gt;jpeg_color_space = colorspace;</span>
+<span class="lineNum">     414 </span>                : 
+<span class="lineNum">     415 </span><span class="lineCov">           10213:   cinfo-&gt;write_JFIF_header = FALSE; <I><FONT COLOR="#B22222">/* No marker for non-JFIF colorspaces */</FONT></I></span>
+<span class="lineNum">     416 </span><span class="lineCov">           10213:   cinfo-&gt;write_Adobe_marker = FALSE; <I><FONT COLOR="#B22222">/* write no Adobe marker by default */</FONT></I></span>
+<span class="lineNum">     417 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            2299: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            7914: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 4 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 5 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 6 not taken</span>
+</span><span class="lineNum">     418 </span><span class="lineCov">           10213:   <B><FONT COLOR="#A020F0">switch</FONT></B> (colorspace) {</span>
+<span class="lineNum">     419 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">JCS_GRAYSCALE</FONT></B>:
+<span class="lineNum">     420 </span><span class="lineCov">            2299:     cinfo-&gt;write_JFIF_header = TRUE; <I><FONT COLOR="#B22222">/* Write a JFIF marker */</FONT></I></span>
+<span class="lineNum">     421 </span><span class="lineCov">            2299:     cinfo-&gt;num_components = 1;</span>
+<span class="lineNum">     422 </span>                :     <I><FONT COLOR="#B22222">/* JFIF specifies component ID 1 */</FONT></I>
+<span class="lineNum">     423 </span><span class="lineCov">            2299:     SET_COMP(0, 1, 1,1, 0, 0,0);</span>
+<span class="lineNum">     424 </span><span class="lineCov">            2299:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     425 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">JCS_RGB</FONT></B>:
+<span class="lineNum">     426 </span><span class="lineNoCov">               0:     cinfo-&gt;write_Adobe_marker = TRUE; <I><FONT COLOR="#B22222">/* write Adobe marker to flag RGB */</FONT></I></span>
+<span class="lineNum">     427 </span><span class="lineNoCov">               0:     cinfo-&gt;num_components = 3;</span>
+<span class="lineNum">     428 </span><span class="lineNoCov">               0:     SET_COMP(0, 0x52 <I><FONT COLOR="#B22222">/* 'R' */</FONT></I>, 1,1, 0, 0,0);</span>
+<span class="lineNum">     429 </span><span class="lineNoCov">               0:     SET_COMP(1, 0x47 <I><FONT COLOR="#B22222">/* 'G' */</FONT></I>, 1,1, 0, 0,0);</span>
+<span class="lineNum">     430 </span><span class="lineNoCov">               0:     SET_COMP(2, 0x42 <I><FONT COLOR="#B22222">/* 'B' */</FONT></I>, 1,1, 0, 0,0);</span>
+<span class="lineNum">     431 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     432 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">JCS_YCbCr</FONT></B>:
+<span class="lineNum">     433 </span><span class="lineCov">            7914:     cinfo-&gt;write_JFIF_header = TRUE; <I><FONT COLOR="#B22222">/* Write a JFIF marker */</FONT></I></span>
+<span class="lineNum">     434 </span><span class="lineCov">            7914:     cinfo-&gt;num_components = 3;</span>
+<span class="lineNum">     435 </span>                :     <I><FONT COLOR="#B22222">/* JFIF specifies component IDs 1,2,3 */</FONT></I>
+<span class="lineNum">     436 </span>                :     <I><FONT COLOR="#B22222">/* We default to 2x2 subsamples of chrominance */</FONT></I>
+<span class="lineNum">     437 </span><span class="lineCov">            7914:     SET_COMP(0, 1, 2,2, 0, 0,0);</span>
+<span class="lineNum">     438 </span><span class="lineCov">            7914:     SET_COMP(1, 2, 1,1, 1, 1,1);</span>
+<span class="lineNum">     439 </span><span class="lineCov">            7914:     SET_COMP(2, 3, 1,1, 1, 1,1);</span>
+<span class="lineNum">     440 </span><span class="lineCov">            7914:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     441 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">JCS_CMYK</FONT></B>:
+<span class="lineNum">     442 </span><span class="lineNoCov">               0:     cinfo-&gt;write_Adobe_marker = TRUE; <I><FONT COLOR="#B22222">/* write Adobe marker to flag CMYK */</FONT></I></span>
+<span class="lineNum">     443 </span><span class="lineNoCov">               0:     cinfo-&gt;num_components = 4;</span>
+<span class="lineNum">     444 </span><span class="lineNoCov">               0:     SET_COMP(0, 0x43 <I><FONT COLOR="#B22222">/* 'C' */</FONT></I>, 1,1, 0, 0,0);</span>
+<span class="lineNum">     445 </span><span class="lineNoCov">               0:     SET_COMP(1, 0x4D <I><FONT COLOR="#B22222">/* 'M' */</FONT></I>, 1,1, 0, 0,0);</span>
+<span class="lineNum">     446 </span><span class="lineNoCov">               0:     SET_COMP(2, 0x59 <I><FONT COLOR="#B22222">/* 'Y' */</FONT></I>, 1,1, 0, 0,0);</span>
+<span class="lineNum">     447 </span><span class="lineNoCov">               0:     SET_COMP(3, 0x4B <I><FONT COLOR="#B22222">/* 'K' */</FONT></I>, 1,1, 0, 0,0);</span>
+<span class="lineNum">     448 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     449 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">JCS_YCCK</FONT></B>:
+<span class="lineNum">     450 </span><span class="lineNoCov">               0:     cinfo-&gt;write_Adobe_marker = TRUE; <I><FONT COLOR="#B22222">/* write Adobe marker to flag YCCK */</FONT></I></span>
+<span class="lineNum">     451 </span><span class="lineNoCov">               0:     cinfo-&gt;num_components = 4;</span>
+<span class="lineNum">     452 </span><span class="lineNoCov">               0:     SET_COMP(0, 1, 2,2, 0, 0,0);</span>
+<span class="lineNum">     453 </span><span class="lineNoCov">               0:     SET_COMP(1, 2, 1,1, 1, 1,1);</span>
+<span class="lineNum">     454 </span><span class="lineNoCov">               0:     SET_COMP(2, 3, 1,1, 1, 1,1);</span>
+<span class="lineNum">     455 </span><span class="lineNoCov">               0:     SET_COMP(3, 4, 2,2, 0, 0,0);</span>
+<span class="lineNum">     456 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     457 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">JCS_UNKNOWN</FONT></B>:
+<span class="lineNum">     458 </span><span class="lineNoCov">               0:     cinfo-&gt;num_components = cinfo-&gt;input_components;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
+</span><span class="lineNum">     459 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;num_components &lt; 1 || cinfo-&gt;num_components &gt; MAX_COMPONENTS)</span>
+<span class="lineNum">     460 </span><span class="lineNoCov">               0:       ERREXIT2(cinfo, JERR_COMPONENT_COUNT, cinfo-&gt;num_components,</span>
+<span class="lineNum">     461 </span>                : 	       MAX_COMPONENTS);
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     462 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0; ci &lt; cinfo-&gt;num_components; ci++) {</span>
+<span class="lineNum">     463 </span><span class="lineNoCov">               0:       SET_COMP(ci, ci, 1,1, 0, 0,0);</span>
+<span class="lineNum">     464 </span>                :     }
+<span class="lineNum">     465 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     466 </span>                :   <B><FONT COLOR="#5F9EA0">default</FONT></B>:
+<span class="lineNum">     467 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_BAD_J_COLORSPACE);</span>
+<span class="lineNum">     468 </span>                :   }
+<span class="lineNum">     469 </span><span class="lineCov">           10213: }</span>
+<span class="lineNum">     470 </span>                : 
+<span class="lineNum">     471 </span>                : 
+<span class="lineNum">     472 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">C_PROGRESSIVE_SUPPORTED</FONT>
+<span class="lineNum">     473 </span>                : 
+<span class="lineNum">     474 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(jpeg_scan_info *)
+<span class="lineNum">     475 </span><span class="lineCov">            1016: <B><FONT COLOR="#0000FF">fill_a_scan</FONT></B> (jpeg_scan_info * scanptr, <B><FONT COLOR="#228B22">int</FONT></B> ci,</span>
+<span class="lineNum">     476 </span>                : 	     <B><FONT COLOR="#228B22">int</FONT></B> Ss, <B><FONT COLOR="#228B22">int</FONT></B> Se, <B><FONT COLOR="#228B22">int</FONT></B> Ah, <B><FONT COLOR="#228B22">int</FONT></B> Al)
+<span class="lineNum">     477 </span>                : <I><FONT COLOR="#B22222">/* Support routine: generate one scan for specified component */</FONT></I>
+<span class="lineNum">     478 </span>                : {
+<span class="lineNum">     479 </span><span class="lineCov">            1016:   scanptr-&gt;comps_in_scan = 1;</span>
+<span class="lineNum">     480 </span><span class="lineCov">            1016:   scanptr-&gt;component_index[0] = ci;</span>
+<span class="lineNum">     481 </span><span class="lineCov">            1016:   scanptr-&gt;Ss = Ss;</span>
+<span class="lineNum">     482 </span><span class="lineCov">            1016:   scanptr-&gt;Se = Se;</span>
+<span class="lineNum">     483 </span><span class="lineCov">            1016:   scanptr-&gt;Ah = Ah;</span>
+<span class="lineNum">     484 </span><span class="lineCov">            1016:   scanptr-&gt;Al = Al;</span>
+<span class="lineNum">     485 </span><span class="lineCov">            1016:   scanptr++;</span>
+<span class="lineNum">     486 </span><span class="lineCov">            1016:   <B><FONT COLOR="#A020F0">return</FONT></B> scanptr;</span>
+<span class="lineNum">     487 </span>                : }
+<span class="lineNum">     488 </span>                : 
+<span class="lineNum">     489 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(jpeg_scan_info *)
+<span class="lineNum">     490 </span><span class="lineCov">             856: <B><FONT COLOR="#0000FF">fill_scans</FONT></B> (jpeg_scan_info * scanptr, <B><FONT COLOR="#228B22">int</FONT></B> ncomps,</span>
+<span class="lineNum">     491 </span>                : 	    <B><FONT COLOR="#228B22">int</FONT></B> Ss, <B><FONT COLOR="#228B22">int</FONT></B> Se, <B><FONT COLOR="#228B22">int</FONT></B> Ah, <B><FONT COLOR="#228B22">int</FONT></B> Al)
+<span class="lineNum">     492 </span>                : <I><FONT COLOR="#B22222">/* Support routine: generate one scan for each component */</FONT></I>
+<span class="lineNum">     493 </span>                : {
+<span class="lineNum">     494 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> ci;
+<span class="lineNum">     495 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             856: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             856: branch 1 taken</span>
+</span><span class="lineNum">     496 </span><span class="lineCov">            1712:   <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0; ci &lt; ncomps; ci++) {</span>
+<span class="lineNum">     497 </span><span class="lineCov">             856:     scanptr-&gt;comps_in_scan = 1;</span>
+<span class="lineNum">     498 </span><span class="lineCov">             856:     scanptr-&gt;component_index[0] = ci;</span>
+<span class="lineNum">     499 </span><span class="lineCov">             856:     scanptr-&gt;Ss = Ss;</span>
+<span class="lineNum">     500 </span><span class="lineCov">             856:     scanptr-&gt;Se = Se;</span>
+<span class="lineNum">     501 </span><span class="lineCov">             856:     scanptr-&gt;Ah = Ah;</span>
+<span class="lineNum">     502 </span><span class="lineCov">             856:     scanptr-&gt;Al = Al;</span>
+<span class="lineNum">     503 </span><span class="lineCov">             856:     scanptr++;</span>
+<span class="lineNum">     504 </span>                :   }
+<span class="lineNum">     505 </span><span class="lineCov">             856:   <B><FONT COLOR="#A020F0">return</FONT></B> scanptr;</span>
+<span class="lineNum">     506 </span>                : }
+<span class="lineNum">     507 </span>                : 
+<span class="lineNum">     508 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(jpeg_scan_info *)
+<span class="lineNum">     509 </span><span class="lineCov">             682: <B><FONT COLOR="#0000FF">fill_dc_scans</FONT></B> (jpeg_scan_info * scanptr, <B><FONT COLOR="#228B22">int</FONT></B> ncomps, <B><FONT COLOR="#228B22">int</FONT></B> Ah, <B><FONT COLOR="#228B22">int</FONT></B> Al)</span>
+<span class="lineNum">     510 </span>                : <I><FONT COLOR="#B22222">/* Support routine: generate interleaved DC scan if possible, else N scans */</FONT></I>
+<span class="lineNum">     511 </span>                : {
+<span class="lineNum">     512 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> ci;
+<span class="lineNum">     513 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             682: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     514 </span><span class="lineCov">             682:   <B><FONT COLOR="#A020F0">if</FONT></B> (ncomps &lt;= MAX_COMPS_IN_SCAN) {</span>
+<span class="lineNum">     515 </span>                :     <I><FONT COLOR="#B22222">/* Single interleaved DC scan */</FONT></I>
+<span class="lineNum">     516 </span><span class="lineCov">             682:     scanptr-&gt;comps_in_scan = ncomps;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1190: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             682: branch 1 taken</span>
+</span><span class="lineNum">     517 </span><span class="lineCov">            1872:     <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0; ci &lt; ncomps; ci++)</span>
+<span class="lineNum">     518 </span><span class="lineCov">            1190:       scanptr-&gt;component_index[ci] = ci;</span>
+<span class="lineNum">     519 </span><span class="lineCov">             682:     scanptr-&gt;Ss = scanptr-&gt;Se = 0;</span>
+<span class="lineNum">     520 </span><span class="lineCov">             682:     scanptr-&gt;Ah = Ah;</span>
+<span class="lineNum">     521 </span><span class="lineCov">             682:     scanptr-&gt;Al = Al;</span>
+<span class="lineNum">     522 </span><span class="lineCov">             682:     scanptr++;</span>
+<span class="lineNum">     523 </span>                :   } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     524 </span>                :     <I><FONT COLOR="#B22222">/* Noninterleaved DC scan for each component */</FONT></I>
+<span class="lineNum">     525 </span><span class="lineNoCov">               0:     scanptr = fill_scans(scanptr, ncomps, 0, 0, Ah, Al);</span>
+<span class="lineNum">     526 </span>                :   }
+<span class="lineNum">     527 </span><span class="lineCov">             682:   <B><FONT COLOR="#A020F0">return</FONT></B> scanptr;</span>
+<span class="lineNum">     528 </span>                : }
+<span class="lineNum">     529 </span>                : 
+<span class="lineNum">     530 </span>                : 
+<span class="lineNum">     531 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     532 </span>                :  * Create a recommended progressive-JPEG script.
+<span class="lineNum">     533 </span>                :  * cinfo-&gt;num_components and cinfo-&gt;jpeg_color_space must be correct.
+<span class="lineNum">     534 </span>                :  */</FONT></I>
+<span class="lineNum">     535 </span>                : 
+<span class="lineNum">     536 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     537 </span><span class="lineCov">             341: <B><FONT COLOR="#0000FF">jpeg_simple_progression</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     538 </span>                : {
+<span class="lineNum">     539 </span><span class="lineCov">             341:   <B><FONT COLOR="#228B22">int</FONT></B> ncomps = cinfo-&gt;num_components;</span>
+<span class="lineNum">     540 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> nscans;
+<span class="lineNum">     541 </span>                :   jpeg_scan_info * scanptr;
+<span class="lineNum">     542 </span>                : 
+<span class="lineNum">     543 </span>                :   <I><FONT COLOR="#B22222">/* Safety check to ensure start_compress not called yet. */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             341: branch 1 taken</span>
+</span><span class="lineNum">     544 </span><span class="lineCov">             341:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;global_state != CSTATE_START)</span>
+<span class="lineNum">     545 </span><span class="lineNoCov">               0:     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo-&gt;global_state);</span>
+<span class="lineNum">     546 </span>                : 
+<span class="lineNum">     547 </span>                :   <I><FONT COLOR="#B22222">/* Figure space needed for script.  Calculation must match code below! */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             127: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             214: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             127: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
+</span><span class="lineNum">     548 </span><span class="lineCov">             341:   <B><FONT COLOR="#A020F0">if</FONT></B> (ncomps == 3 &amp;&amp; cinfo-&gt;jpeg_color_space == JCS_YCbCr) {</span>
+<span class="lineNum">     549 </span>                :     <I><FONT COLOR="#B22222">/* Custom script for YCbCr color images. */</FONT></I>
+<span class="lineNum">     550 </span><span class="lineCov">             127:     nscans = 10;</span>
+<span class="lineNum">     551 </span>                :   } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     552 </span>                :     <I><FONT COLOR="#B22222">/* All-purpose script for other color spaces. */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             214: branch 1 taken</span>
+</span><span class="lineNum">     553 </span><span class="lineCov">             214:     <B><FONT COLOR="#A020F0">if</FONT></B> (ncomps &gt; MAX_COMPS_IN_SCAN)</span>
+<span class="lineNum">     554 </span><span class="lineNoCov">               0:       nscans = 6 * ncomps;	<I><FONT COLOR="#B22222">/* 2 DC + 4 AC scans per component */</FONT></I></span>
+<span class="lineNum">     555 </span>                :     <B><FONT COLOR="#A020F0">else</FONT></B>
+<span class="lineNum">     556 </span><span class="lineCov">             214:       nscans = 2 + 4 * ncomps;	<I><FONT COLOR="#B22222">/* 2 DC scans; 4 AC scans per component */</FONT></I></span>
+<span class="lineNum">     557 </span>                :   }
+<span class="lineNum">     558 </span>                : 
+<span class="lineNum">     559 </span>                :   <I><FONT COLOR="#B22222">/* Allocate space for script.
+<span class="lineNum">     560 </span>                :    * We need to put it in the permanent pool in case the application performs
+<span class="lineNum">     561 </span>                :    * multiple compressions without changing the settings.  To avoid a memory
+<span class="lineNum">     562 </span>                :    * leak if jpeg_simple_progression is called repeatedly for the same JPEG
+<span class="lineNum">     563 </span>                :    * object, we try to re-use previously allocated space, and we allocate
+<span class="lineNum">     564 </span>                :    * enough space to handle YCbCr even if initially asked for grayscale.
+<span class="lineNum">     565 </span>                :    */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             341: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             341: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             341: branch 3 taken</span>
+</span><span class="lineNum">     566 </span><span class="lineCov">             341:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;script_space == NULL || cinfo-&gt;script_space_size &lt; nscans) {</span>
+<span class="lineNum">     567 </span><span class="lineCov">             341:     cinfo-&gt;script_space_size = MAX(nscans, 10);</span>
+<span class="lineNum">     568 </span><span class="lineCov">             341:     cinfo-&gt;script_space = (jpeg_scan_info *)</span>
+<span class="lineNum">     569 </span><span class="lineCov">             682:       (*cinfo-&gt;mem-&gt;alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,</span>
+<span class="lineNum">     570 </span><span class="lineCov">             341: 			cinfo-&gt;script_space_size * SIZEOF(jpeg_scan_info));</span>
+<span class="lineNum">     571 </span>                :   }
+<span class="lineNum">     572 </span><span class="lineCov">             341:   scanptr = cinfo-&gt;script_space;</span>
+<span class="lineNum">     573 </span><span class="lineCov">             341:   cinfo-&gt;scan_info = scanptr;</span>
+<span class="lineNum">     574 </span><span class="lineCov">             341:   cinfo-&gt;num_scans = nscans;</span>
+<span class="lineNum">     575 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             127: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             214: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             127: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 3 not taken</span>
+</span><span class="lineNum">     576 </span><span class="lineCov">             341:   <B><FONT COLOR="#A020F0">if</FONT></B> (ncomps == 3 &amp;&amp; cinfo-&gt;jpeg_color_space == JCS_YCbCr) {</span>
+<span class="lineNum">     577 </span>                :     <I><FONT COLOR="#B22222">/* Custom script for YCbCr color images. */</FONT></I>
+<span class="lineNum">     578 </span>                :     <I><FONT COLOR="#B22222">/* Initial DC scan */</FONT></I>
+<span class="lineNum">     579 </span><span class="lineCov">             127:     scanptr = fill_dc_scans(scanptr, ncomps, 0, 1);</span>
+<span class="lineNum">     580 </span>                :     <I><FONT COLOR="#B22222">/* Initial AC scan: get some luma data out in a hurry */</FONT></I>
+<span class="lineNum">     581 </span><span class="lineCov">             127:     scanptr = fill_a_scan(scanptr, 0, 1, 5, 0, 2);</span>
+<span class="lineNum">     582 </span>                :     <I><FONT COLOR="#B22222">/* Chroma data is too small to be worth expending many scans on */</FONT></I>
+<span class="lineNum">     583 </span><span class="lineCov">             127:     scanptr = fill_a_scan(scanptr, 2, 1, 63, 0, 1);</span>
+<span class="lineNum">     584 </span><span class="lineCov">             127:     scanptr = fill_a_scan(scanptr, 1, 1, 63, 0, 1);</span>
+<span class="lineNum">     585 </span>                :     <I><FONT COLOR="#B22222">/* Complete spectral selection for luma AC */</FONT></I>
+<span class="lineNum">     586 </span><span class="lineCov">             127:     scanptr = fill_a_scan(scanptr, 0, 6, 63, 0, 2);</span>
+<span class="lineNum">     587 </span>                :     <I><FONT COLOR="#B22222">/* Refine next bit of luma AC */</FONT></I>
+<span class="lineNum">     588 </span><span class="lineCov">             127:     scanptr = fill_a_scan(scanptr, 0, 1, 63, 2, 1);</span>
+<span class="lineNum">     589 </span>                :     <I><FONT COLOR="#B22222">/* Finish DC successive approximation */</FONT></I>
+<span class="lineNum">     590 </span><span class="lineCov">             127:     scanptr = fill_dc_scans(scanptr, ncomps, 1, 0);</span>
+<span class="lineNum">     591 </span>                :     <I><FONT COLOR="#B22222">/* Finish AC successive approximation */</FONT></I>
+<span class="lineNum">     592 </span><span class="lineCov">             127:     scanptr = fill_a_scan(scanptr, 2, 1, 63, 1, 0);</span>
+<span class="lineNum">     593 </span><span class="lineCov">             127:     scanptr = fill_a_scan(scanptr, 1, 1, 63, 1, 0);</span>
+<span class="lineNum">     594 </span>                :     <I><FONT COLOR="#B22222">/* Luma bottom bit comes last since it's usually largest scan */</FONT></I>
+<span class="lineNum">     595 </span><span class="lineCov">             127:     scanptr = fill_a_scan(scanptr, 0, 1, 63, 1, 0);</span>
+<span class="lineNum">     596 </span>                :   } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     597 </span>                :     <I><FONT COLOR="#B22222">/* All-purpose script for other color spaces. */</FONT></I>
+<span class="lineNum">     598 </span>                :     <I><FONT COLOR="#B22222">/* Successive approximation first pass */</FONT></I>
+<span class="lineNum">     599 </span><span class="lineCov">             214:     scanptr = fill_dc_scans(scanptr, ncomps, 0, 1);</span>
+<span class="lineNum">     600 </span><span class="lineCov">             214:     scanptr = fill_scans(scanptr, ncomps, 1, 5, 0, 2);</span>
+<span class="lineNum">     601 </span><span class="lineCov">             214:     scanptr = fill_scans(scanptr, ncomps, 6, 63, 0, 2);</span>
+<span class="lineNum">     602 </span>                :     <I><FONT COLOR="#B22222">/* Successive approximation second pass */</FONT></I>
+<span class="lineNum">     603 </span><span class="lineCov">             214:     scanptr = fill_scans(scanptr, ncomps, 1, 63, 2, 1);</span>
+<span class="lineNum">     604 </span>                :     <I><FONT COLOR="#B22222">/* Successive approximation final pass */</FONT></I>
+<span class="lineNum">     605 </span><span class="lineCov">             214:     scanptr = fill_dc_scans(scanptr, ncomps, 1, 0);</span>
+<span class="lineNum">     606 </span><span class="lineCov">             214:     scanptr = fill_scans(scanptr, ncomps, 1, 63, 1, 0);</span>
+<span class="lineNum">     607 </span>                :   }
+<span class="lineNum">     608 </span><span class="lineCov">             341: }</span>
+<span class="lineNum">     609 </span>                : 
+<span class="lineNum">     610 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B> <I><FONT COLOR="#B22222">/* C_PROGRESSIVE_SUPPORTED */</FONT></I>
+</pre>
+<hr>
+Generated: 2016-04-07&nbsp;17:52 by <a href="http://minormatter.com/zcov">zcov</a><br>
+</body>
+</html>

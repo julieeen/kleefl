@@ -1,0 +1,1059 @@
+<html>
+<head>
+  <script src="sorttable.js"></script>
+  <script src="sourceview.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <title>zcov: /home/vagrant/workspace/proj_libjpeg/cov/jcphuff.c</title>
+</head>
+<body>
+<center><h1> zcov: <a href="index.html">/home/vagrant/workspace/proj_libjpeg/cov</a>/<a href="jcphuff.c.html">jcphuff.c</a> </h1></center>
+<hr>
+
+
+<center>
+<table id="headertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Files:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Taken:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>70.1%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 115&nbsp;/&nbsp;164 </td>
+  </tr>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Generated:</b> </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;12:37 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>82.9%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 136&nbsp;/&nbsp;164 </td>
+  </tr>
+  <tr>
+    <td colspan=2> </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Line&nbsp;Coverage:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>82.4%</b> </td>
+    <td bgcolor=#F0F0FF align=right> 263&nbsp;/&nbsp;319 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<center>
+<table id="fileheadertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Programs:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Runs</b> </td>
+    <td bgcolor=#F0F0FF align=right> 13688 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<pre>
+<span class="lineNum">       1 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">       2 </span>                :  * jcphuff.c
+<span class="lineNum">       3 </span>                :  *
+<span class="lineNum">       4 </span>                :  * Copyright (C) 1995-1997, Thomas G. Lane.
+<span class="lineNum">       5 </span>                :  * This file is part of the Independent JPEG Group's software.
+<span class="lineNum">       6 </span>                :  * For conditions of distribution and use, see the accompanying README file.
+<span class="lineNum">       7 </span>                :  *
+<span class="lineNum">       8 </span>                :  * This file contains Huffman entropy encoding routines for progressive JPEG.
+<span class="lineNum">       9 </span>                :  *
+<span class="lineNum">      10 </span>                :  * We do not support output suspension in this module, since the library
+<span class="lineNum">      11 </span>                :  * currently does not allow multiple-scan files to be written with output
+<span class="lineNum">      12 </span>                :  * suspension.
+<span class="lineNum">      13 </span>                :  */</FONT></I>
+<span class="lineNum">      14 </span>                : 
+<span class="lineNum">      15 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">JPEG_INTERNALS</FONT>
+<span class="lineNum">      16 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jinclude.h&quot;</FONT></B>
+<span class="lineNum">      17 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jpeglib.h&quot;</FONT></B>
+<span class="lineNum">      18 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jchuff.h&quot;</FONT></B>		<I><FONT COLOR="#B22222">/* Declarations shared with jchuff.c */</FONT></I>
+<span class="lineNum">      19 </span>                : 
+<span class="lineNum">      20 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">C_PROGRESSIVE_SUPPORTED</FONT>
+<span class="lineNum">      21 </span>                : 
+<span class="lineNum">      22 </span>                : <I><FONT COLOR="#B22222">/* Expanded entropy encoder object for progressive Huffman encoding. */</FONT></I>
+<span class="lineNum">      23 </span>                : 
+<span class="lineNum">      24 </span>                : <B><FONT COLOR="#228B22">typedef</FONT></B> <B><FONT COLOR="#228B22">struct</FONT></B> {
+<span class="lineNum">      25 </span>                :   <B><FONT COLOR="#228B22">struct</FONT></B> jpeg_entropy_encoder pub; <I><FONT COLOR="#B22222">/* public fields */</FONT></I>
+<span class="lineNum">      26 </span>                : 
+<span class="lineNum">      27 </span>                :   <I><FONT COLOR="#B22222">/* Mode flag: TRUE for optimization, FALSE for actual data output */</FONT></I>
+<span class="lineNum">      28 </span>                :   boolean gather_statistics;
+<span class="lineNum">      29 </span>                : 
+<span class="lineNum">      30 </span>                :   <I><FONT COLOR="#B22222">/* Bit-level coding status.
+<span class="lineNum">      31 </span>                :    * next_output_byte/free_in_buffer are local copies of cinfo-&gt;dest fields.
+<span class="lineNum">      32 </span>                :    */</FONT></I>
+<span class="lineNum">      33 </span>                :   JOCTET * next_output_byte;	<I><FONT COLOR="#B22222">/* =&gt; next byte to write in buffer */</FONT></I>
+<span class="lineNum">      34 </span>                :   size_t free_in_buffer;	<I><FONT COLOR="#B22222">/* # of byte spaces remaining in buffer */</FONT></I>
+<span class="lineNum">      35 </span>                :   INT32 put_buffer;		<I><FONT COLOR="#B22222">/* current bit-accumulation buffer */</FONT></I>
+<span class="lineNum">      36 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> put_bits;			<I><FONT COLOR="#B22222">/* # of bits now in it */</FONT></I>
+<span class="lineNum">      37 </span>                :   j_compress_ptr cinfo;		<I><FONT COLOR="#B22222">/* link to cinfo (needed for dump_buffer) */</FONT></I>
+<span class="lineNum">      38 </span>                : 
+<span class="lineNum">      39 </span>                :   <I><FONT COLOR="#B22222">/* Coding status for DC components */</FONT></I>
+<span class="lineNum">      40 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> last_dc_val[MAX_COMPS_IN_SCAN]; <I><FONT COLOR="#B22222">/* last DC coef for each component */</FONT></I>
+<span class="lineNum">      41 </span>                : 
+<span class="lineNum">      42 </span>                :   <I><FONT COLOR="#B22222">/* Coding status for AC components */</FONT></I>
+<span class="lineNum">      43 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> ac_tbl_no;		<I><FONT COLOR="#B22222">/* the table number of the single component */</FONT></I>
+<span class="lineNum">      44 </span>                :   <B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> EOBRUN;		<I><FONT COLOR="#B22222">/* run length of EOBs */</FONT></I>
+<span class="lineNum">      45 </span>                :   <B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> BE;		<I><FONT COLOR="#B22222">/* # of buffered correction bits before MCU */</FONT></I>
+<span class="lineNum">      46 </span>                :   <B><FONT COLOR="#228B22">char</FONT></B> * bit_buffer;		<I><FONT COLOR="#B22222">/* buffer for correction bits (1 per char) */</FONT></I>
+<span class="lineNum">      47 </span>                :   <I><FONT COLOR="#B22222">/* packing correction bits tightly would save some space but cost time... */</FONT></I>
+<span class="lineNum">      48 </span>                : 
+<span class="lineNum">      49 </span>                :   <B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> restarts_to_go;	<I><FONT COLOR="#B22222">/* MCUs left in this restart interval */</FONT></I>
+<span class="lineNum">      50 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> next_restart_num;		<I><FONT COLOR="#B22222">/* next restart number to write (0-7) */</FONT></I>
+<span class="lineNum">      51 </span>                : 
+<span class="lineNum">      52 </span>                :   <I><FONT COLOR="#B22222">/* Pointers to derived tables (these workspaces have image lifespan).
+<span class="lineNum">      53 </span>                :    * Since any one scan codes only DC or only AC, we only need one set
+<span class="lineNum">      54 </span>                :    * of tables, not one for DC and one for AC.
+<span class="lineNum">      55 </span>                :    */</FONT></I>
+<span class="lineNum">      56 </span>                :   c_derived_tbl * derived_tbls[NUM_HUFF_TBLS];
+<span class="lineNum">      57 </span>                : 
+<span class="lineNum">      58 </span>                :   <I><FONT COLOR="#B22222">/* Statistics tables for optimization; again, one set is enough */</FONT></I>
+<span class="lineNum">      59 </span>                :   <B><FONT COLOR="#228B22">long</FONT></B> * count_ptrs[NUM_HUFF_TBLS];
+<span class="lineNum">      60 </span>                : } phuff_entropy_encoder;
+<span class="lineNum">      61 </span>                : 
+<span class="lineNum">      62 </span>                : <B><FONT COLOR="#228B22">typedef</FONT></B> phuff_entropy_encoder * phuff_entropy_ptr;
+<span class="lineNum">      63 </span>                : 
+<span class="lineNum">      64 </span>                : <I><FONT COLOR="#B22222">/* MAX_CORR_BITS is the number of bits the AC refinement correction-bit
+<span class="lineNum">      65 </span>                :  * buffer can hold.  Larger sizes may slightly improve compression, but
+<span class="lineNum">      66 </span>                :  * 1000 is already well into the realm of overkill.
+<span class="lineNum">      67 </span>                :  * The minimum safe size is 64 bits.
+<span class="lineNum">      68 </span>                :  */</FONT></I>
+<span class="lineNum">      69 </span>                : 
+<span class="lineNum">      70 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">MAX_CORR_BITS</FONT>  1000	<I><FONT COLOR="#B22222">/* Max # of correction bits I can buffer */</FONT></I>
+<span class="lineNum">      71 </span>                : 
+<span class="lineNum">      72 </span>                : <I><FONT COLOR="#B22222">/* IRIGHT_SHIFT is like RIGHT_SHIFT, but works on int rather than INT32.
+<span class="lineNum">      73 </span>                :  * We assume that int right shift is unsigned if INT32 right shift is,
+<span class="lineNum">      74 </span>                :  * which should be safe.
+<span class="lineNum">      75 </span>                :  */</FONT></I>
+<span class="lineNum">      76 </span>                : 
+<span class="lineNum">      77 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">RIGHT_SHIFT_IS_UNSIGNED</FONT>
+<span class="lineNum">      78 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">ISHIFT_TEMPS</FONT>	int ishift_temp;
+<span class="lineNum">      79 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <B><FONT COLOR="#0000FF">IRIGHT_SHIFT</FONT></B>(x,shft)  \
+<span class="lineNum">      80 </span>                : 	((ishift_temp = (x)) &lt; 0 ? \
+<span class="lineNum">      81 </span>                : 	 (ishift_temp &gt;&gt; (shft)) | ((~0) &lt;&lt; (16-(shft))) : \
+<span class="lineNum">      82 </span>                : 	 (ishift_temp &gt;&gt; (shft)))
+<span class="lineNum">      83 </span>                : #<B><FONT COLOR="#5F9EA0">else</FONT></B>
+<span class="lineNum">      84 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">ISHIFT_TEMPS</FONT>
+<span class="lineNum">      85 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <B><FONT COLOR="#0000FF">IRIGHT_SHIFT</FONT></B>(x,shft)	((x) &gt;&gt; (shft))
+<span class="lineNum">      86 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      87 </span>                : 
+<span class="lineNum">      88 </span>                : <I><FONT COLOR="#B22222">/* Forward declarations */</FONT></I>
+<span class="lineNum">      89 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(boolean) encode_mcu_DC_first JPP((j_compress_ptr cinfo,
+<span class="lineNum">      90 </span>                : 					    JBLOCKROW *MCU_data));
+<span class="lineNum">      91 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(boolean) encode_mcu_AC_first JPP((j_compress_ptr cinfo,
+<span class="lineNum">      92 </span>                : 					    JBLOCKROW *MCU_data));
+<span class="lineNum">      93 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(boolean) encode_mcu_DC_refine JPP((j_compress_ptr cinfo,
+<span class="lineNum">      94 </span>                : 					     JBLOCKROW *MCU_data));
+<span class="lineNum">      95 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(boolean) encode_mcu_AC_refine JPP((j_compress_ptr cinfo,
+<span class="lineNum">      96 </span>                : 					     JBLOCKROW *MCU_data));
+<span class="lineNum">      97 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>) finish_pass_phuff JPP((j_compress_ptr cinfo));
+<span class="lineNum">      98 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>) finish_pass_gather_phuff JPP((j_compress_ptr cinfo));
+<span class="lineNum">      99 </span>                : 
+<span class="lineNum">     100 </span>                : 
+<span class="lineNum">     101 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     102 </span>                :  * Initialize for a Huffman-compressed scan using progressive JPEG.
+<span class="lineNum">     103 </span>                :  */</FONT></I>
+<span class="lineNum">     104 </span>                : 
+<span class="lineNum">     105 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     106 </span><span class="lineCov">            8976: <B><FONT COLOR="#0000FF">start_pass_phuff</FONT></B> (j_compress_ptr cinfo, boolean gather_statistics)</span>
+<span class="lineNum">     107 </span>                : {  
+<span class="lineNum">     108 </span><span class="lineCov">            8976:   phuff_entropy_ptr entropy = (phuff_entropy_ptr) cinfo-&gt;entropy;</span>
+<span class="lineNum">     109 </span>                :   boolean is_DC_band;
+<span class="lineNum">     110 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> ci, tbl;
+<span class="lineNum">     111 </span>                :   jpeg_component_info * compptr;
+<span class="lineNum">     112 </span>                : 
+<span class="lineNum">     113 </span><span class="lineCov">            8976:   entropy-&gt;cinfo = cinfo;</span>
+<span class="lineNum">     114 </span><span class="lineCov">            8976:   entropy-&gt;gather_statistics = gather_statistics;</span>
+<span class="lineNum">     115 </span>                : 
+<span class="lineNum">     116 </span><span class="lineCov">            8976:   is_DC_band = (cinfo-&gt;Ss == 0);</span>
+<span class="lineNum">     117 </span>                : 
+<span class="lineNum">     118 </span>                :   <I><FONT COLOR="#B22222">/* We assume jcmaster.c already validated the scan parameters. */</FONT></I>
+<span class="lineNum">     119 </span>                : 
+<span class="lineNum">     120 </span>                :   <I><FONT COLOR="#B22222">/* Select execution routines */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            4959: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4017: branch 1 taken</span>
+</span><span class="lineNum">     121 </span><span class="lineCov">            8976:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;Ah == 0) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1527: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3432: branch 1 taken</span>
+</span><span class="lineNum">     122 </span><span class="lineCov">            4959:     <B><FONT COLOR="#A020F0">if</FONT></B> (is_DC_band)</span>
+<span class="lineNum">     123 </span><span class="lineCov">            1527:       entropy-&gt;pub.encode_mcu = encode_mcu_DC_first;</span>
+<span class="lineNum">     124 </span>                :     <B><FONT COLOR="#A020F0">else</FONT></B>
+<span class="lineNum">     125 </span><span class="lineCov">            3432:       entropy-&gt;pub.encode_mcu = encode_mcu_AC_first;</span>
+<span class="lineNum">     126 </span>                :   } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             585: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3432: branch 1 taken</span>
+</span><span class="lineNum">     127 </span><span class="lineCov">            4017:     <B><FONT COLOR="#A020F0">if</FONT></B> (is_DC_band)</span>
+<span class="lineNum">     128 </span><span class="lineCov">             585:       entropy-&gt;pub.encode_mcu = encode_mcu_DC_refine;</span>
+<span class="lineNum">     129 </span>                :     <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     130 </span><span class="lineCov">            3432:       entropy-&gt;pub.encode_mcu = encode_mcu_AC_refine;</span>
+<span class="lineNum">     131 </span>                :       <I><FONT COLOR="#B22222">/* AC refinement needs a correction bit buffer */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             585: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2847: branch 1 taken</span>
+</span><span class="lineNum">     132 </span><span class="lineCov">            3432:       <B><FONT COLOR="#A020F0">if</FONT></B> (entropy-&gt;bit_buffer == NULL)</span>
+<span class="lineNum">     133 </span><span class="lineCov">             585: 	entropy-&gt;bit_buffer = (<B><FONT COLOR="#228B22">char</FONT></B> *)</span>
+<span class="lineNum">     134 </span><span class="lineCov">             585: 	  (*cinfo-&gt;mem-&gt;alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
+<span class="lineNum">     135 </span>                : 				      MAX_CORR_BITS * SIZEOF(<B><FONT COLOR="#228B22">char</FONT></B>));
+<span class="lineNum">     136 </span>                :     }
+<span class="lineNum">     137 </span>                :   }
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            4374: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4602: branch 1 taken</span>
+</span><span class="lineNum">     138 </span><span class="lineCov">            8976:   <B><FONT COLOR="#A020F0">if</FONT></B> (gather_statistics)</span>
+<span class="lineNum">     139 </span><span class="lineCov">            4374:     entropy-&gt;pub.finish_pass = finish_pass_gather_phuff;</span>
+<span class="lineNum">     140 </span>                :   <B><FONT COLOR="#A020F0">else</FONT></B>
+<span class="lineNum">     141 </span><span class="lineCov">            4602:     entropy-&gt;pub.finish_pass = finish_pass_phuff;</span>
+<span class="lineNum">     142 </span>                : 
+<span class="lineNum">     143 </span>                :   <I><FONT COLOR="#B22222">/* Only DC coefficients may be interleaved, so cinfo-&gt;comps_in_scan = 1
+<span class="lineNum">     144 </span>                :    * for AC coefficients.
+<span class="lineNum">     145 </span>                :    */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           10992: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            8976: branch 1 taken</span>
+</span><span class="lineNum">     146 </span><span class="lineCov">           19968:   <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0; ci &lt; cinfo-&gt;comps_in_scan; ci++) {</span>
+<span class="lineNum">     147 </span><span class="lineCov">           10992:     compptr = cinfo-&gt;cur_comp_info[ci];</span>
+<span class="lineNum">     148 </span>                :     <I><FONT COLOR="#B22222">/* Initialize DC predictions to 0 */</FONT></I>
+<span class="lineNum">     149 </span><span class="lineCov">           10992:     entropy-&gt;last_dc_val[ci] = 0;</span>
+<span class="lineNum">     150 </span>                :     <I><FONT COLOR="#B22222">/* Get table index */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            4128: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            6864: branch 1 taken</span>
+</span><span class="lineNum">     151 </span><span class="lineCov">           10992:     <B><FONT COLOR="#A020F0">if</FONT></B> (is_DC_band) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1131: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2997: branch 1 taken</span>
+</span><span class="lineNum">     152 </span><span class="lineCov">            4128:       <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;Ah != 0)	<I><FONT COLOR="#B22222">/* DC refinement needs no table */</FONT></I></span>
+<span class="lineNum">     153 </span><span class="lineCov">            1131: 	<B><FONT COLOR="#A020F0">continue</FONT></B>;</span>
+<span class="lineNum">     154 </span><span class="lineCov">            2997:       tbl = compptr-&gt;dc_tbl_no;</span>
+<span class="lineNum">     155 </span>                :     } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     156 </span><span class="lineCov">            6864:       entropy-&gt;ac_tbl_no = tbl = compptr-&gt;ac_tbl_no;</span>
+<span class="lineNum">     157 </span>                :     }
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            5298: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4563: branch 1 taken</span>
+</span><span class="lineNum">     158 </span><span class="lineCov">            9861:     <B><FONT COLOR="#A020F0">if</FONT></B> (gather_statistics) {</span>
+<span class="lineNum">     159 </span>                :       <I><FONT COLOR="#B22222">/* Check for invalid table index */</FONT></I>
+<span class="lineNum">     160 </span>                :       <I><FONT COLOR="#B22222">/* (make_c_derived_tbl does this in the other path) */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            5298: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            5298: branch 3 taken</span>
+</span><span class="lineNum">     161 </span><span class="lineCov">            5298:       <B><FONT COLOR="#A020F0">if</FONT></B> (tbl &lt; 0 || tbl &gt;= NUM_HUFF_TBLS)</span>
+<span class="lineNum">     162 </span><span class="lineNoCov">               0:         ERREXIT1(cinfo, JERR_NO_HUFF_TABLE, tbl);</span>
+<span class="lineNum">     163 </span>                :       <I><FONT COLOR="#B22222">/* Allocate and zero the statistics tables */</FONT></I>
+<span class="lineNum">     164 </span>                :       <I><FONT COLOR="#B22222">/* Note that jpeg_gen_optimal_table expects 257 entries in each table! */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1404: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3894: branch 1 taken</span>
+</span><span class="lineNum">     165 </span><span class="lineCov">            5298:       <B><FONT COLOR="#A020F0">if</FONT></B> (entropy-&gt;count_ptrs[tbl] == NULL)</span>
+<span class="lineNum">     166 </span><span class="lineCov">            1404: 	entropy-&gt;count_ptrs[tbl] = (<B><FONT COLOR="#228B22">long</FONT></B> *)</span>
+<span class="lineNum">     167 </span><span class="lineCov">            1404: 	  (*cinfo-&gt;mem-&gt;alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
+<span class="lineNum">     168 </span>                : 				      257 * SIZEOF(<B><FONT COLOR="#228B22">long</FONT></B>));
+<span class="lineNum">     169 </span><span class="lineCov">            5298:       MEMZERO(entropy-&gt;count_ptrs[tbl], 257 * SIZEOF(<B><FONT COLOR="#228B22">long</FONT></B>));</span>
+<span class="lineNum">     170 </span>                :     } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     171 </span>                :       <I><FONT COLOR="#B22222">/* Compute derived values for Huffman table */</FONT></I>
+<span class="lineNum">     172 </span>                :       <I><FONT COLOR="#B22222">/* We may do this more than once for a table, but it's not expensive */</FONT></I>
+<span class="lineNum">     173 </span><span class="lineCov">            4563:       jpeg_make_c_derived_tbl(cinfo, is_DC_band, tbl,</span>
+<span class="lineNum">     174 </span>                : 			      &amp; entropy-&gt;derived_tbls[tbl]);
+<span class="lineNum">     175 </span>                :     }
+<span class="lineNum">     176 </span>                :   }
+<span class="lineNum">     177 </span>                : 
+<span class="lineNum">     178 </span>                :   <I><FONT COLOR="#B22222">/* Initialize AC stuff */</FONT></I>
+<span class="lineNum">     179 </span><span class="lineCov">            8976:   entropy-&gt;EOBRUN = 0;</span>
+<span class="lineNum">     180 </span><span class="lineCov">            8976:   entropy-&gt;BE = 0;</span>
+<span class="lineNum">     181 </span>                : 
+<span class="lineNum">     182 </span>                :   <I><FONT COLOR="#B22222">/* Initialize bit buffer to empty */</FONT></I>
+<span class="lineNum">     183 </span><span class="lineCov">            8976:   entropy-&gt;put_buffer = 0;</span>
+<span class="lineNum">     184 </span><span class="lineCov">            8976:   entropy-&gt;put_bits = 0;</span>
+<span class="lineNum">     185 </span>                : 
+<span class="lineNum">     186 </span>                :   <I><FONT COLOR="#B22222">/* Initialize restart stuff */</FONT></I>
+<span class="lineNum">     187 </span><span class="lineCov">            8976:   entropy-&gt;restarts_to_go = cinfo-&gt;restart_interval;</span>
+<span class="lineNum">     188 </span><span class="lineCov">            8976:   entropy-&gt;next_restart_num = 0;</span>
+<span class="lineNum">     189 </span><span class="lineCov">            8976: }</span>
+<span class="lineNum">     190 </span>                : 
+<span class="lineNum">     191 </span>                : 
+<span class="lineNum">     192 </span>                : <I><FONT COLOR="#B22222">/* Outputting bytes to the file.
+<span class="lineNum">     193 </span>                :  * NB: these must be called only when actually outputting,
+<span class="lineNum">     194 </span>                :  * that is, entropy-&gt;gather_statistics == FALSE.
+<span class="lineNum">     195 </span>                :  */</FONT></I>
+<span class="lineNum">     196 </span>                : 
+<span class="lineNum">     197 </span>                : <I><FONT COLOR="#B22222">/* Emit a byte */</FONT></I>
+<span class="lineNum">     198 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <B><FONT COLOR="#0000FF">emit_byte</FONT></B>(entropy,val)  \
+<span class="lineNum">     199 </span>                : 	{ *(entropy)-&gt;next_output_byte++ = (JOCTET) (val);  \
+<span class="lineNum">     200 </span>                : 	  <B><FONT COLOR="#A020F0">if</FONT></B> (--(entropy)-&gt;free_in_buffer == 0)  \
+<span class="lineNum">     201 </span>                : 	    dump_buffer(entropy); }
+<span class="lineNum">     202 </span>                : 
+<span class="lineNum">     203 </span>                : 
+<span class="lineNum">     204 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     205 </span><span class="lineNoCov">               0: <B><FONT COLOR="#0000FF">dump_buffer</FONT></B> (phuff_entropy_ptr entropy)</span>
+<span class="lineNum">     206 </span>                : <I><FONT COLOR="#B22222">/* Empty the output buffer; we do not support suspension in this module. */</FONT></I>
+<span class="lineNum">     207 </span>                : {
+<span class="lineNum">     208 </span><span class="lineNoCov">               0:   <B><FONT COLOR="#228B22">struct</FONT></B> jpeg_destination_mgr * dest = entropy-&gt;cinfo-&gt;dest;</span>
+<span class="lineNum">     209 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+</span><span class="lineNum">     210 </span><span class="lineNoCov">               0:   <B><FONT COLOR="#A020F0">if</FONT></B> (! (*dest-&gt;empty_output_buffer) (entropy-&gt;cinfo))</span>
+<span class="lineNum">     211 </span><span class="lineNoCov">               0:     ERREXIT(entropy-&gt;cinfo, JERR_CANT_SUSPEND);</span>
+<span class="lineNum">     212 </span>                :   <I><FONT COLOR="#B22222">/* After a successful buffer dump, must reset buffer pointers */</FONT></I>
+<span class="lineNum">     213 </span><span class="lineNoCov">               0:   entropy-&gt;next_output_byte = dest-&gt;next_output_byte;</span>
+<span class="lineNum">     214 </span><span class="lineNoCov">               0:   entropy-&gt;free_in_buffer = dest-&gt;free_in_buffer;</span>
+<span class="lineNum">     215 </span><span class="lineNoCov">               0: }</span>
+<span class="lineNum">     216 </span>                : 
+<span class="lineNum">     217 </span>                : 
+<span class="lineNum">     218 </span>                : <I><FONT COLOR="#B22222">/* Outputting bits to the file */</FONT></I>
+<span class="lineNum">     219 </span>                : 
+<span class="lineNum">     220 </span>                : <I><FONT COLOR="#B22222">/* Only the right 24 bits of put_buffer are used; the valid bits are
+<span class="lineNum">     221 </span>                :  * left-justified in this part.  At most 16 bits can be passed to emit_bits
+<span class="lineNum">     222 </span>                :  * in one call, and we never retain more than 7 bits in put_buffer
+<span class="lineNum">     223 </span>                :  * between calls, so 24 bits are sufficient.
+<span class="lineNum">     224 </span>                :  */</FONT></I>
+<span class="lineNum">     225 </span>                : 
+<span class="lineNum">     226 </span>                : INLINE
+<span class="lineNum">     227 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     228 </span><span class="lineCov">          130752: <B><FONT COLOR="#0000FF">emit_bits</FONT></B> (phuff_entropy_ptr entropy, <B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> code, <B><FONT COLOR="#228B22">int</FONT></B> size)</span>
+<span class="lineNum">     229 </span>                : <I><FONT COLOR="#B22222">/* Emit some bits, unless we are in gather mode */</FONT></I>
+<span class="lineNum">     230 </span>                : {
+<span class="lineNum">     231 </span>                :   <I><FONT COLOR="#B22222">/* This routine is heavily used, so it's worth coding tightly. */</FONT></I>
+<span class="lineNum">     232 </span><span class="lineCov">          130752:   <B><FONT COLOR="#228B22">register</FONT></B> INT32 put_buffer = (INT32) code;</span>
+<span class="lineNum">     233 </span><span class="lineCov">          130752:   <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> put_bits = entropy-&gt;put_bits;</span>
+<span class="lineNum">     234 </span>                : 
+<span class="lineNum">     235 </span>                :   <I><FONT COLOR="#B22222">/* if size is 0, caller used an invalid Huffman table entry */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          130752: branch 1 taken</span>
+</span><span class="lineNum">     236 </span><span class="lineCov">          130752:   <B><FONT COLOR="#A020F0">if</FONT></B> (size == 0)</span>
+<span class="lineNum">     237 </span><span class="lineNoCov">               0:     ERREXIT(entropy-&gt;cinfo, JERR_HUFF_MISSING_CODE);</span>
+<span class="lineNum">     238 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           19866: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          110886: branch 1 taken</span>
+</span><span class="lineNum">     239 </span><span class="lineCov">          130752:   <B><FONT COLOR="#A020F0">if</FONT></B> (entropy-&gt;gather_statistics)</span>
+<span class="lineNum">     240 </span><span class="lineCov">          150618:     <B><FONT COLOR="#A020F0">return</FONT></B>;			<I><FONT COLOR="#B22222">/* do nothing if we're only getting stats */</FONT></I></span>
+<span class="lineNum">     241 </span>                : 
+<span class="lineNum">     242 </span><span class="lineCov">          110886:   put_buffer &amp;= (((INT32) 1)&lt;&lt;size) - 1; <I><FONT COLOR="#B22222">/* mask off any extra bits in code */</FONT></I></span>
+<span class="lineNum">     243 </span>                :   
+<span class="lineNum">     244 </span><span class="lineCov">          110886:   put_bits += size;		<I><FONT COLOR="#B22222">/* new number of bits in buffer */</FONT></I></span>
+<span class="lineNum">     245 </span>                :   
+<span class="lineNum">     246 </span><span class="lineCov">          110886:   put_buffer &lt;&lt;= 24 - put_bits; <I><FONT COLOR="#B22222">/* align incoming bits */</FONT></I></span>
+<span class="lineNum">     247 </span>                : 
+<span class="lineNum">     248 </span><span class="lineCov">          110886:   put_buffer |= entropy-&gt;put_buffer; <I><FONT COLOR="#B22222">/* and merge with old buffer contents */</FONT></I></span>
+<span class="lineNum">     249 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           21846: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">          110886: branch 1 taken</span>
+</span><span class="lineNum">     250 </span><span class="lineCov">          243618:   <B><FONT COLOR="#A020F0">while</FONT></B> (put_bits &gt;= 8) {</span>
+<span class="lineNum">     251 </span><span class="lineCov">           21846:     <B><FONT COLOR="#228B22">int</FONT></B> c = (<B><FONT COLOR="#228B22">int</FONT></B>) ((put_buffer &gt;&gt; 16) &amp; 0xFF);</span>
+<span class="lineNum">     252 </span>                :     
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           21846: branch 1 taken</span>
+</span><span class="lineNum">     253 </span><span class="lineCov">           21846:     emit_byte(entropy, c);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             243: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           21603: branch 1 taken</span>
+</span><span class="lineNum">     254 </span><span class="lineCov">           21846:     <B><FONT COLOR="#A020F0">if</FONT></B> (c == 0xFF) {		<I><FONT COLOR="#B22222">/* need to stuff a zero byte? */</FONT></I></span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             243: branch 1 taken</span>
+</span><span class="lineNum">     255 </span><span class="lineCov">             243:       emit_byte(entropy, 0);</span>
+<span class="lineNum">     256 </span>                :     }
+<span class="lineNum">     257 </span><span class="lineCov">           21846:     put_buffer &lt;&lt;= 8;</span>
+<span class="lineNum">     258 </span><span class="lineCov">           21846:     put_bits -= 8;</span>
+<span class="lineNum">     259 </span>                :   }
+<span class="lineNum">     260 </span>                : 
+<span class="lineNum">     261 </span><span class="lineCov">          110886:   entropy-&gt;put_buffer = put_buffer; <I><FONT COLOR="#B22222">/* update variables */</FONT></I></span>
+<span class="lineNum">     262 </span><span class="lineCov">          110886:   entropy-&gt;put_bits = put_bits;</span>
+<span class="lineNum">     263 </span>                : }
+<span class="lineNum">     264 </span>                : 
+<span class="lineNum">     265 </span>                : 
+<span class="lineNum">     266 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     267 </span><span class="lineCov">            4602: <B><FONT COLOR="#0000FF">flush_bits</FONT></B> (phuff_entropy_ptr entropy)</span>
+<span class="lineNum">     268 </span>                : {
+<span class="lineNum">     269 </span><span class="lineCov">            4602:   emit_bits(entropy, 0x7F, 7); <I><FONT COLOR="#B22222">/* fill any partial byte with ones */</FONT></I></span>
+<span class="lineNum">     270 </span><span class="lineCov">            4602:   entropy-&gt;put_buffer = 0;     <I><FONT COLOR="#B22222">/* and reset bit-buffer to empty */</FONT></I></span>
+<span class="lineNum">     271 </span><span class="lineCov">            4602:   entropy-&gt;put_bits = 0;</span>
+<span class="lineNum">     272 </span><span class="lineCov">            4602: }</span>
+<span class="lineNum">     273 </span>                : 
+<span class="lineNum">     274 </span>                : 
+<span class="lineNum">     275 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     276 </span>                :  * Emit (or just count) a Huffman symbol.
+<span class="lineNum">     277 </span>                :  */</FONT></I>
+<span class="lineNum">     278 </span>                : 
+<span class="lineNum">     279 </span>                : INLINE
+<span class="lineNum">     280 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     281 </span><span class="lineCov">           89907: <B><FONT COLOR="#0000FF">emit_symbol</FONT></B> (phuff_entropy_ptr entropy, <B><FONT COLOR="#228B22">int</FONT></B> tbl_no, <B><FONT COLOR="#228B22">int</FONT></B> symbol)</span>
+<span class="lineNum">     282 </span>                : {
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           45048: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           44859: branch 1 taken</span>
+</span><span class="lineNum">     283 </span><span class="lineCov">           89907:   <B><FONT COLOR="#A020F0">if</FONT></B> (entropy-&gt;gather_statistics)</span>
+<span class="lineNum">     284 </span><span class="lineCov">           45048:     entropy-&gt;count_ptrs[tbl_no][symbol]++;</span>
+<span class="lineNum">     285 </span>                :   <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     286 </span><span class="lineCov">           44859:     c_derived_tbl * tbl = entropy-&gt;derived_tbls[tbl_no];</span>
+<span class="lineNum">     287 </span><span class="lineCov">           44859:     emit_bits(entropy, tbl-&gt;ehufco[symbol], tbl-&gt;ehufsi[symbol]);</span>
+<span class="lineNum">     288 </span>                :   }
+<span class="lineNum">     289 </span><span class="lineCov">           89907: }</span>
+<span class="lineNum">     290 </span>                : 
+<span class="lineNum">     291 </span>                : 
+<span class="lineNum">     292 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     293 </span>                :  * Emit bits from a correction bit buffer.
+<span class="lineNum">     294 </span>                :  */</FONT></I>
+<span class="lineNum">     295 </span>                : 
+<span class="lineNum">     296 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     297 </span><span class="lineCov">           26514: <B><FONT COLOR="#0000FF">emit_buffered_bits</FONT></B> (phuff_entropy_ptr entropy, <B><FONT COLOR="#228B22">char</FONT></B> * bufstart,</span>
+<span class="lineNum">     298 </span>                : 		    <B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> nbits)
+<span class="lineNum">     299 </span>                : {
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           13257: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           13257: branch 1 taken</span>
+</span><span class="lineNum">     300 </span><span class="lineCov">           26514:   <B><FONT COLOR="#A020F0">if</FONT></B> (entropy-&gt;gather_statistics)</span>
+<span class="lineNum">     301 </span><span class="lineCov">           39771:     <B><FONT COLOR="#A020F0">return</FONT></B>;			<I><FONT COLOR="#B22222">/* no real work */</FONT></I></span>
+<span class="lineNum">     302 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           18384: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           13257: branch 1 taken</span>
+</span><span class="lineNum">     303 </span><span class="lineCov">           44898:   <B><FONT COLOR="#A020F0">while</FONT></B> (nbits &gt; 0) {</span>
+<span class="lineNum">     304 </span><span class="lineCov">           18384:     emit_bits(entropy, (<B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B>) (*bufstart), 1);</span>
+<span class="lineNum">     305 </span><span class="lineCov">           18384:     bufstart++;</span>
+<span class="lineNum">     306 </span><span class="lineCov">           18384:     nbits--;</span>
+<span class="lineNum">     307 </span>                :   }
+<span class="lineNum">     308 </span>                : }
+<span class="lineNum">     309 </span>                : 
+<span class="lineNum">     310 </span>                : 
+<span class="lineNum">     311 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     312 </span>                :  * Emit any pending EOBRUN symbol.
+<span class="lineNum">     313 </span>                :  */</FONT></I>
+<span class="lineNum">     314 </span>                : 
+<span class="lineNum">     315 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     316 </span><span class="lineCov">           26835: <B><FONT COLOR="#0000FF">emit_eobrun</FONT></B> (phuff_entropy_ptr entropy)</span>
+<span class="lineNum">     317 </span>                : {
+<span class="lineNum">     318 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> temp, nbits;
+<span class="lineNum">     319 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           10506: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           16329: branch 1 taken</span>
+</span><span class="lineNum">     320 </span><span class="lineCov">           26835:   <B><FONT COLOR="#A020F0">if</FONT></B> (entropy-&gt;EOBRUN &gt; 0) {	<I><FONT COLOR="#B22222">/* if there is any pending EOBRUN */</FONT></I></span>
+<span class="lineNum">     321 </span><span class="lineCov">           10506:     temp = entropy-&gt;EOBRUN;</span>
+<span class="lineNum">     322 </span><span class="lineCov">           10506:     nbits = 0;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           11646: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           10506: branch 1 taken</span>
+</span><span class="lineNum">     323 </span><span class="lineCov">           32658:     <B><FONT COLOR="#A020F0">while</FONT></B> ((temp &gt;&gt;= 1))</span>
+<span class="lineNum">     324 </span><span class="lineCov">           11646:       nbits++;</span>
+<span class="lineNum">     325 </span>                :     <I><FONT COLOR="#B22222">/* safety check: shouldn't happen given limited correction-bit buffer */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           10506: branch 1 taken</span>
+</span><span class="lineNum">     326 </span><span class="lineCov">           10506:     <B><FONT COLOR="#A020F0">if</FONT></B> (nbits &gt; 14)</span>
+<span class="lineNum">     327 </span><span class="lineNoCov">               0:       ERREXIT(entropy-&gt;cinfo, JERR_HUFF_MISSING_CODE);</span>
+<span class="lineNum">     328 </span>                : 
+<span class="lineNum">     329 </span><span class="lineCov">           10506:     emit_symbol(entropy, entropy-&gt;ac_tbl_no, nbits &lt;&lt; 4);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            4368: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            6138: branch 1 taken</span>
+</span><span class="lineNum">     330 </span><span class="lineCov">           10506:     <B><FONT COLOR="#A020F0">if</FONT></B> (nbits)</span>
+<span class="lineNum">     331 </span><span class="lineCov">            4368:       emit_bits(entropy, entropy-&gt;EOBRUN, nbits);</span>
+<span class="lineNum">     332 </span>                : 
+<span class="lineNum">     333 </span><span class="lineCov">           10506:     entropy-&gt;EOBRUN = 0;</span>
+<span class="lineNum">     334 </span>                : 
+<span class="lineNum">     335 </span>                :     <I><FONT COLOR="#B22222">/* Emit any buffered correction bits */</FONT></I>
+<span class="lineNum">     336 </span><span class="lineCov">           10506:     emit_buffered_bits(entropy, entropy-&gt;bit_buffer, entropy-&gt;BE);</span>
+<span class="lineNum">     337 </span><span class="lineCov">           10506:     entropy-&gt;BE = 0;</span>
+<span class="lineNum">     338 </span>                :   }
+<span class="lineNum">     339 </span><span class="lineCov">           26835: }</span>
+<span class="lineNum">     340 </span>                : 
+<span class="lineNum">     341 </span>                : 
+<span class="lineNum">     342 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     343 </span>                :  * Emit a restart marker &amp; resynchronize predictions.
+<span class="lineNum">     344 </span>                :  */</FONT></I>
+<span class="lineNum">     345 </span>                : 
+<span class="lineNum">     346 </span>                : <B><FONT COLOR="#0000FF">LOCAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     347 </span><span class="lineNoCov">               0: <B><FONT COLOR="#0000FF">emit_restart</FONT></B> (phuff_entropy_ptr entropy, <B><FONT COLOR="#228B22">int</FONT></B> restart_num)</span>
+<span class="lineNum">     348 </span>                : {
+<span class="lineNum">     349 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> ci;
+<span class="lineNum">     350 </span>                : 
+<span class="lineNum">     351 </span><span class="lineNoCov">               0:   emit_eobrun(entropy);</span>
+<span class="lineNum">     352 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     353 </span><span class="lineNoCov">               0:   <B><FONT COLOR="#A020F0">if</FONT></B> (! entropy-&gt;gather_statistics) {</span>
+<span class="lineNum">     354 </span><span class="lineNoCov">               0:     flush_bits(entropy);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     355 </span><span class="lineNoCov">               0:     emit_byte(entropy, 0xFF);</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     356 </span><span class="lineNoCov">               0:     emit_byte(entropy, JPEG_RST0 + restart_num);</span>
+<span class="lineNum">     357 </span>                :   }
+<span class="lineNum">     358 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     359 </span><span class="lineNoCov">               0:   <B><FONT COLOR="#A020F0">if</FONT></B> (entropy-&gt;cinfo-&gt;Ss == 0) {</span>
+<span class="lineNum">     360 </span>                :     <I><FONT COLOR="#B22222">/* Re-initialize DC predictions to 0 */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     361 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0; ci &lt; entropy-&gt;cinfo-&gt;comps_in_scan; ci++)</span>
+<span class="lineNum">     362 </span><span class="lineNoCov">               0:       entropy-&gt;last_dc_val[ci] = 0;</span>
+<span class="lineNum">     363 </span>                :   } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     364 </span>                :     <I><FONT COLOR="#B22222">/* Re-initialize all AC-related fields to 0 */</FONT></I>
+<span class="lineNum">     365 </span><span class="lineNoCov">               0:     entropy-&gt;EOBRUN = 0;</span>
+<span class="lineNum">     366 </span><span class="lineNoCov">               0:     entropy-&gt;BE = 0;</span>
+<span class="lineNum">     367 </span>                :   }
+<span class="lineNum">     368 </span><span class="lineNoCov">               0: }</span>
+<span class="lineNum">     369 </span>                : 
+<span class="lineNum">     370 </span>                : 
+<span class="lineNum">     371 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     372 </span>                :  * MCU encoding for DC initial scan (either spectral selection,
+<span class="lineNum">     373 </span>                :  * or first pass of successive approximation).
+<span class="lineNum">     374 </span>                :  */</FONT></I>
+<span class="lineNum">     375 </span>                : 
+<span class="lineNum">     376 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(boolean)
+<span class="lineNum">     377 </span><span class="lineCov">            9141: <B><FONT COLOR="#0000FF">encode_mcu_DC_first</FONT></B> (j_compress_ptr cinfo, JBLOCKROW *MCU_data)</span>
+<span class="lineNum">     378 </span>                : {
+<span class="lineNum">     379 </span><span class="lineCov">            9141:   phuff_entropy_ptr entropy = (phuff_entropy_ptr) cinfo-&gt;entropy;</span>
+<span class="lineNum">     380 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> temp, temp2;
+<span class="lineNum">     381 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> nbits;
+<span class="lineNum">     382 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> blkn, ci;
+<span class="lineNum">     383 </span><span class="lineCov">            9141:   <B><FONT COLOR="#228B22">int</FONT></B> Al = cinfo-&gt;Al;</span>
+<span class="lineNum">     384 </span>                :   JBLOCKROW block;
+<span class="lineNum">     385 </span>                :   jpeg_component_info * compptr;
+<span class="lineNum">     386 </span>                :   ISHIFT_TEMPS
+<span class="lineNum">     387 </span>                : 
+<span class="lineNum">     388 </span><span class="lineCov">            9141:   entropy-&gt;next_output_byte = cinfo-&gt;dest-&gt;next_output_byte;</span>
+<span class="lineNum">     389 </span><span class="lineCov">            9141:   entropy-&gt;free_in_buffer = cinfo-&gt;dest-&gt;free_in_buffer;</span>
+<span class="lineNum">     390 </span>                : 
+<span class="lineNum">     391 </span>                :   <I><FONT COLOR="#B22222">/* Emit restart marker if needed */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9141: branch 1 taken</span>
+</span><span class="lineNum">     392 </span><span class="lineCov">            9141:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;restart_interval)</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     393 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (entropy-&gt;restarts_to_go == 0)</span>
+<span class="lineNum">     394 </span><span class="lineNoCov">               0:       emit_restart(entropy, entropy-&gt;next_restart_num);</span>
+<span class="lineNum">     395 </span>                : 
+<span class="lineNum">     396 </span>                :   <I><FONT COLOR="#B22222">/* Encode the MCU data blocks */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           46821: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9141: branch 1 taken</span>
+</span><span class="lineNum">     397 </span><span class="lineCov">           55962:   <B><FONT COLOR="#A020F0">for</FONT></B> (blkn = 0; blkn &lt; cinfo-&gt;blocks_in_MCU; blkn++) {</span>
+<span class="lineNum">     398 </span><span class="lineCov">           46821:     block = MCU_data[blkn];</span>
+<span class="lineNum">     399 </span><span class="lineCov">           46821:     ci = cinfo-&gt;MCU_membership[blkn];</span>
+<span class="lineNum">     400 </span><span class="lineCov">           46821:     compptr = cinfo-&gt;cur_comp_info[ci];</span>
+<span class="lineNum">     401 </span>                : 
+<span class="lineNum">     402 </span>                :     <I><FONT COLOR="#B22222">/* Compute the DC value after the required point transform by Al.
+<span class="lineNum">     403 </span>                :      * This is simply an arithmetic right shift.
+<span class="lineNum">     404 </span>                :      */</FONT></I>
+<span class="lineNum">     405 </span><span class="lineCov">           46821:     temp2 = IRIGHT_SHIFT((<B><FONT COLOR="#228B22">int</FONT></B>) ((*block)[0]), Al);</span>
+<span class="lineNum">     406 </span>                : 
+<span class="lineNum">     407 </span>                :     <I><FONT COLOR="#B22222">/* DC differences are figured on the point-transformed values. */</FONT></I>
+<span class="lineNum">     408 </span><span class="lineCov">           46821:     temp = temp2 - entropy-&gt;last_dc_val[ci];</span>
+<span class="lineNum">     409 </span><span class="lineCov">           46821:     entropy-&gt;last_dc_val[ci] = temp2;</span>
+<span class="lineNum">     410 </span>                : 
+<span class="lineNum">     411 </span>                :     <I><FONT COLOR="#B22222">/* Encode the DC coefficient difference per section G.1.2.1 */</FONT></I>
+<span class="lineNum">     412 </span><span class="lineCov">           46821:     temp2 = temp;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1758: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           45063: branch 1 taken</span>
+</span><span class="lineNum">     413 </span><span class="lineCov">           46821:     <B><FONT COLOR="#A020F0">if</FONT></B> (temp &lt; 0) {</span>
+<span class="lineNum">     414 </span><span class="lineCov">            1758:       temp = -temp;		<I><FONT COLOR="#B22222">/* temp is abs value of input */</FONT></I></span>
+<span class="lineNum">     415 </span>                :       <I><FONT COLOR="#B22222">/* For a negative input, want temp2 = bitwise complement of abs(input) */</FONT></I>
+<span class="lineNum">     416 </span>                :       <I><FONT COLOR="#B22222">/* This code assumes we are on a two's complement machine */</FONT></I>
+<span class="lineNum">     417 </span><span class="lineCov">            1758:       temp2--;</span>
+<span class="lineNum">     418 </span>                :     }
+<span class="lineNum">     419 </span>                :     
+<span class="lineNum">     420 </span>                :     <I><FONT COLOR="#B22222">/* Find the number of bits needed for the magnitude of the coefficient */</FONT></I>
+<span class="lineNum">     421 </span><span class="lineCov">           46821:     nbits = 0;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           14937: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           46821: branch 1 taken</span>
+</span><span class="lineNum">     422 </span><span class="lineCov">          108579:     <B><FONT COLOR="#A020F0">while</FONT></B> (temp) {</span>
+<span class="lineNum">     423 </span><span class="lineCov">           14937:       nbits++;</span>
+<span class="lineNum">     424 </span><span class="lineCov">           14937:       temp &gt;&gt;= 1;</span>
+<span class="lineNum">     425 </span>                :     }
+<span class="lineNum">     426 </span>                :     <I><FONT COLOR="#B22222">/* Check for out-of-range coefficient values.
+<span class="lineNum">     427 </span>                :      * Since we're encoding a difference, the range limit is twice as much.
+<span class="lineNum">     428 </span>                :      */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           46821: branch 1 taken</span>
+</span><span class="lineNum">     429 </span><span class="lineCov">           46821:     <B><FONT COLOR="#A020F0">if</FONT></B> (nbits &gt; MAX_COEF_BITS+1)</span>
+<span class="lineNum">     430 </span><span class="lineNoCov">               0:       ERREXIT(cinfo, JERR_BAD_DCT_COEF);</span>
+<span class="lineNum">     431 </span>                :     
+<span class="lineNum">     432 </span>                :     <I><FONT COLOR="#B22222">/* Count/emit the Huffman-coded symbol for the number of bits */</FONT></I>
+<span class="lineNum">     433 </span><span class="lineCov">           46821:     emit_symbol(entropy, compptr-&gt;dc_tbl_no, nbits);</span>
+<span class="lineNum">     434 </span>                :     
+<span class="lineNum">     435 </span>                :     <I><FONT COLOR="#B22222">/* Emit that number of bits of the value, if positive, */</FONT></I>
+<span class="lineNum">     436 </span>                :     <I><FONT COLOR="#B22222">/* or the complement of its magnitude, if negative. */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            3501: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           43320: branch 1 taken</span>
+</span><span class="lineNum">     437 </span><span class="lineCov">           46821:     <B><FONT COLOR="#A020F0">if</FONT></B> (nbits)			<I><FONT COLOR="#B22222">/* emit_bits rejects calls with size 0 */</FONT></I></span>
+<span class="lineNum">     438 </span><span class="lineCov">            3501:       emit_bits(entropy, (<B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B>) temp2, nbits);</span>
+<span class="lineNum">     439 </span>                :   }
+<span class="lineNum">     440 </span>                : 
+<span class="lineNum">     441 </span><span class="lineCov">            9141:   cinfo-&gt;dest-&gt;next_output_byte = entropy-&gt;next_output_byte;</span>
+<span class="lineNum">     442 </span><span class="lineCov">            9141:   cinfo-&gt;dest-&gt;free_in_buffer = entropy-&gt;free_in_buffer;</span>
+<span class="lineNum">     443 </span>                : 
+<span class="lineNum">     444 </span>                :   <I><FONT COLOR="#B22222">/* Update restart-interval state too */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            9141: branch 1 taken</span>
+</span><span class="lineNum">     445 </span><span class="lineCov">            9141:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;restart_interval) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     446 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (entropy-&gt;restarts_to_go == 0) {</span>
+<span class="lineNum">     447 </span><span class="lineNoCov">               0:       entropy-&gt;restarts_to_go = cinfo-&gt;restart_interval;</span>
+<span class="lineNum">     448 </span><span class="lineNoCov">               0:       entropy-&gt;next_restart_num++;</span>
+<span class="lineNum">     449 </span><span class="lineNoCov">               0:       entropy-&gt;next_restart_num &amp;= 7;</span>
+<span class="lineNum">     450 </span>                :     }
+<span class="lineNum">     451 </span><span class="lineNoCov">               0:     entropy-&gt;restarts_to_go--;</span>
+<span class="lineNum">     452 </span>                :   }
+<span class="lineNum">     453 </span>                : 
+<span class="lineNum">     454 </span><span class="lineCov">            9141:   <B><FONT COLOR="#A020F0">return</FONT></B> TRUE;</span>
+<span class="lineNum">     455 </span>                : }
+<span class="lineNum">     456 </span>                : 
+<span class="lineNum">     457 </span>                : 
+<span class="lineNum">     458 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     459 </span>                :  * MCU encoding for AC initial scan (either spectral selection,
+<span class="lineNum">     460 </span>                :  * or first pass of successive approximation).
+<span class="lineNum">     461 </span>                :  */</FONT></I>
+<span class="lineNum">     462 </span>                : 
+<span class="lineNum">     463 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(boolean)
+<span class="lineNum">     464 </span><span class="lineCov">           66168: <B><FONT COLOR="#0000FF">encode_mcu_AC_first</FONT></B> (j_compress_ptr cinfo, JBLOCKROW *MCU_data)</span>
+<span class="lineNum">     465 </span>                : {
+<span class="lineNum">     466 </span><span class="lineCov">           66168:   phuff_entropy_ptr entropy = (phuff_entropy_ptr) cinfo-&gt;entropy;</span>
+<span class="lineNum">     467 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> temp, temp2;
+<span class="lineNum">     468 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> nbits;
+<span class="lineNum">     469 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> r, k;
+<span class="lineNum">     470 </span><span class="lineCov">           66168:   <B><FONT COLOR="#228B22">int</FONT></B> Se = cinfo-&gt;Se;</span>
+<span class="lineNum">     471 </span><span class="lineCov">           66168:   <B><FONT COLOR="#228B22">int</FONT></B> Al = cinfo-&gt;Al;</span>
+<span class="lineNum">     472 </span>                :   JBLOCKROW block;
+<span class="lineNum">     473 </span>                : 
+<span class="lineNum">     474 </span><span class="lineCov">           66168:   entropy-&gt;next_output_byte = cinfo-&gt;dest-&gt;next_output_byte;</span>
+<span class="lineNum">     475 </span><span class="lineCov">           66168:   entropy-&gt;free_in_buffer = cinfo-&gt;dest-&gt;free_in_buffer;</span>
+<span class="lineNum">     476 </span>                : 
+<span class="lineNum">     477 </span>                :   <I><FONT COLOR="#B22222">/* Emit restart marker if needed */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           66168: branch 1 taken</span>
+</span><span class="lineNum">     478 </span><span class="lineCov">           66168:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;restart_interval)</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     479 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (entropy-&gt;restarts_to_go == 0)</span>
+<span class="lineNum">     480 </span><span class="lineNoCov">               0:       emit_restart(entropy, entropy-&gt;next_restart_num);</span>
+<span class="lineNum">     481 </span>                : 
+<span class="lineNum">     482 </span>                :   <I><FONT COLOR="#B22222">/* Encode the MCU data block */</FONT></I>
+<span class="lineNum">     483 </span><span class="lineCov">           66168:   block = MCU_data[0];</span>
+<span class="lineNum">     484 </span>                : 
+<span class="lineNum">     485 </span>                :   <I><FONT COLOR="#B22222">/* Encode the AC coefficients per section G.1.2.2, fig. G.3 */</FONT></I>
+<span class="lineNum">     486 </span>                :   
+<span class="lineNum">     487 </span><span class="lineCov">           66168:   r = 0;			<I><FONT COLOR="#B22222">/* r = run length of zeros */</FONT></I></span>
+<span class="lineNum">     488 </span>                :    
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">         2558304: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           66168: branch 1 taken</span>
+</span><span class="lineNum">     489 </span><span class="lineCov">         2624472:   <B><FONT COLOR="#A020F0">for</FONT></B> (k = cinfo-&gt;Ss; k &lt;= Se; k++) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">         2526582: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           31722: branch 1 taken</span>
+</span><span class="lineNum">     490 </span><span class="lineCov">         2558304:     <B><FONT COLOR="#A020F0">if</FONT></B> ((temp = (*block)[jpeg_natural_order[k]]) == 0) {</span>
+<span class="lineNum">     491 </span><span class="lineCov">         2526582:       r++;</span>
+<span class="lineNum">     492 </span><span class="lineCov">         2526582:       <B><FONT COLOR="#A020F0">continue</FONT></B>;</span>
+<span class="lineNum">     493 </span>                :     }
+<span class="lineNum">     494 </span>                :     <I><FONT COLOR="#B22222">/* We must apply the point transform by Al.  For AC coefficients this
+<span class="lineNum">     495 </span>                :      * is an integer division with rounding towards 0.  To do this portably
+<span class="lineNum">     496 </span>                :      * in C, we shift after obtaining the absolute value; so the code is
+<span class="lineNum">     497 </span>                :      * interwoven with finding the abs value (temp) and output bits (temp2).
+<span class="lineNum">     498 </span>                :      */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           15402: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           16320: branch 1 taken</span>
+</span><span class="lineNum">     499 </span><span class="lineCov">           31722:     <B><FONT COLOR="#A020F0">if</FONT></B> (temp &lt; 0) {</span>
+<span class="lineNum">     500 </span><span class="lineCov">           15402:       temp = -temp;		<I><FONT COLOR="#B22222">/* temp is abs value of input */</FONT></I></span>
+<span class="lineNum">     501 </span><span class="lineCov">           15402:       temp &gt;&gt;= Al;		<I><FONT COLOR="#B22222">/* apply the point transform */</FONT></I></span>
+<span class="lineNum">     502 </span>                :       <I><FONT COLOR="#B22222">/* For a negative coef, want temp2 = bitwise complement of abs(coef) */</FONT></I>
+<span class="lineNum">     503 </span><span class="lineCov">           15402:       temp2 = ~temp;</span>
+<span class="lineNum">     504 </span>                :     } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     505 </span><span class="lineCov">           16320:       temp &gt;&gt;= Al;		<I><FONT COLOR="#B22222">/* apply the point transform */</FONT></I></span>
+<span class="lineNum">     506 </span><span class="lineCov">           16320:       temp2 = temp;</span>
+<span class="lineNum">     507 </span>                :     }
+<span class="lineNum">     508 </span>                :     <I><FONT COLOR="#B22222">/* Watch out for case that nonzero coef is zero after point transform */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           15288: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           16434: branch 1 taken</span>
+</span><span class="lineNum">     509 </span><span class="lineCov">           31722:     <B><FONT COLOR="#A020F0">if</FONT></B> (temp == 0) {</span>
+<span class="lineNum">     510 </span><span class="lineCov">           15288:       r++;</span>
+<span class="lineNum">     511 </span><span class="lineCov">           15288:       <B><FONT COLOR="#A020F0">continue</FONT></B>;</span>
+<span class="lineNum">     512 </span>                :     }
+<span class="lineNum">     513 </span>                : 
+<span class="lineNum">     514 </span>                :     <I><FONT COLOR="#B22222">/* Emit any pending EOBRUN */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            2208: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           14226: branch 1 taken</span>
+</span><span class="lineNum">     515 </span><span class="lineCov">           16434:     <B><FONT COLOR="#A020F0">if</FONT></B> (entropy-&gt;EOBRUN &gt; 0)</span>
+<span class="lineNum">     516 </span><span class="lineCov">            2208:       emit_eobrun(entropy);</span>
+<span class="lineNum">     517 </span>                :     <I><FONT COLOR="#B22222">/* if run length &gt; 15, must emit special run-length-16 codes (0xF0) */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             138: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           16434: branch 1 taken</span>
+</span><span class="lineNum">     518 </span><span class="lineCov">           33006:     <B><FONT COLOR="#A020F0">while</FONT></B> (r &gt; 15) {</span>
+<span class="lineNum">     519 </span><span class="lineCov">             138:       emit_symbol(entropy, entropy-&gt;ac_tbl_no, 0xF0);</span>
+<span class="lineNum">     520 </span><span class="lineCov">             138:       r -= 16;</span>
+<span class="lineNum">     521 </span>                :     }
+<span class="lineNum">     522 </span>                : 
+<span class="lineNum">     523 </span>                :     <I><FONT COLOR="#B22222">/* Find the number of bits needed for the magnitude of the coefficient */</FONT></I>
+<span class="lineNum">     524 </span><span class="lineCov">           16434:     nbits = 1;			<I><FONT COLOR="#B22222">/* there must be at least one 1 bit */</FONT></I></span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           19770: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           16434: branch 1 taken</span>
+</span><span class="lineNum">     525 </span><span class="lineCov">           52638:     <B><FONT COLOR="#A020F0">while</FONT></B> ((temp &gt;&gt;= 1))</span>
+<span class="lineNum">     526 </span><span class="lineCov">           19770:       nbits++;</span>
+<span class="lineNum">     527 </span>                :     <I><FONT COLOR="#B22222">/* Check for out-of-range coefficient values */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           16434: branch 1 taken</span>
+</span><span class="lineNum">     528 </span><span class="lineCov">           16434:     <B><FONT COLOR="#A020F0">if</FONT></B> (nbits &gt; MAX_COEF_BITS)</span>
+<span class="lineNum">     529 </span><span class="lineNoCov">               0:       ERREXIT(cinfo, JERR_BAD_DCT_COEF);</span>
+<span class="lineNum">     530 </span>                : 
+<span class="lineNum">     531 </span>                :     <I><FONT COLOR="#B22222">/* Count/emit Huffman symbol for run length / number of bits */</FONT></I>
+<span class="lineNum">     532 </span><span class="lineCov">           16434:     emit_symbol(entropy, entropy-&gt;ac_tbl_no, (r &lt;&lt; 4) + nbits);</span>
+<span class="lineNum">     533 </span>                : 
+<span class="lineNum">     534 </span>                :     <I><FONT COLOR="#B22222">/* Emit that number of bits of the value, if positive, */</FONT></I>
+<span class="lineNum">     535 </span>                :     <I><FONT COLOR="#B22222">/* or the complement of its magnitude, if negative. */</FONT></I>
+<span class="lineNum">     536 </span><span class="lineCov">           16434:     emit_bits(entropy, (<B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B>) temp2, nbits);</span>
+<span class="lineNum">     537 </span>                : 
+<span class="lineNum">     538 </span><span class="lineCov">           16434:     r = 0;			<I><FONT COLOR="#B22222">/* reset zero run length */</FONT></I></span>
+<span class="lineNum">     539 </span>                :   }
+<span class="lineNum">     540 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           65622: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             546: branch 1 taken</span>
+</span><span class="lineNum">     541 </span><span class="lineCov">           66168:   <B><FONT COLOR="#A020F0">if</FONT></B> (r &gt; 0) {			<I><FONT COLOR="#B22222">/* If there are trailing zeroes, */</FONT></I></span>
+<span class="lineNum">     542 </span><span class="lineCov">           65622:     entropy-&gt;EOBRUN++;		<I><FONT COLOR="#B22222">/* count an EOB */</FONT></I></span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           65622: branch 1 taken</span>
+</span><span class="lineNum">     543 </span><span class="lineCov">           65622:     <B><FONT COLOR="#A020F0">if</FONT></B> (entropy-&gt;EOBRUN == 0x7FFF)</span>
+<span class="lineNum">     544 </span><span class="lineNoCov">               0:       emit_eobrun(entropy);	<I><FONT COLOR="#B22222">/* force it out to avoid overflow */</FONT></I></span>
+<span class="lineNum">     545 </span>                :   }
+<span class="lineNum">     546 </span>                : 
+<span class="lineNum">     547 </span><span class="lineCov">           66168:   cinfo-&gt;dest-&gt;next_output_byte = entropy-&gt;next_output_byte;</span>
+<span class="lineNum">     548 </span><span class="lineCov">           66168:   cinfo-&gt;dest-&gt;free_in_buffer = entropy-&gt;free_in_buffer;</span>
+<span class="lineNum">     549 </span>                : 
+<span class="lineNum">     550 </span>                :   <I><FONT COLOR="#B22222">/* Update restart-interval state too */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           66168: branch 1 taken</span>
+</span><span class="lineNum">     551 </span><span class="lineCov">           66168:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;restart_interval) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     552 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (entropy-&gt;restarts_to_go == 0) {</span>
+<span class="lineNum">     553 </span><span class="lineNoCov">               0:       entropy-&gt;restarts_to_go = cinfo-&gt;restart_interval;</span>
+<span class="lineNum">     554 </span><span class="lineNoCov">               0:       entropy-&gt;next_restart_num++;</span>
+<span class="lineNum">     555 </span><span class="lineNoCov">               0:       entropy-&gt;next_restart_num &amp;= 7;</span>
+<span class="lineNum">     556 </span>                :     }
+<span class="lineNum">     557 </span><span class="lineNoCov">               0:     entropy-&gt;restarts_to_go--;</span>
+<span class="lineNum">     558 </span>                :   }
+<span class="lineNum">     559 </span>                : 
+<span class="lineNum">     560 </span><span class="lineCov">           66168:   <B><FONT COLOR="#A020F0">return</FONT></B> TRUE;</span>
+<span class="lineNum">     561 </span>                : }
+<span class="lineNum">     562 </span>                : 
+<span class="lineNum">     563 </span>                : 
+<span class="lineNum">     564 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     565 </span>                :  * MCU encoding for DC successive approximation refinement scan.
+<span class="lineNum">     566 </span>                :  * Note: we assume such scans can be multi-component, although the spec
+<span class="lineNum">     567 </span>                :  * is not very clear on the point.
+<span class="lineNum">     568 </span>                :  */</FONT></I>
+<span class="lineNum">     569 </span>                : 
+<span class="lineNum">     570 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(boolean)
+<span class="lineNum">     571 </span><span class="lineCov">            4506: <B><FONT COLOR="#0000FF">encode_mcu_DC_refine</FONT></B> (j_compress_ptr cinfo, JBLOCKROW *MCU_data)</span>
+<span class="lineNum">     572 </span>                : {
+<span class="lineNum">     573 </span><span class="lineCov">            4506:   phuff_entropy_ptr entropy = (phuff_entropy_ptr) cinfo-&gt;entropy;</span>
+<span class="lineNum">     574 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> temp;
+<span class="lineNum">     575 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> blkn;
+<span class="lineNum">     576 </span><span class="lineCov">            4506:   <B><FONT COLOR="#228B22">int</FONT></B> Al = cinfo-&gt;Al;</span>
+<span class="lineNum">     577 </span>                :   JBLOCKROW block;
+<span class="lineNum">     578 </span>                : 
+<span class="lineNum">     579 </span><span class="lineCov">            4506:   entropy-&gt;next_output_byte = cinfo-&gt;dest-&gt;next_output_byte;</span>
+<span class="lineNum">     580 </span><span class="lineCov">            4506:   entropy-&gt;free_in_buffer = cinfo-&gt;dest-&gt;free_in_buffer;</span>
+<span class="lineNum">     581 </span>                : 
+<span class="lineNum">     582 </span>                :   <I><FONT COLOR="#B22222">/* Emit restart marker if needed */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4506: branch 1 taken</span>
+</span><span class="lineNum">     583 </span><span class="lineCov">            4506:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;restart_interval)</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     584 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (entropy-&gt;restarts_to_go == 0)</span>
+<span class="lineNum">     585 </span><span class="lineNoCov">               0:       emit_restart(entropy, entropy-&gt;next_restart_num);</span>
+<span class="lineNum">     586 </span>                : 
+<span class="lineNum">     587 </span>                :   <I><FONT COLOR="#B22222">/* Encode the MCU data blocks */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           23316: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4506: branch 1 taken</span>
+</span><span class="lineNum">     588 </span><span class="lineCov">           27822:   <B><FONT COLOR="#A020F0">for</FONT></B> (blkn = 0; blkn &lt; cinfo-&gt;blocks_in_MCU; blkn++) {</span>
+<span class="lineNum">     589 </span><span class="lineCov">           23316:     block = MCU_data[blkn];</span>
+<span class="lineNum">     590 </span>                : 
+<span class="lineNum">     591 </span>                :     <I><FONT COLOR="#B22222">/* We simply emit the Al'th bit of the DC coefficient value. */</FONT></I>
+<span class="lineNum">     592 </span><span class="lineCov">           23316:     temp = (*block)[0];</span>
+<span class="lineNum">     593 </span><span class="lineCov">           23316:     emit_bits(entropy, (<B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B>) (temp &gt;&gt; Al), 1);</span>
+<span class="lineNum">     594 </span>                :   }
+<span class="lineNum">     595 </span>                : 
+<span class="lineNum">     596 </span><span class="lineCov">            4506:   cinfo-&gt;dest-&gt;next_output_byte = entropy-&gt;next_output_byte;</span>
+<span class="lineNum">     597 </span><span class="lineCov">            4506:   cinfo-&gt;dest-&gt;free_in_buffer = entropy-&gt;free_in_buffer;</span>
+<span class="lineNum">     598 </span>                : 
+<span class="lineNum">     599 </span>                :   <I><FONT COLOR="#B22222">/* Update restart-interval state too */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4506: branch 1 taken</span>
+</span><span class="lineNum">     600 </span><span class="lineCov">            4506:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;restart_interval) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     601 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (entropy-&gt;restarts_to_go == 0) {</span>
+<span class="lineNum">     602 </span><span class="lineNoCov">               0:       entropy-&gt;restarts_to_go = cinfo-&gt;restart_interval;</span>
+<span class="lineNum">     603 </span><span class="lineNoCov">               0:       entropy-&gt;next_restart_num++;</span>
+<span class="lineNum">     604 </span><span class="lineNoCov">               0:       entropy-&gt;next_restart_num &amp;= 7;</span>
+<span class="lineNum">     605 </span>                :     }
+<span class="lineNum">     606 </span><span class="lineNoCov">               0:     entropy-&gt;restarts_to_go--;</span>
+<span class="lineNum">     607 </span>                :   }
+<span class="lineNum">     608 </span>                : 
+<span class="lineNum">     609 </span><span class="lineCov">            4506:   <B><FONT COLOR="#A020F0">return</FONT></B> TRUE;</span>
+<span class="lineNum">     610 </span>                : }
+<span class="lineNum">     611 </span>                : 
+<span class="lineNum">     612 </span>                : 
+<span class="lineNum">     613 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     614 </span>                :  * MCU encoding for AC successive approximation refinement scan.
+<span class="lineNum">     615 </span>                :  */</FONT></I>
+<span class="lineNum">     616 </span>                : 
+<span class="lineNum">     617 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(boolean)
+<span class="lineNum">     618 </span><span class="lineCov">           66168: <B><FONT COLOR="#0000FF">encode_mcu_AC_refine</FONT></B> (j_compress_ptr cinfo, JBLOCKROW *MCU_data)</span>
+<span class="lineNum">     619 </span>                : {
+<span class="lineNum">     620 </span><span class="lineCov">           66168:   phuff_entropy_ptr entropy = (phuff_entropy_ptr) cinfo-&gt;entropy;</span>
+<span class="lineNum">     621 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> temp;
+<span class="lineNum">     622 </span>                :   <B><FONT COLOR="#228B22">register</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> r, k;
+<span class="lineNum">     623 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> EOB;
+<span class="lineNum">     624 </span>                :   <B><FONT COLOR="#228B22">char</FONT></B> *BR_buffer;
+<span class="lineNum">     625 </span>                :   <B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B> BR;
+<span class="lineNum">     626 </span><span class="lineCov">           66168:   <B><FONT COLOR="#228B22">int</FONT></B> Se = cinfo-&gt;Se;</span>
+<span class="lineNum">     627 </span><span class="lineCov">           66168:   <B><FONT COLOR="#228B22">int</FONT></B> Al = cinfo-&gt;Al;</span>
+<span class="lineNum">     628 </span>                :   JBLOCKROW block;
+<span class="lineNum">     629 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> absvalues[DCTSIZE2];
+<span class="lineNum">     630 </span>                : 
+<span class="lineNum">     631 </span><span class="lineCov">           66168:   entropy-&gt;next_output_byte = cinfo-&gt;dest-&gt;next_output_byte;</span>
+<span class="lineNum">     632 </span><span class="lineCov">           66168:   entropy-&gt;free_in_buffer = cinfo-&gt;dest-&gt;free_in_buffer;</span>
+<span class="lineNum">     633 </span>                : 
+<span class="lineNum">     634 </span>                :   <I><FONT COLOR="#B22222">/* Emit restart marker if needed */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           66168: branch 1 taken</span>
+</span><span class="lineNum">     635 </span><span class="lineCov">           66168:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;restart_interval)</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     636 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (entropy-&gt;restarts_to_go == 0)</span>
+<span class="lineNum">     637 </span><span class="lineNoCov">               0:       emit_restart(entropy, entropy-&gt;next_restart_num);</span>
+<span class="lineNum">     638 </span>                : 
+<span class="lineNum">     639 </span>                :   <I><FONT COLOR="#B22222">/* Encode the MCU data block */</FONT></I>
+<span class="lineNum">     640 </span><span class="lineCov">           66168:   block = MCU_data[0];</span>
+<span class="lineNum">     641 </span>                : 
+<span class="lineNum">     642 </span>                :   <I><FONT COLOR="#B22222">/* It is convenient to make a pre-pass to determine the transformed
+<span class="lineNum">     643 </span>                :    * coefficients' absolute values and the EOB position.
+<span class="lineNum">     644 </span>                :    */</FONT></I>
+<span class="lineNum">     645 </span><span class="lineCov">           66168:   EOB = 0;</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">         4168584: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           66168: branch 1 taken</span>
+</span><span class="lineNum">     646 </span><span class="lineCov">         4234752:   <B><FONT COLOR="#A020F0">for</FONT></B> (k = cinfo-&gt;Ss; k &lt;= Se; k++) {</span>
+<span class="lineNum">     647 </span><span class="lineCov">         4168584:     temp = (*block)[jpeg_natural_order[k]];</span>
+<span class="lineNum">     648 </span>                :     <I><FONT COLOR="#B22222">/* We must apply the point transform by Al.  For AC coefficients this
+<span class="lineNum">     649 </span>                :      * is an integer division with rounding towards 0.  To do this portably
+<span class="lineNum">     650 </span>                :      * in C, we shift after obtaining the absolute value.
+<span class="lineNum">     651 </span>                :      */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           28974: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">         4139610: branch 1 taken</span>
+</span><span class="lineNum">     652 </span><span class="lineCov">         4168584:     <B><FONT COLOR="#A020F0">if</FONT></B> (temp &lt; 0)</span>
+<span class="lineNum">     653 </span><span class="lineCov">           28974:       temp = -temp;		<I><FONT COLOR="#B22222">/* temp is abs value of input */</FONT></I></span>
+<span class="lineNum">     654 </span><span class="lineCov">         4168584:     temp &gt;&gt;= Al;		<I><FONT COLOR="#B22222">/* apply the point transform */</FONT></I></span>
+<span class="lineNum">     655 </span><span class="lineCov">         4168584:     absvalues[k] = temp;	<I><FONT COLOR="#B22222">/* save abs value for main pass */</FONT></I></span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           15288: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">         4153296: branch 1 taken</span>
+</span><span class="lineNum">     656 </span><span class="lineCov">         4168584:     <B><FONT COLOR="#A020F0">if</FONT></B> (temp == 1)</span>
+<span class="lineNum">     657 </span><span class="lineCov">           15288:       EOB = k;			<I><FONT COLOR="#B22222">/* EOB = index of last newly-nonzero coef */</FONT></I></span>
+<span class="lineNum">     658 </span>                :   }
+<span class="lineNum">     659 </span>                : 
+<span class="lineNum">     660 </span>                :   <I><FONT COLOR="#B22222">/* Encode the AC coefficients per section G.1.2.3, fig. G.7 */</FONT></I>
+<span class="lineNum">     661 </span>                :   
+<span class="lineNum">     662 </span><span class="lineCov">           66168:   r = 0;			<I><FONT COLOR="#B22222">/* r = run length of zeros */</FONT></I></span>
+<span class="lineNum">     663 </span><span class="lineCov">           66168:   BR = 0;			<I><FONT COLOR="#B22222">/* BR = count of buffered bits added now */</FONT></I></span>
+<span class="lineNum">     664 </span><span class="lineCov">           66168:   BR_buffer = entropy-&gt;bit_buffer + entropy-&gt;BE; <I><FONT COLOR="#B22222">/* Append bits to buffer */</FONT></I></span>
+<span class="lineNum">     665 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">         4168584: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           66168: branch 1 taken</span>
+</span><span class="lineNum">     666 </span><span class="lineCov">         4234752:   <B><FONT COLOR="#A020F0">for</FONT></B> (k = cinfo-&gt;Ss; k &lt;= Se; k++) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">         4116528: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           52056: branch 1 taken</span>
+</span><span class="lineNum">     667 </span><span class="lineCov">         4168584:     <B><FONT COLOR="#A020F0">if</FONT></B> ((temp = absvalues[k]) == 0) {</span>
+<span class="lineNum">     668 </span><span class="lineCov">         4116528:       r++;</span>
+<span class="lineNum">     669 </span><span class="lineCov">         4116528:       <B><FONT COLOR="#A020F0">continue</FONT></B>;</span>
+<span class="lineNum">     670 </span>                :     }
+<span class="lineNum">     671 </span>                : 
+<span class="lineNum">     672 </span>                :     <I><FONT COLOR="#B22222">/* Emit any required ZRLs, but not if they can be folded into EOB */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            2646: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           50130: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             720: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1926: branch 3 taken</span>
+</span><span class="lineNum">     673 </span><span class="lineCov">          104832:     <B><FONT COLOR="#A020F0">while</FONT></B> (r &gt; 15 &amp;&amp; k &lt;= EOB) {</span>
+<span class="lineNum">     674 </span>                :       <I><FONT COLOR="#B22222">/* emit any pending EOBRUN and the BE correction bits */</FONT></I>
+<span class="lineNum">     675 </span><span class="lineCov">             720:       emit_eobrun(entropy);</span>
+<span class="lineNum">     676 </span>                :       <I><FONT COLOR="#B22222">/* Emit ZRL */</FONT></I>
+<span class="lineNum">     677 </span><span class="lineCov">             720:       emit_symbol(entropy, entropy-&gt;ac_tbl_no, 0xF0);</span>
+<span class="lineNum">     678 </span><span class="lineCov">             720:       r -= 16;</span>
+<span class="lineNum">     679 </span>                :       <I><FONT COLOR="#B22222">/* Emit buffered correction bits that must be associated with ZRL */</FONT></I>
+<span class="lineNum">     680 </span><span class="lineCov">             720:       emit_buffered_bits(entropy, BR_buffer, BR);</span>
+<span class="lineNum">     681 </span><span class="lineCov">             720:       BR_buffer = entropy-&gt;bit_buffer; <I><FONT COLOR="#B22222">/* BE bits are gone now */</FONT></I></span>
+<span class="lineNum">     682 </span><span class="lineCov">             720:       BR = 0;</span>
+<span class="lineNum">     683 </span>                :     }
+<span class="lineNum">     684 </span>                : 
+<span class="lineNum">     685 </span>                :     <I><FONT COLOR="#B22222">/* If the coef was previously nonzero, it only needs a correction bit.
+<span class="lineNum">     686 </span>                :      * NOTE: a straight translation of the spec's figure G.7 would suggest
+<span class="lineNum">     687 </span>                :      * that we also need to test r &gt; 15.  But if r &gt; 15, we can only get here
+<span class="lineNum">     688 </span>                :      * if k &gt; EOB, which implies that this coefficient is not 1.
+<span class="lineNum">     689 </span>                :      */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           36768: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           15288: branch 1 taken</span>
+</span><span class="lineNum">     690 </span><span class="lineCov">           52056:     <B><FONT COLOR="#A020F0">if</FONT></B> (temp &gt; 1) {</span>
+<span class="lineNum">     691 </span>                :       <I><FONT COLOR="#B22222">/* The correction bit is the next bit of the absolute value. */</FONT></I>
+<span class="lineNum">     692 </span><span class="lineCov">           36768:       BR_buffer[BR++] = (<B><FONT COLOR="#228B22">char</FONT></B>) (temp &amp; 1);</span>
+<span class="lineNum">     693 </span><span class="lineCov">           36768:       <B><FONT COLOR="#A020F0">continue</FONT></B>;</span>
+<span class="lineNum">     694 </span>                :     }
+<span class="lineNum">     695 </span>                : 
+<span class="lineNum">     696 </span>                :     <I><FONT COLOR="#B22222">/* Emit any pending EOBRUN and the BE correction bits */</FONT></I>
+<span class="lineNum">     697 </span><span class="lineCov">           15288:     emit_eobrun(entropy);</span>
+<span class="lineNum">     698 </span>                : 
+<span class="lineNum">     699 </span>                :     <I><FONT COLOR="#B22222">/* Count/emit Huffman symbol for run length / number of bits */</FONT></I>
+<span class="lineNum">     700 </span><span class="lineCov">           15288:     emit_symbol(entropy, entropy-&gt;ac_tbl_no, (r &lt;&lt; 4) + 1);</span>
+<span class="lineNum">     701 </span>                : 
+<span class="lineNum">     702 </span>                :     <I><FONT COLOR="#B22222">/* Emit output bit for newly-nonzero coef */</FONT></I>
+<span class="lineNum">     703 </span><span class="lineCov">           15288:     temp = ((*block)[jpeg_natural_order[k]] &lt; 0) ? 0 : 1;</span>
+<span class="lineNum">     704 </span><span class="lineCov">           15288:     emit_bits(entropy, (<B><FONT COLOR="#228B22">unsigned</FONT></B> <B><FONT COLOR="#228B22">int</FONT></B>) temp, 1);</span>
+<span class="lineNum">     705 </span>                : 
+<span class="lineNum">     706 </span>                :     <I><FONT COLOR="#B22222">/* Emit buffered correction bits that must be associated with this code */</FONT></I>
+<span class="lineNum">     707 </span><span class="lineCov">           15288:     emit_buffered_bits(entropy, BR_buffer, BR);</span>
+<span class="lineNum">     708 </span><span class="lineCov">           15288:     BR_buffer = entropy-&gt;bit_buffer; <I><FONT COLOR="#B22222">/* BE bits are gone now */</FONT></I></span>
+<span class="lineNum">     709 </span><span class="lineCov">           15288:     BR = 0;</span>
+<span class="lineNum">     710 </span><span class="lineCov">           15288:     r = 0;			<I><FONT COLOR="#B22222">/* reset zero run length */</FONT></I></span>
+<span class="lineNum">     711 </span>                :   }
+<span class="lineNum">     712 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">              30: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           66138: branch 1 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">               6: branch 2 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">              24: branch 3 taken</span>
+</span><span class="lineNum">     713 </span><span class="lineCov">           66168:   <B><FONT COLOR="#A020F0">if</FONT></B> (r &gt; 0 || BR &gt; 0) {	<I><FONT COLOR="#B22222">/* If there are trailing zeroes, */</FONT></I></span>
+<span class="lineNum">     714 </span><span class="lineCov">           66144:     entropy-&gt;EOBRUN++;		<I><FONT COLOR="#B22222">/* count an EOB */</FONT></I></span>
+<span class="lineNum">     715 </span><span class="lineCov">           66144:     entropy-&gt;BE += BR;		<I><FONT COLOR="#B22222">/* concat my correction bits to older ones */</FONT></I></span>
+<span class="lineNum">     716 </span>                :     <I><FONT COLOR="#B22222">/* We force out the EOB if we risk either:
+<span class="lineNum">     717 </span>                :      * 1. overflow of the EOB counter;
+<span class="lineNum">     718 </span>                :      * 2. overflow of the correction bit buffer during the next MCU.
+<span class="lineNum">     719 </span>                :      */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">           66144: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 2 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           66144: branch 3 taken</span>
+</span><span class="lineNum">     720 </span><span class="lineCov">           66144:     <B><FONT COLOR="#A020F0">if</FONT></B> (entropy-&gt;EOBRUN == 0x7FFF || entropy-&gt;BE &gt; (MAX_CORR_BITS-DCTSIZE2+1))</span>
+<span class="lineNum">     721 </span><span class="lineNoCov">               0:       emit_eobrun(entropy);</span>
+<span class="lineNum">     722 </span>                :   }
+<span class="lineNum">     723 </span>                : 
+<span class="lineNum">     724 </span><span class="lineCov">           66168:   cinfo-&gt;dest-&gt;next_output_byte = entropy-&gt;next_output_byte;</span>
+<span class="lineNum">     725 </span><span class="lineCov">           66168:   cinfo-&gt;dest-&gt;free_in_buffer = entropy-&gt;free_in_buffer;</span>
+<span class="lineNum">     726 </span>                : 
+<span class="lineNum">     727 </span>                :   <I><FONT COLOR="#B22222">/* Update restart-interval state too */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           66168: branch 1 taken</span>
+</span><span class="lineNum">     728 </span><span class="lineCov">           66168:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;restart_interval) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     729 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">if</FONT></B> (entropy-&gt;restarts_to_go == 0) {</span>
+<span class="lineNum">     730 </span><span class="lineNoCov">               0:       entropy-&gt;restarts_to_go = cinfo-&gt;restart_interval;</span>
+<span class="lineNum">     731 </span><span class="lineNoCov">               0:       entropy-&gt;next_restart_num++;</span>
+<span class="lineNum">     732 </span><span class="lineNoCov">               0:       entropy-&gt;next_restart_num &amp;= 7;</span>
+<span class="lineNum">     733 </span>                :     }
+<span class="lineNum">     734 </span><span class="lineNoCov">               0:     entropy-&gt;restarts_to_go--;</span>
+<span class="lineNum">     735 </span>                :   }
+<span class="lineNum">     736 </span>                : 
+<span class="lineNum">     737 </span><span class="lineCov">           66168:   <B><FONT COLOR="#A020F0">return</FONT></B> TRUE;</span>
+<span class="lineNum">     738 </span>                : }
+<span class="lineNum">     739 </span>                : 
+<span class="lineNum">     740 </span>                : 
+<span class="lineNum">     741 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     742 </span>                :  * Finish up at the end of a Huffman-compressed progressive scan.
+<span class="lineNum">     743 </span>                :  */</FONT></I>
+<span class="lineNum">     744 </span>                : 
+<span class="lineNum">     745 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     746 </span><span class="lineCov">            4602: <B><FONT COLOR="#0000FF">finish_pass_phuff</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     747 </span>                : {   
+<span class="lineNum">     748 </span><span class="lineCov">            4602:   phuff_entropy_ptr entropy = (phuff_entropy_ptr) cinfo-&gt;entropy;</span>
+<span class="lineNum">     749 </span>                : 
+<span class="lineNum">     750 </span><span class="lineCov">            4602:   entropy-&gt;next_output_byte = cinfo-&gt;dest-&gt;next_output_byte;</span>
+<span class="lineNum">     751 </span><span class="lineCov">            4602:   entropy-&gt;free_in_buffer = cinfo-&gt;dest-&gt;free_in_buffer;</span>
+<span class="lineNum">     752 </span>                : 
+<span class="lineNum">     753 </span>                :   <I><FONT COLOR="#B22222">/* Flush out any buffered data */</FONT></I>
+<span class="lineNum">     754 </span><span class="lineCov">            4602:   emit_eobrun(entropy);</span>
+<span class="lineNum">     755 </span><span class="lineCov">            4602:   flush_bits(entropy);</span>
+<span class="lineNum">     756 </span>                : 
+<span class="lineNum">     757 </span><span class="lineCov">            4602:   cinfo-&gt;dest-&gt;next_output_byte = entropy-&gt;next_output_byte;</span>
+<span class="lineNum">     758 </span><span class="lineCov">            4602:   cinfo-&gt;dest-&gt;free_in_buffer = entropy-&gt;free_in_buffer;</span>
+<span class="lineNum">     759 </span><span class="lineCov">            4602: }</span>
+<span class="lineNum">     760 </span>                : 
+<span class="lineNum">     761 </span>                : 
+<span class="lineNum">     762 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     763 </span>                :  * Finish up a statistics-gathering pass and create the new Huffman tables.
+<span class="lineNum">     764 </span>                :  */</FONT></I>
+<span class="lineNum">     765 </span>                : 
+<span class="lineNum">     766 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     767 </span><span class="lineCov">            4017: <B><FONT COLOR="#0000FF">finish_pass_gather_phuff</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     768 </span>                : {
+<span class="lineNum">     769 </span><span class="lineCov">            4017:   phuff_entropy_ptr entropy = (phuff_entropy_ptr) cinfo-&gt;entropy;</span>
+<span class="lineNum">     770 </span>                :   boolean is_DC_band;
+<span class="lineNum">     771 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> ci, tbl;
+<span class="lineNum">     772 </span>                :   jpeg_component_info * compptr;
+<span class="lineNum">     773 </span>                :   JHUFF_TBL **htblptr;
+<span class="lineNum">     774 </span>                :   boolean did[NUM_HUFF_TBLS];
+<span class="lineNum">     775 </span>                : 
+<span class="lineNum">     776 </span>                :   <I><FONT COLOR="#B22222">/* Flush out buffered data (all we care about is counting the EOB symbol) */</FONT></I>
+<span class="lineNum">     777 </span><span class="lineCov">            4017:   emit_eobrun(entropy);</span>
+<span class="lineNum">     778 </span>                : 
+<span class="lineNum">     779 </span><span class="lineCov">            4017:   is_DC_band = (cinfo-&gt;Ss == 0);</span>
+<span class="lineNum">     780 </span>                : 
+<span class="lineNum">     781 </span>                :   <I><FONT COLOR="#B22222">/* It's important not to apply jpeg_gen_optimal_table more than once
+<span class="lineNum">     782 </span>                :    * per table, because it clobbers the input frequency counts!
+<span class="lineNum">     783 </span>                :    */</FONT></I>
+<span class="lineNum">     784 </span><span class="lineCov">            4017:   MEMZERO(did, SIZEOF(did));</span>
+<span class="lineNum">     785 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            4563: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4017: branch 1 taken</span>
+</span><span class="lineNum">     786 </span><span class="lineCov">            8580:   <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0; ci &lt; cinfo-&gt;comps_in_scan; ci++) {</span>
+<span class="lineNum">     787 </span><span class="lineCov">            4563:     compptr = cinfo-&gt;cur_comp_info[ci];</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            1131: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3432: branch 1 taken</span>
+</span><span class="lineNum">     788 </span><span class="lineCov">            4563:     <B><FONT COLOR="#A020F0">if</FONT></B> (is_DC_band) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            1131: branch 1 taken</span>
+</span><span class="lineNum">     789 </span><span class="lineCov">            1131:       <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;Ah != 0)	<I><FONT COLOR="#B22222">/* DC refinement needs no table */</FONT></I></span>
+<span class="lineNum">     790 </span><span class="lineNoCov">               0: 	<B><FONT COLOR="#A020F0">continue</FONT></B>;</span>
+<span class="lineNum">     791 </span><span class="lineCov">            1131:       tbl = compptr-&gt;dc_tbl_no;</span>
+<span class="lineNum">     792 </span>                :     } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     793 </span><span class="lineCov">            3432:       tbl = compptr-&gt;ac_tbl_no;</span>
+<span class="lineNum">     794 </span>                :     }
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            4290: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             273: branch 1 taken</span>
+</span><span class="lineNum">     795 </span><span class="lineCov">            4563:     <B><FONT COLOR="#A020F0">if</FONT></B> (! did[tbl]) {</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">             858: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3432: branch 1 taken</span>
+</span><span class="lineNum">     796 </span><span class="lineCov">            4290:       <B><FONT COLOR="#A020F0">if</FONT></B> (is_DC_band)</span>
+<span class="lineNum">     797 </span><span class="lineCov">             858:         htblptr = &amp; cinfo-&gt;dc_huff_tbl_ptrs[tbl];</span>
+<span class="lineNum">     798 </span>                :       <B><FONT COLOR="#A020F0">else</FONT></B>
+<span class="lineNum">     799 </span><span class="lineCov">            3432:         htblptr = &amp; cinfo-&gt;ac_huff_tbl_ptrs[tbl];</span>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            4290: branch 1 taken</span>
+</span><span class="lineNum">     800 </span><span class="lineCov">            4290:       <B><FONT COLOR="#A020F0">if</FONT></B> (*htblptr == NULL)</span>
+<span class="lineNum">     801 </span><span class="lineNoCov">               0:         *htblptr = jpeg_alloc_huff_table((j_common_ptr) cinfo);</span>
+<span class="lineNum">     802 </span><span class="lineCov">            4290:       jpeg_gen_optimal_table(cinfo, *htblptr, entropy-&gt;count_ptrs[tbl]);</span>
+<span class="lineNum">     803 </span><span class="lineCov">            4290:       did[tbl] = TRUE;</span>
+<span class="lineNum">     804 </span>                :     }
+<span class="lineNum">     805 </span>                :   }
+<span class="lineNum">     806 </span><span class="lineCov">            4017: }</span>
+<span class="lineNum">     807 </span>                : 
+<span class="lineNum">     808 </span>                : 
+<span class="lineNum">     809 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     810 </span>                :  * Module initialization routine for progressive Huffman entropy encoding.
+<span class="lineNum">     811 </span>                :  */</FONT></I>
+<span class="lineNum">     812 </span>                : 
+<span class="lineNum">     813 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     814 </span><span class="lineCov">             942: <B><FONT COLOR="#0000FF">jinit_phuff_encoder</FONT></B> (j_compress_ptr cinfo)</span>
+<span class="lineNum">     815 </span>                : {
+<span class="lineNum">     816 </span>                :   phuff_entropy_ptr entropy;
+<span class="lineNum">     817 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> i;
+<span class="lineNum">     818 </span>                : 
+<span class="lineNum">     819 </span><span class="lineCov">             942:   entropy = (phuff_entropy_ptr)</span>
+<span class="lineNum">     820 </span><span class="lineCov">             942:     (*cinfo-&gt;mem-&gt;alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
+<span class="lineNum">     821 </span>                : 				SIZEOF(phuff_entropy_encoder));
+<span class="lineNum">     822 </span><span class="lineCov">             942:   cinfo-&gt;entropy = (<B><FONT COLOR="#228B22">struct</FONT></B> jpeg_entropy_encoder *) entropy;</span>
+<span class="lineNum">     823 </span><span class="lineCov">             942:   entropy-&gt;pub.start_pass = start_pass_phuff;</span>
+<span class="lineNum">     824 </span>                : 
+<span class="lineNum">     825 </span>                :   <I><FONT COLOR="#B22222">/* Mark tables unallocated */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            3768: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">             942: branch 1 taken</span>
+</span><span class="lineNum">     826 </span><span class="lineCov">            4710:   <B><FONT COLOR="#A020F0">for</FONT></B> (i = 0; i &lt; NUM_HUFF_TBLS; i++) {</span>
+<span class="lineNum">     827 </span><span class="lineCov">            3768:     entropy-&gt;derived_tbls[i] = NULL;</span>
+<span class="lineNum">     828 </span><span class="lineCov">            3768:     entropy-&gt;count_ptrs[i] = NULL;</span>
+<span class="lineNum">     829 </span>                :   }
+<span class="lineNum">     830 </span><span class="lineCov">             942:   entropy-&gt;bit_buffer = NULL;	<I><FONT COLOR="#B22222">/* needed only in AC refinement scan */</FONT></I></span>
+<span class="lineNum">     831 </span><span class="lineCov">             942: }</span>
+<span class="lineNum">     832 </span>                : 
+<span class="lineNum">     833 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B> <I><FONT COLOR="#B22222">/* C_PROGRESSIVE_SUPPORTED */</FONT></I>
+</pre>
+<hr>
+Generated: 2016-04-07&nbsp;12:37 by <a href="http://minormatter.com/zcov">zcov</a><br>
+</body>
+</html>

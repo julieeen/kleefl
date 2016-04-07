@@ -1,0 +1,377 @@
+<html>
+<head>
+  <script src="sorttable.js"></script>
+  <script src="sourceview.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <title>zcov: /home/vagrant/workspace/proj_libjpeg/cov/jcmainct.c</title>
+</head>
+<body>
+<center><h1> zcov: <a href="index.html">/home/vagrant/workspace/proj_libjpeg/cov</a>/<a href="jcmainct.c.html">jcmainct.c</a> </h1></center>
+<hr>
+
+
+<center>
+<table id="headertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Files:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Taken:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>59.1%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 13&nbsp;/&nbsp;22 </td>
+  </tr>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Generated:</b> </td>
+    <td bgcolor=#F0F0FF> 2016-04-07&nbsp;17:52 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Branches&nbsp;Executed:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>90.9%<b> </td>
+    <td bgcolor=#F0F0FF align=right> 20&nbsp;/&nbsp;22 </td>
+  </tr>
+  <tr>
+    <td colspan=2> </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Line&nbsp;Coverage:</b> </td>
+    <td bgcolor=#F0F0FF align=right> <b>80.4%</b> </td>
+    <td bgcolor=#F0F0FF align=right> 37&nbsp;/&nbsp;46 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<center>
+<table id="fileheadertable" cellpadding=2>
+  <tr>
+    <td bgcolor=#ACACFF> <b>Programs:</b> </td>
+    <td bgcolor=#F0F0FF> 1 </td>
+    <td width="30"></td>
+    <td bgcolor=#ACACFF> <b>Runs</b> </td>
+    <td bgcolor=#F0F0FF align=right> 5570 </td>
+  </tr>
+</table>
+</center>
+<p>
+<hr>
+
+<pre>
+<span class="lineNum">       1 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">       2 </span>                :  * jcmainct.c
+<span class="lineNum">       3 </span>                :  *
+<span class="lineNum">       4 </span>                :  * Copyright (C) 1994-1996, Thomas G. Lane.
+<span class="lineNum">       5 </span>                :  * This file is part of the Independent JPEG Group's software.
+<span class="lineNum">       6 </span>                :  * For conditions of distribution and use, see the accompanying README file.
+<span class="lineNum">       7 </span>                :  *
+<span class="lineNum">       8 </span>                :  * This file contains the main buffer controller for compression.
+<span class="lineNum">       9 </span>                :  * The main buffer lies between the pre-processor and the JPEG
+<span class="lineNum">      10 </span>                :  * compressor proper; it holds downsampled data in the JPEG colorspace.
+<span class="lineNum">      11 </span>                :  */</FONT></I>
+<span class="lineNum">      12 </span>                : 
+<span class="lineNum">      13 </span>                : #<B><FONT COLOR="#5F9EA0">define</FONT></B> <FONT COLOR="#B8860B">JPEG_INTERNALS</FONT>
+<span class="lineNum">      14 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jinclude.h&quot;</FONT></B>
+<span class="lineNum">      15 </span>                : #<B><FONT COLOR="#5F9EA0">include</FONT></B> <B><FONT COLOR="#BC8F8F">&quot;jpeglib.h&quot;</FONT></B>
+<span class="lineNum">      16 </span>                : 
+<span class="lineNum">      17 </span>                : 
+<span class="lineNum">      18 </span>                : <I><FONT COLOR="#B22222">/* Note: currently, there is no operating mode in which a full-image buffer
+<span class="lineNum">      19 </span>                :  * is needed at this step.  If there were, that mode could not be used with
+<span class="lineNum">      20 </span>                :  * &quot;raw data&quot; input, since this module is bypassed in that case.  However,
+<span class="lineNum">      21 </span>                :  * we've left the code here for possible use in special applications.
+<span class="lineNum">      22 </span>                :  */</FONT></I>
+<span class="lineNum">      23 </span>                : #<B><FONT COLOR="#5F9EA0">undef</FONT></B> <FONT COLOR="#B8860B">FULL_MAIN_BUFFER_SUPPORTED</FONT>
+<span class="lineNum">      24 </span>                : 
+<span class="lineNum">      25 </span>                : 
+<span class="lineNum">      26 </span>                : <I><FONT COLOR="#B22222">/* Private buffer controller object */</FONT></I>
+<span class="lineNum">      27 </span>                : 
+<span class="lineNum">      28 </span>                : <B><FONT COLOR="#228B22">typedef</FONT></B> <B><FONT COLOR="#228B22">struct</FONT></B> {
+<span class="lineNum">      29 </span>                :   <B><FONT COLOR="#228B22">struct</FONT></B> jpeg_c_main_controller pub; <I><FONT COLOR="#B22222">/* public fields */</FONT></I>
+<span class="lineNum">      30 </span>                : 
+<span class="lineNum">      31 </span>                :   JDIMENSION cur_iMCU_row;	<I><FONT COLOR="#B22222">/* number of current iMCU row */</FONT></I>
+<span class="lineNum">      32 </span>                :   JDIMENSION rowgroup_ctr;	<I><FONT COLOR="#B22222">/* counts row groups received in iMCU row */</FONT></I>
+<span class="lineNum">      33 </span>                :   boolean suspended;		<I><FONT COLOR="#B22222">/* remember if we suspended output */</FONT></I>
+<span class="lineNum">      34 </span>                :   J_BUF_MODE pass_mode;		<I><FONT COLOR="#B22222">/* current operating mode */</FONT></I>
+<span class="lineNum">      35 </span>                : 
+<span class="lineNum">      36 </span>                :   <I><FONT COLOR="#B22222">/* If using just a strip buffer, this points to the entire set of buffers
+<span class="lineNum">      37 </span>                :    * (we allocate one for each component).  In the full-image case, this
+<span class="lineNum">      38 </span>                :    * points to the currently accessible strips of the virtual arrays.
+<span class="lineNum">      39 </span>                :    */</FONT></I>
+<span class="lineNum">      40 </span>                :   JSAMPARRAY buffer[MAX_COMPONENTS];
+<span class="lineNum">      41 </span>                : 
+<span class="lineNum">      42 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">FULL_MAIN_BUFFER_SUPPORTED</FONT>
+<span class="lineNum">      43 </span>                :   <I><FONT COLOR="#B22222">/* If using full-image storage, this array holds pointers to virtual-array
+<span class="lineNum">      44 </span>                :    * control blocks for each component.  Unused if not full-image storage.
+<span class="lineNum">      45 </span>                :    */</FONT></I>
+<span class="lineNum">      46 </span>                :   jvirt_sarray_ptr whole_image[MAX_COMPONENTS];
+<span class="lineNum">      47 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      48 </span>                : } my_main_controller;
+<span class="lineNum">      49 </span>                : 
+<span class="lineNum">      50 </span>                : <B><FONT COLOR="#228B22">typedef</FONT></B> my_main_controller * my_main_ptr;
+<span class="lineNum">      51 </span>                : 
+<span class="lineNum">      52 </span>                : 
+<span class="lineNum">      53 </span>                : <I><FONT COLOR="#B22222">/* Forward declarations */</FONT></I>
+<span class="lineNum">      54 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>) process_data_simple_main
+<span class="lineNum">      55 </span>                : 	JPP((j_compress_ptr cinfo, JSAMPARRAY input_buf,
+<span class="lineNum">      56 </span>                : 	     JDIMENSION *in_row_ctr, JDIMENSION in_rows_avail));
+<span class="lineNum">      57 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">FULL_MAIN_BUFFER_SUPPORTED</FONT>
+<span class="lineNum">      58 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>) process_data_buffer_main
+<span class="lineNum">      59 </span>                : 	JPP((j_compress_ptr cinfo, JSAMPARRAY input_buf,
+<span class="lineNum">      60 </span>                : 	     JDIMENSION *in_row_ctr, JDIMENSION in_rows_avail));
+<span class="lineNum">      61 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      62 </span>                : 
+<span class="lineNum">      63 </span>                : 
+<span class="lineNum">      64 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">      65 </span>                :  * Initialize for a processing pass.
+<span class="lineNum">      66 </span>                :  */</FONT></I>
+<span class="lineNum">      67 </span>                : 
+<span class="lineNum">      68 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">      69 </span><span class="lineCov">            3850: <B><FONT COLOR="#0000FF">start_pass_main</FONT></B> (j_compress_ptr cinfo, J_BUF_MODE pass_mode)</span>
+<span class="lineNum">      70 </span>                : {
+<span class="lineNum">      71 </span><span class="lineCov">            3850:   my_main_ptr main = (my_main_ptr) cinfo-&gt;main;</span>
+<span class="lineNum">      72 </span>                : 
+<span class="lineNum">      73 </span>                :   <I><FONT COLOR="#B22222">/* Do nothing in raw-data mode. */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3850: branch 1 taken</span>
+</span><span class="lineNum">      74 </span><span class="lineCov">            3850:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;raw_data_in)</span>
+<span class="lineNum">      75 </span><span class="lineCov">            3850:     <B><FONT COLOR="#A020F0">return</FONT></B>;</span>
+<span class="lineNum">      76 </span>                : 
+<span class="lineNum">      77 </span><span class="lineCov">            3850:   main-&gt;cur_iMCU_row = 0;	<I><FONT COLOR="#B22222">/* initialize counters */</FONT></I></span>
+<span class="lineNum">      78 </span><span class="lineCov">            3850:   main-&gt;rowgroup_ctr = 0;</span>
+<span class="lineNum">      79 </span><span class="lineCov">            3850:   main-&gt;suspended = FALSE;</span>
+<span class="lineNum">      80 </span><span class="lineCov">            3850:   main-&gt;pass_mode = pass_mode;	<I><FONT COLOR="#B22222">/* save mode for use by process_data */</FONT></I></span>
+<span class="lineNum">      81 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            3850: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">      82 </span><span class="lineCov">            3850:   <B><FONT COLOR="#A020F0">switch</FONT></B> (pass_mode) {</span>
+<span class="lineNum">      83 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">JBUF_PASS_THRU</FONT></B>:
+<span class="lineNum">      84 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">FULL_MAIN_BUFFER_SUPPORTED</FONT>
+<span class="lineNum">      85 </span>                :     <B><FONT COLOR="#A020F0">if</FONT></B> (main-&gt;whole_image[0] != NULL)
+<span class="lineNum">      86 </span>                :       ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
+<span class="lineNum">      87 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      88 </span><span class="lineCov">            3850:     main-&gt;pub.process_data = process_data_simple_main;</span>
+<span class="lineNum">      89 </span><span class="lineCov">            3850:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">      90 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">FULL_MAIN_BUFFER_SUPPORTED</FONT>
+<span class="lineNum">      91 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">JBUF_SAVE_SOURCE</FONT></B>:
+<span class="lineNum">      92 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">JBUF_CRANK_DEST</FONT></B>:
+<span class="lineNum">      93 </span>                :   <B><FONT COLOR="#A020F0">case</FONT></B> <B><FONT COLOR="#5F9EA0">JBUF_SAVE_AND_PASS</FONT></B>:
+<span class="lineNum">      94 </span>                :     <B><FONT COLOR="#A020F0">if</FONT></B> (main-&gt;whole_image[0] == NULL)
+<span class="lineNum">      95 </span>                :       ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
+<span class="lineNum">      96 </span>                :     main-&gt;pub.process_data = process_data_buffer_main;
+<span class="lineNum">      97 </span>                :     <B><FONT COLOR="#A020F0">break</FONT></B>;
+<span class="lineNum">      98 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">      99 </span>                :   <B><FONT COLOR="#5F9EA0">default</FONT></B>:
+<span class="lineNum">     100 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);</span>
+<span class="lineNum">     101 </span><span class="lineNoCov">               0:     <B><FONT COLOR="#A020F0">break</FONT></B>;</span>
+<span class="lineNum">     102 </span>                :   }
+<span class="lineNum">     103 </span>                : }
+<span class="lineNum">     104 </span>                : 
+<span class="lineNum">     105 </span>                : 
+<span class="lineNum">     106 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     107 </span>                :  * Process some data.
+<span class="lineNum">     108 </span>                :  * This routine handles the simple pass-through mode,
+<span class="lineNum">     109 </span>                :  * where we have only a strip buffer.
+<span class="lineNum">     110 </span>                :  */</FONT></I>
+<span class="lineNum">     111 </span>                : 
+<span class="lineNum">     112 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     113 </span><span class="lineCov">          355031: <B><FONT COLOR="#0000FF">process_data_simple_main</FONT></B> (j_compress_ptr cinfo,</span>
+<span class="lineNum">     114 </span>                : 			  JSAMPARRAY input_buf, JDIMENSION *in_row_ctr,
+<span class="lineNum">     115 </span>                : 			  JDIMENSION in_rows_avail)
+<span class="lineNum">     116 </span>                : {
+<span class="lineNum">     117 </span><span class="lineCov">          355031:   my_main_ptr main = (my_main_ptr) cinfo-&gt;main;</span>
+<span class="lineNum">     118 </span>                : 
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          388708: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            2388: branch 1 taken</span>
+</span><span class="lineNum">     119 </span><span class="lineCov">          746127:   <B><FONT COLOR="#A020F0">while</FONT></B> (main-&gt;cur_iMCU_row &lt; cinfo-&gt;total_iMCU_rows) {</span>
+<span class="lineNum">     120 </span>                :     <I><FONT COLOR="#B22222">/* Read input data if we haven't filled the main buffer yet */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          388708: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     121 </span><span class="lineCov">          388708:     <B><FONT COLOR="#A020F0">if</FONT></B> (main-&gt;rowgroup_ctr &lt; DCTSIZE)</span>
+<span class="lineNum">     122 </span><span class="lineCov">          777416:       (*cinfo-&gt;prep-&gt;pre_process_data) (cinfo,</span>
+<span class="lineNum">     123 </span>                : 					input_buf, in_row_ctr, in_rows_avail,
+<span class="lineNum">     124 </span><span class="lineCov">          388708: 					main-&gt;buffer, &amp;main-&gt;rowgroup_ctr,</span>
+<span class="lineNum">     125 </span>                : 					(JDIMENSION) DCTSIZE);
+<span class="lineNum">     126 </span>                : 
+<span class="lineNum">     127 </span>                :     <I><FONT COLOR="#B22222">/* If we don't have a full iMCU row buffered, return to application for
+<span class="lineNum">     128 </span>                :      * more data.  Note that preprocessor will always pad to fill the iMCU row
+<span class="lineNum">     129 </span>                :      * at the bottom of the image.
+<span class="lineNum">     130 </span>                :      */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">          352643: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           36065: branch 1 taken</span>
+</span><span class="lineNum">     131 </span><span class="lineCov">          388708:     <B><FONT COLOR="#A020F0">if</FONT></B> (main-&gt;rowgroup_ctr != DCTSIZE)</span>
+<span class="lineNum">     132 </span><span class="lineCov">          352643:       <B><FONT COLOR="#A020F0">return</FONT></B>;</span>
+<span class="lineNum">     133 </span>                : 
+<span class="lineNum">     134 </span>                :     <I><FONT COLOR="#B22222">/* Send the completed row to the compressor */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           36065: branch 2 taken</span>
+</span><span class="lineNum">     135 </span><span class="lineCov">           36065:     <B><FONT COLOR="#A020F0">if</FONT></B> (! (*cinfo-&gt;coef-&gt;compress_data) (cinfo, main-&gt;buffer)) {</span>
+<span class="lineNum">     136 </span>                :       <I><FONT COLOR="#B22222">/* If compressor did not consume the whole row, then we must need to
+<span class="lineNum">     137 </span>                :        * suspend processing and return to the application.  In this situation
+<span class="lineNum">     138 </span>                :        * we pretend we didn't yet consume the last input row; otherwise, if
+<span class="lineNum">     139 </span>                :        * it happened to be the last row of the image, the application would
+<span class="lineNum">     140 </span>                :        * think we were done.
+<span class="lineNum">     141 </span>                :        */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchNotTaken">               0: branch 1 not taken</span>
+</span><span class="lineNum">     142 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#A020F0">if</FONT></B> (! main-&gt;suspended) {</span>
+<span class="lineNum">     143 </span><span class="lineNoCov">               0: 	(*in_row_ctr)--;</span>
+<span class="lineNum">     144 </span><span class="lineNoCov">               0: 	main-&gt;suspended = TRUE;</span>
+<span class="lineNum">     145 </span>                :       }
+<span class="lineNum">     146 </span><span class="lineNoCov">               0:       <B><FONT COLOR="#A020F0">return</FONT></B>;</span>
+<span class="lineNum">     147 </span>                :     }
+<span class="lineNum">     148 </span>                :     <I><FONT COLOR="#B22222">/* We did finish the row.  Undo our little suspension hack if a previous
+<span class="lineNum">     149 </span>                :      * call suspended; then mark the main buffer empty.
+<span class="lineNum">     150 </span>                :      */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">           36065: branch 1 taken</span>
+</span><span class="lineNum">     151 </span><span class="lineCov">           36065:     <B><FONT COLOR="#A020F0">if</FONT></B> (main-&gt;suspended) {</span>
+<span class="lineNum">     152 </span><span class="lineNoCov">               0:       (*in_row_ctr)++;</span>
+<span class="lineNum">     153 </span><span class="lineNoCov">               0:       main-&gt;suspended = FALSE;</span>
+<span class="lineNum">     154 </span>                :     }
+<span class="lineNum">     155 </span><span class="lineCov">           36065:     main-&gt;rowgroup_ctr = 0;</span>
+<span class="lineNum">     156 </span><span class="lineCov">           36065:     main-&gt;cur_iMCU_row++;</span>
+<span class="lineNum">     157 </span>                :   }
+<span class="lineNum">     158 </span>                : }
+<span class="lineNum">     159 </span>                : 
+<span class="lineNum">     160 </span>                : 
+<span class="lineNum">     161 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">FULL_MAIN_BUFFER_SUPPORTED</FONT>
+<span class="lineNum">     162 </span>                : 
+<span class="lineNum">     163 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     164 </span>                :  * Process some data.
+<span class="lineNum">     165 </span>                :  * This routine handles all of the modes that use a full-size buffer.
+<span class="lineNum">     166 </span>                :  */</FONT></I>
+<span class="lineNum">     167 </span>                : 
+<span class="lineNum">     168 </span>                : <B><FONT COLOR="#0000FF">METHODDEF</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     169 </span>                : <B><FONT COLOR="#0000FF">process_data_buffer_main</FONT></B> (j_compress_ptr cinfo,
+<span class="lineNum">     170 </span>                : 			  JSAMPARRAY input_buf, JDIMENSION *in_row_ctr,
+<span class="lineNum">     171 </span>                : 			  JDIMENSION in_rows_avail)
+<span class="lineNum">     172 </span>                : {
+<span class="lineNum">     173 </span>                :   my_main_ptr main = (my_main_ptr) cinfo-&gt;main;
+<span class="lineNum">     174 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> ci;
+<span class="lineNum">     175 </span>                :   jpeg_component_info *compptr;
+<span class="lineNum">     176 </span>                :   boolean writing = (main-&gt;pass_mode != JBUF_CRANK_DEST);
+<span class="lineNum">     177 </span>                : 
+<span class="lineNum">     178 </span>                :   <B><FONT COLOR="#A020F0">while</FONT></B> (main-&gt;cur_iMCU_row &lt; cinfo-&gt;total_iMCU_rows) {
+<span class="lineNum">     179 </span>                :     <I><FONT COLOR="#B22222">/* Realign the virtual buffers if at the start of an iMCU row. */</FONT></I>
+<span class="lineNum">     180 </span>                :     <B><FONT COLOR="#A020F0">if</FONT></B> (main-&gt;rowgroup_ctr == 0) {
+<span class="lineNum">     181 </span>                :       <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0, compptr = cinfo-&gt;comp_info; ci &lt; cinfo-&gt;num_components;
+<span class="lineNum">     182 </span>                : 	   ci++, compptr++) {
+<span class="lineNum">     183 </span>                : 	main-&gt;buffer[ci] = (*cinfo-&gt;mem-&gt;access_virt_sarray)
+<span class="lineNum">     184 </span>                : 	  ((j_common_ptr) cinfo, main-&gt;whole_image[ci],
+<span class="lineNum">     185 </span>                : 	   main-&gt;cur_iMCU_row * (compptr-&gt;v_samp_factor * DCTSIZE),
+<span class="lineNum">     186 </span>                : 	   (JDIMENSION) (compptr-&gt;v_samp_factor * DCTSIZE), writing);
+<span class="lineNum">     187 </span>                :       }
+<span class="lineNum">     188 </span>                :       <I><FONT COLOR="#B22222">/* In a read pass, pretend we just read some source data. */</FONT></I>
+<span class="lineNum">     189 </span>                :       <B><FONT COLOR="#A020F0">if</FONT></B> (! writing) {
+<span class="lineNum">     190 </span>                : 	*in_row_ctr += cinfo-&gt;max_v_samp_factor * DCTSIZE;
+<span class="lineNum">     191 </span>                : 	main-&gt;rowgroup_ctr = DCTSIZE;
+<span class="lineNum">     192 </span>                :       }
+<span class="lineNum">     193 </span>                :     }
+<span class="lineNum">     194 </span>                : 
+<span class="lineNum">     195 </span>                :     <I><FONT COLOR="#B22222">/* If a write pass, read input data until the current iMCU row is full. */</FONT></I>
+<span class="lineNum">     196 </span>                :     <I><FONT COLOR="#B22222">/* Note: preprocessor will pad if necessary to fill the last iMCU row. */</FONT></I>
+<span class="lineNum">     197 </span>                :     <B><FONT COLOR="#A020F0">if</FONT></B> (writing) {
+<span class="lineNum">     198 </span>                :       (*cinfo-&gt;prep-&gt;pre_process_data) (cinfo,
+<span class="lineNum">     199 </span>                : 					input_buf, in_row_ctr, in_rows_avail,
+<span class="lineNum">     200 </span>                : 					main-&gt;buffer, &amp;main-&gt;rowgroup_ctr,
+<span class="lineNum">     201 </span>                : 					(JDIMENSION) DCTSIZE);
+<span class="lineNum">     202 </span>                :       <I><FONT COLOR="#B22222">/* Return to application if we need more data to fill the iMCU row. */</FONT></I>
+<span class="lineNum">     203 </span>                :       <B><FONT COLOR="#A020F0">if</FONT></B> (main-&gt;rowgroup_ctr &lt; DCTSIZE)
+<span class="lineNum">     204 </span>                : 	<B><FONT COLOR="#A020F0">return</FONT></B>;
+<span class="lineNum">     205 </span>                :     }
+<span class="lineNum">     206 </span>                : 
+<span class="lineNum">     207 </span>                :     <I><FONT COLOR="#B22222">/* Emit data, unless this is a sink-only pass. */</FONT></I>
+<span class="lineNum">     208 </span>                :     <B><FONT COLOR="#A020F0">if</FONT></B> (main-&gt;pass_mode != JBUF_SAVE_SOURCE) {
+<span class="lineNum">     209 </span>                :       <B><FONT COLOR="#A020F0">if</FONT></B> (! (*cinfo-&gt;coef-&gt;compress_data) (cinfo, main-&gt;buffer)) {
+<span class="lineNum">     210 </span>                : 	<I><FONT COLOR="#B22222">/* If compressor did not consume the whole row, then we must need to
+<span class="lineNum">     211 </span>                : 	 * suspend processing and return to the application.  In this situation
+<span class="lineNum">     212 </span>                : 	 * we pretend we didn't yet consume the last input row; otherwise, if
+<span class="lineNum">     213 </span>                : 	 * it happened to be the last row of the image, the application would
+<span class="lineNum">     214 </span>                : 	 * think we were done.
+<span class="lineNum">     215 </span>                : 	 */</FONT></I>
+<span class="lineNum">     216 </span>                : 	<B><FONT COLOR="#A020F0">if</FONT></B> (! main-&gt;suspended) {
+<span class="lineNum">     217 </span>                : 	  (*in_row_ctr)--;
+<span class="lineNum">     218 </span>                : 	  main-&gt;suspended = TRUE;
+<span class="lineNum">     219 </span>                : 	}
+<span class="lineNum">     220 </span>                : 	<B><FONT COLOR="#A020F0">return</FONT></B>;
+<span class="lineNum">     221 </span>                :       }
+<span class="lineNum">     222 </span>                :       <I><FONT COLOR="#B22222">/* We did finish the row.  Undo our little suspension hack if a previous
+<span class="lineNum">     223 </span>                :        * call suspended; then mark the main buffer empty.
+<span class="lineNum">     224 </span>                :        */</FONT></I>
+<span class="lineNum">     225 </span>                :       <B><FONT COLOR="#A020F0">if</FONT></B> (main-&gt;suspended) {
+<span class="lineNum">     226 </span>                : 	(*in_row_ctr)++;
+<span class="lineNum">     227 </span>                : 	main-&gt;suspended = FALSE;
+<span class="lineNum">     228 </span>                :       }
+<span class="lineNum">     229 </span>                :     }
+<span class="lineNum">     230 </span>                : 
+<span class="lineNum">     231 </span>                :     <I><FONT COLOR="#B22222">/* If get here, we are done with this iMCU row.  Mark buffer empty. */</FONT></I>
+<span class="lineNum">     232 </span>                :     main-&gt;rowgroup_ctr = 0;
+<span class="lineNum">     233 </span>                :     main-&gt;cur_iMCU_row++;
+<span class="lineNum">     234 </span>                :   }
+<span class="lineNum">     235 </span>                : }
+<span class="lineNum">     236 </span>                : 
+<span class="lineNum">     237 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B> <I><FONT COLOR="#B22222">/* FULL_MAIN_BUFFER_SUPPORTED */</FONT></I>
+<span class="lineNum">     238 </span>                : 
+<span class="lineNum">     239 </span>                : 
+<span class="lineNum">     240 </span>                : <I><FONT COLOR="#B22222">/*
+<span class="lineNum">     241 </span>                :  * Initialize main buffer controller.
+<span class="lineNum">     242 </span>                :  */</FONT></I>
+<span class="lineNum">     243 </span>                : 
+<span class="lineNum">     244 </span>                : <B><FONT COLOR="#0000FF">GLOBAL</FONT></B>(<B><FONT COLOR="#228B22">void</FONT></B>)
+<span class="lineNum">     245 </span><span class="lineCov">            3850: <B><FONT COLOR="#0000FF">jinit_c_main_controller</FONT></B> (j_compress_ptr cinfo, boolean need_full_buffer)</span>
+<span class="lineNum">     246 </span>                : {
+<span class="lineNum">     247 </span>                :   my_main_ptr main;
+<span class="lineNum">     248 </span>                :   <B><FONT COLOR="#228B22">int</FONT></B> ci;
+<span class="lineNum">     249 </span>                :   jpeg_component_info *compptr;
+<span class="lineNum">     250 </span>                : 
+<span class="lineNum">     251 </span><span class="lineCov">            3850:   main = (my_main_ptr)</span>
+<span class="lineNum">     252 </span><span class="lineCov">            3850:     (*cinfo-&gt;mem-&gt;alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
+<span class="lineNum">     253 </span>                : 				SIZEOF(my_main_controller));
+<span class="lineNum">     254 </span><span class="lineCov">            3850:   cinfo-&gt;main = (<B><FONT COLOR="#228B22">struct</FONT></B> jpeg_c_main_controller *) main;</span>
+<span class="lineNum">     255 </span><span class="lineCov">            3850:   main-&gt;pub.start_pass = start_pass_main;</span>
+<span class="lineNum">     256 </span>                : 
+<span class="lineNum">     257 </span>                :   <I><FONT COLOR="#B22222">/* We don't need to create a buffer in raw-data mode. */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3850: branch 1 taken</span>
+</span><span class="lineNum">     258 </span><span class="lineCov">            3850:   <B><FONT COLOR="#A020F0">if</FONT></B> (cinfo-&gt;raw_data_in)</span>
+<span class="lineNum">     259 </span><span class="lineCov">            3850:     <B><FONT COLOR="#A020F0">return</FONT></B>;</span>
+<span class="lineNum">     260 </span>                : 
+<span class="lineNum">     261 </span>                :   <I><FONT COLOR="#B22222">/* Create the buffer.  It holds downsampled data, so each component
+<span class="lineNum">     262 </span>                :    * may be of a different size.
+<span class="lineNum">     263 </span>                :    */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchNotTaken">               0: branch 0 not taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3850: branch 1 taken</span>
+</span><span class="lineNum">     264 </span><span class="lineCov">            3850:   <B><FONT COLOR="#A020F0">if</FONT></B> (need_full_buffer) {</span>
+<span class="lineNum">     265 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">FULL_MAIN_BUFFER_SUPPORTED</FONT>
+<span class="lineNum">     266 </span>                :     <I><FONT COLOR="#B22222">/* Allocate a full-image virtual array for each component */</FONT></I>
+<span class="lineNum">     267 </span>                :     <I><FONT COLOR="#B22222">/* Note we pad the bottom to a multiple of the iMCU height */</FONT></I>
+<span class="lineNum">     268 </span>                :     <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0, compptr = cinfo-&gt;comp_info; ci &lt; cinfo-&gt;num_components;
+<span class="lineNum">     269 </span>                : 	 ci++, compptr++) {
+<span class="lineNum">     270 </span>                :       main-&gt;whole_image[ci] = (*cinfo-&gt;mem-&gt;request_virt_sarray)
+<span class="lineNum">     271 </span>                : 	((j_common_ptr) cinfo, JPOOL_IMAGE, FALSE,
+<span class="lineNum">     272 </span>                : 	 compptr-&gt;width_in_blocks * DCTSIZE,
+<span class="lineNum">     273 </span>                : 	 (JDIMENSION) jround_up((<B><FONT COLOR="#228B22">long</FONT></B>) compptr-&gt;height_in_blocks,
+<span class="lineNum">     274 </span>                : 				(<B><FONT COLOR="#228B22">long</FONT></B>) compptr-&gt;v_samp_factor) * DCTSIZE,
+<span class="lineNum">     275 </span>                : 	 (JDIMENSION) (compptr-&gt;v_samp_factor * DCTSIZE));
+<span class="lineNum">     276 </span>                :     }
+<span class="lineNum">     277 </span>                : #<B><FONT COLOR="#5F9EA0">else</FONT></B>
+<span class="lineNum">     278 </span><span class="lineNoCov">               0:     ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);</span>
+<span class="lineNum">     279 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     280 </span>                :   } <B><FONT COLOR="#A020F0">else</FONT></B> {
+<span class="lineNum">     281 </span>                : #<B><FONT COLOR="#5F9EA0">ifdef</FONT></B> <FONT COLOR="#B8860B">FULL_MAIN_BUFFER_SUPPORTED</FONT>
+<span class="lineNum">     282 </span>                :     main-&gt;whole_image[0] = NULL; <I><FONT COLOR="#B22222">/* flag for no virtual arrays */</FONT></I>
+<span class="lineNum">     283 </span>                : #<B><FONT COLOR="#5F9EA0">endif</FONT></B>
+<span class="lineNum">     284 </span>                :     <I><FONT COLOR="#B22222">/* Allocate a strip buffer for each component */</FONT></I>
+<span class="branchGroup"><span class="lineNum">         </span><span class="branchTaken">            8148: branch 0 taken</span>
+<span class="lineNum">         </span><span class="branchTaken">            3850: branch 1 taken</span>
+</span><span class="lineNum">     285 </span><span class="lineCov">           15848:     <B><FONT COLOR="#A020F0">for</FONT></B> (ci = 0, compptr = cinfo-&gt;comp_info; ci &lt; cinfo-&gt;num_components;</span>
+<span class="lineNum">     286 </span><span class="lineCov">            8148: 	 ci++, compptr++) {</span>
+<span class="lineNum">     287 </span><span class="lineCov">           16296:       main-&gt;buffer[ci] = (*cinfo-&gt;mem-&gt;alloc_sarray)</span>
+<span class="lineNum">     288 </span><span class="lineCov">           24444: 	((j_common_ptr) cinfo, JPOOL_IMAGE,</span>
+<span class="lineNum">     289 </span><span class="lineCov">            8148: 	 compptr-&gt;width_in_blocks * DCTSIZE,</span>
+<span class="lineNum">     290 </span><span class="lineCov">            8148: 	 (JDIMENSION) (compptr-&gt;v_samp_factor * DCTSIZE));</span>
+<span class="lineNum">     291 </span>                :     }
+<span class="lineNum">     292 </span>                :   }
+<span class="lineNum">     293 </span>                : }
+</pre>
+<hr>
+Generated: 2016-04-07&nbsp;17:52 by <a href="http://minormatter.com/zcov">zcov</a><br>
+</body>
+</html>
