@@ -32,11 +32,10 @@ function clean_afl {
 
 # Build with wllvm (klee)
 function make_klee {
-	echo "make klee"
-	export LLVM_COMPILER=clang	# Export clang as compiler for wllvm
-	
+	echo "make klee"	
 	mkdir $KLEE_DIR
 	cd $KLEE_DIR
+	export LLVM_COMPILER=clang	# Export clang as compiler for wllvm
 	# -g : Generate source level debug information
 	CC=wllvm CXX=wllvm++ CFLAGS=-g ../configure
 	make

@@ -1,0 +1,28 @@
+<html><head>
+<style>
+table { width:100%; text-align: center;}
+table, th, td { border: 1px solid black; border-collapse: collapse;}
+th, td { padding: 5px; text-align: center;}
+table#t01 tr:nth-child(even) { background-color: #eee;}
+table#t01 tr:nth-child(odd) { background-color:#fff;}
+table#t01 th { background-color: white; color: black; }
+</style>
+</head><body><h3>Fuzzing configuration</h3><table border="0" id="t01"><th>fuzzer ID</th><th>commandline</th><th>runtime</th><th>cycles</th><th>exec</th><th>exec per sec</th><th>paths total</th><th>afl crashes</th><tr><td>fuzzer44</td><td style="text-align:left">./app -f @@</td><td>0:10:05</td><td>24</td><td>1291769</td><td>2200.99</td><td>14</td><td>0</td><tr><td>fuzzer0</td><td style="text-align:left">./app -f @@</td><td>0:10:01</td><td>16</td><td>1298070</td><td>2253.46</td><td>19</td><td>0</td></tr></table></br><h3>Input Files</h3><table border="0" id="t01"><tr><th>filename</th><th>data</th></tr><tr><td>testfile</td><td><textarea rows="18" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 6761 7262 6167 650a 3130 3032 3331 3030  garbage.10023100
+0000010: 310a 6164 616b 6175 6531 320a 6162 6364  1.adakaue12.abcd
+0000020: 6566 6731 3233 0a68 696a 6b6c 6d6e 6f70  efg123.hijklmnop
+0000030: 3131 0a31 3331 6672 3132 0a64 6168 736b  11.131fr12.dahsk
+0000040: 6831 3332 6831 0a67 6172 6261 6765 0a31  h132h1.garbage.1
+0000050: 3030 3233 3130 3031 0a61 6461 6b61 7565  00231001.adakaue
+0000060: 3132 0a61 6263 6465 6667 3132 330a 6869  12.abcdefg123.hi
+0000070: 6a6b 6c6d 6e6f 7031 310a 3133 3166 7231  jklmnop11.131fr1
+0000080: 320a 6461 6873 6b68 3133 3268 310a 6761  2.dahskh132h1.ga
+0000090: 7262 6167 650a 3130 3032 3331 3030 310a  rbage.100231001.
+00000a0: 6164 616b 6175 6531 320a 6162 6364 6566  adakaue12.abcdef
+00000b0: 6731 3233 0a68 696a 6b6c 6d6e 6f70 3131  g123.hijklmnop11
+00000c0: 0a31 3331 6672 3132 0a64 6168 736b 6831  .131fr12.dahskh1
+00000d0: 3332 6831 0a67 6172 6261 6765 0a31 3030  32h1.garbage.100
+00000e0: 3233 3130 3031 0a61 6461 6b61 7565 3132  231001.adakaue12
+00000f0: 0a61 6263 6465 6667 3132 330a 6869 6a6b  .abcdefg123.hijk
+0000100: 6c6d 6e6f 7031 310a 3133 3166 7231 320a  lmnop11.131fr12.
+0000110: 6461 6873 6b68 3133 3268 310a            dahskh132h1.
+</textarea></td></tr></table>

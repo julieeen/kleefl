@@ -403,7 +403,7 @@ def create_setup_page():
 
 	# build fuzzer instance overview
 	page += '<table border="0" id="t01">'
-	page += "<th>fuzzer ID</th><th>commandline</th><th>runtime</th><th>cycles</th><th>exec</th><th>exec per sec</th><th>afl crashes</th><th>unique crashes</th>"
+	page += "<th>fuzzer ID</th><th>commandline</th><th>runtime</th><th>cycles</th><th>exec</th><th>exec per sec</th><th>paths total</th><th>afl crashes</th>"
 	for fuzzer in fuzzer_coll:
 		page += "<tr>"
 		page += "<td>"+fuzzer.id+"</td>"
@@ -412,7 +412,7 @@ def create_setup_page():
 		page += "<td>"+str(fuzzer.last_update-fuzzer.start_time)+"</td>"
 		
 		for line in fuzzer.stats:
-			tag = ["cycles_done", "execs_done", "execs_per_sec"]
+			tag = ["cycles_done", "execs_done", "execs_per_sec", "paths_total"]
 			for item in tag:
 				if(item in line):
 					value = line.split(": ")[1].strip()
@@ -420,12 +420,6 @@ def create_setup_page():
 
 		page += "<td>"+str(len(fuzzer.crashes))+"</td>"
 
-		value = 0
-		for sig, info in unique_crashes.iteritems():
-			for filepaths in info[1]:
-				if(fuzzer.id in filepaths):
-					value += 1
-		page += "<td>"+str(value)+"</td>"
 	page += "</tr>"
 	page += "</table>"
 

@@ -7,43 +7,43 @@ table#t01 tr:nth-child(even) { background-color: #eee;}
 table#t01 tr:nth-child(odd) { background-color:#fff;}
 table#t01 th { background-color: white; color: black; }
 </style>
-</head><body><h3>Report for 48fd8bdb8bf6f27df71c82e38a1f8e54.48fd8bdb8bf6f27df71c82e38a1f8e54</h3><table border="0" id="t01" style="width:80%;"><th>Description</th><th>Data</th><tr><td> CMD </td><td style="text-align:left">app -dc i @@</br>app -d @@</br>app -D -v @@</br>app -optimis @@</br></td></tr><tr><td> Found after </td><td style="text-align:left">0:10:48.441468</td></td></tr><tr><td> Description </td><td style="text-align:left">Possible stack corruption</td></td></tr><tr><td> Signal </td><td style="text-align:left">Program terminated with signal SIGSEGV, Segmentation fault.</td></td></tr><tr><td> Classification </td><td style="text-align:left">EXPLOITABLE</td></td></tr><tr><td> Occurence </td><td style="text-align:left">2016-04-07 17:41:43.441468</td></td></tr><tr><td> Files </td><td style="text-align:left">fuzz/out/fuzzer71/crashes/id:000011,sig:11,src:000052+000247,op:splice,rep:8</br><textarea rows="7" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5033 3123 0a31 3150 3923 0a31 5538 313a  P31#.11P9#.1U81:
+</head><body><h3>Report for 48fd8bdb8bf6f27df71c82e38a1f8e54.48fd8bdb8bf6f27df71c82e38a1f8e54</h3><table border="0" id="t01" style="width:80%;"><th>Description</th><th>Data</th><tr><td> CMD </td><td style="text-align:left">app -dc i @@</br>app -d @@</br>app -D -v @@</br>app -optimis @@</br></td></tr><tr><td> Found after </td><td style="text-align:left">0:10:48.441468</td></td></tr><tr><td> Description </td><td style="text-align:left">Possible stack corruption</td></td></tr><tr><td> Signal </td><td style="text-align:left">Program terminated with signal SIGSEGV, Segmentation fault.</td></td></tr><tr><td> Classification </td><td style="text-align:left">EXPLOITABLE</td></td></tr><tr><td> Occurence </td><td style="text-align:left">2016-04-07 17:41:43.441468</td></td></tr><tr><td> Files </td><td style="text-align:left">fuzz/out_kleefl/fuzzer71/crashes/id:000011,sig:11,src:000052+000247,op:splice,rep:8</br><textarea rows="7" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5033 3123 0a31 3150 3923 0a31 5538 313a  P31#.11P9#.1U81:
 0000010: 0a31 5036 230a 3138 3831 3a0a 3150 3623  .1P6#.1881:.1P6#
 0000020: 0a31 3838 3131 3838 313a 0a31 5036 0100  .18811881:.1P6..
 0000030: 17e7 230a b9b9 b9b9 b9b9 b9b9 b9b9 b9b9  ..#.............
 0000040: b9b9 b9b9 b9b9 b931 5036 233a 0a31 6b36  .......1P6#:.1k6
 0000050: 230a 3138 3831 3138 3831 3a0a 3150 3601  #.18811881:.1P6.
 0000060: 0038 3816 3a0a 3150 3623 4631 3a         .88.:.1P6#F1:
-</textarea></br>fuzz/out/fuzzer71/crashes/id:000005,sig:11,src:000042+000264,op:splice,rep:16</br><textarea rows="5" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5033 3123 0a31 3950 3623 0a31 0a31 3131  P31#.19P6#.1.111
+</textarea></br>fuzz/out_kleefl/fuzzer71/crashes/id:000005,sig:11,src:000042+000264,op:splice,rep:16</br><textarea rows="5" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5033 3123 0a31 3950 3623 0a31 0a31 3131  P31#.19P6#.1.111
 0000010: 3131 3131 3123 ff00 0000 230a 3138 3861  11111#....#.188a
 0000020: 0004 0000 0a31 5016 6823 0a31 5003 e80a  .....1P.h#.1P...
 0000030: 6100 0400 000a 3150 ee23 1723 0a01 0000  a.....1P.#.#....
 0000040: e839                                     .9
-</textarea></br>fuzz/out/fuzzer71/crashes/id:000010,sig:11,src:000052+000247,op:splice,rep:2</br><textarea rows="5" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5033 3123 0a31 3150 3923 0a31 5a38 313a  P31#.11P9#.1Z81:
+</textarea></br>fuzz/out_kleefl/fuzzer71/crashes/id:000010,sig:11,src:000052+000247,op:splice,rep:2</br><textarea rows="5" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5033 3123 0a31 3150 3923 0a31 5a38 313a  P31#.11P9#.1Z81:
 0000010: 0a31 5036 230a 3138 3831 3138 3831 3a0a  .1P6#.18811881:.
 0000020: 3150 3601 0017 0017 e723 0a31 5036 230a  1P6......#.1P6#.
 0000030: 3138 38e7 230a 3150 3623 0a31 3838 313a  188.#.1P6#.1881:
 0000040: 0a31 5036 230a 230a 3138 3831 3a         .1P6#.#.1881:
-</textarea></br>fuzz/out/fuzzer71/crashes/id:000008,sig:11,src:000042+000244,op:splice,rep:2</br><textarea rows="6" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5033 3336 230a 3150 3623 0a31 5036 230a  P336#.1P6#.1P6#.
+</textarea></br>fuzz/out_kleefl/fuzzer71/crashes/id:000008,sig:11,src:000042+000244,op:splice,rep:2</br><textarea rows="6" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5033 3336 230a 3150 3623 0a31 5036 230a  P336#.1P6#.1P6#.
 0000010: 2331 3838 313a 0a31 5036 230a 3138 3838  #1881:.1P6#.1888
 0000020: 3138 2d36 230a 3120 0000 0080 0038 313a  18-6#.1 .....81:
 0000030: 0a31 5036 0100 1700 230a 3150 3623 0931  .1P6....#.1P6#.1
 0000040: 5538 313a 0a31 5036 230a 2301 3138 3831  U81:.1P6#.#.1881
 0000050: 3a                                       :
-</textarea></br>fuzz/out/fuzzer71/crashes/id:000006,sig:11,src:000042+000264,op:splice,rep:32</br><textarea rows="6" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5033 3123 0bef 3950 3623 0a31 3803 3636  P31#..9P6#.18.66
+</textarea></br>fuzz/out_kleefl/fuzzer71/crashes/id:000006,sig:11,src:000042+000264,op:splice,rep:32</br><textarea rows="6" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5033 3123 0bef 3950 3623 0a31 3803 3636  P31#..9P6#.18.66
 0000010: 3831 3a0a 3163 3936 3636 3636 3636 313a  81:.1c966666661:
 0000020: 0a31 6339 3636 3636 3636 3635 3636 3636  .1c9666666656666
 0000030: 3636 3636 013f 0a31 5039 3636 3636 3536  6666.?.1P9666656
 0000040: 3636 3636 3636 3636 3f36 3636 3636 3230  66666666?6666620
 0000050: 9e39 0a00 0000 0a23 0afa ff00 0b3a       .9.....#.....:
-</textarea></br>fuzz/out/fuzzer36/crashes/id:000003,sig:11,src:000018,op:havoc,rep:2</br><textarea rows="2" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5033 3100 3100 3331 0031 0032 3535 3235  P31.1.31.1.25525
+</textarea></br>fuzz/out_kleefl/fuzzer36/crashes/id:000003,sig:11,src:000018,op:havoc,rep:2</br><textarea rows="2" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5033 3100 3100 3331 0031 0032 3535 3235  P31.1.31.1.25525
 0000010: 35                                       5
-</textarea></br>fuzz/out/fuzzer133/crashes/id:000006,sig:11,src:000047+000120,op:splice,rep:2</br><textarea rows="2" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5033 3100 3100 3735 3100 31c6 3235 3532  P31.1.751.1.2552
+</textarea></br>fuzz/out_kleefl/fuzzer133/crashes/id:000006,sig:11,src:000047+000120,op:splice,rep:2</br><textarea rows="2" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5033 3100 3100 3735 3100 31c6 3235 3532  P31.1.751.1.2552
 0000010: 3535                                     55
-</textarea></br>fuzz/out/fuzzer123/crashes/id:000007,sig:11,src:000052+000311,op:splice,rep:2</br><textarea rows="3" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5033 2336 230a 314a 3623 0a31 3838 313a  P3#6#.1J6#.1881:
+</textarea></br>fuzz/out_kleefl/fuzzer123/crashes/id:000007,sig:11,src:000052+000311,op:splice,rep:2</br><textarea rows="3" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5033 2336 230a 314a 3623 0a31 3838 313a  P3#6#.1J6#.1881:
 0000010: 0a31 5036 230a 3133 2336 230a 314a 3623  .1P6#.13#6#.1J6#
 0000020: 0a31 3838 313a 0a31 5036 3231 3838 313a  .1881:.1P621881:
-</textarea></br>fuzz/out/fuzzer123/crashes/id:000006,sig:11,src:000052+000311,op:splice,rep:2</br><textarea rows="3" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5033 2336 230a 314a 3623 0a31 1c0a 3150  P3#6#.1J6#.1..1P
+</textarea></br>fuzz/out_kleefl/fuzzer123/crashes/id:000006,sig:11,src:000052+000311,op:splice,rep:2</br><textarea rows="3" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 5033 2336 230a 314a 3623 0a31 1c0a 3150  P3#6#.1J6#.1..1P
 0000010: 3138 3838 3831 3a0a 3150 3623 0a31 5031  188881:.1P6#.1P1
 0000020: 3838 313a                                881:
-</textarea></br></td></tr><tr><td> GDB exploitable: </td><td style="text-align:left">Core was generated by `./fuzz/app -dc i fuzz/out/fuzzer71/crashes/id:000011,sig:11,src:000052+000247,o'.</br>Program terminated with signal SIGSEGV, Segmentation fault.</br>#0  0x0000000000405298 in get_text_rgb_row (cinfo=0x7fff31871628, sinfo=<optimized out>) at ../rdppm.c:171</br>171	    *ptr++ = rescale[read_pbm_integer(cinfo, infile)];</br>(gdb) Description: Possible stack corruption</br>Short description: PossibleStackCorruption (7/22)</br>Hash: 48fd8bdb8bf6f27df71c82e38a1f8e54.48fd8bdb8bf6f27df71c82e38a1f8e54</br>Exploitability Classification: EXPLOITABLE</br>Explanation: GDB generated an error while unwinding the stack and/or the stack contained return addresses that were not mapped in the inferior's process address space and/or the stack pointer is pointing to a location outside the default stack region. These conditions likely indicate stack corruption, which is generally considered exploitable.</br>Other tags: SourceAv (19/22), AccessViolation (21/22)</br>(gdb)</br></td></tr></table></body></html>
+</textarea></br></td></tr><tr><td> GDB exploitable: </td><td style="text-align:left">Core was generated by `./fuzz/app -dc i fuzz/out_kleefl/fuzzer71/crashes/id:000011,sig:11,src:000052+0'.</br>Program terminated with signal SIGSEGV, Segmentation fault.</br>#0  0x0000000000405298 in get_text_rgb_row (cinfo=0x7fffbeafa988, sinfo=<optimized out>) at ../rdppm.c:171</br>171	    *ptr++ = rescale[read_pbm_integer(cinfo, infile)];</br>(gdb) Description: Possible stack corruption</br>Short description: PossibleStackCorruption (7/22)</br>Hash: 48fd8bdb8bf6f27df71c82e38a1f8e54.48fd8bdb8bf6f27df71c82e38a1f8e54</br>Exploitability Classification: EXPLOITABLE</br>Explanation: GDB generated an error while unwinding the stack and/or the stack contained return addresses that were not mapped in the inferior's process address space and/or the stack pointer is pointing to a location outside the default stack region. These conditions likely indicate stack corruption, which is generally considered exploitable.</br>Other tags: SourceAv (19/22), AccessViolation (21/22)</br>(gdb)</br></td></tr></table></body></html>

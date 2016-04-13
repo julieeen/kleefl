@@ -253,7 +253,7 @@ def main(args):
 	
 	ktest_filelist = args[1:]
 
-	# if not dir given, try default path: klee/klee-last/*.ktest
+	# if no dir given, try default path: klee/klee-last/*.ktest
 	if not args:
 		for i in os.listdir(def_path):
 			if i.endswith(".ktest"): 

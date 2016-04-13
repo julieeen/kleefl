@@ -7,8 +7,8 @@ from easyprocess import EasyProcess
 binary_run_timout = 3
 
 if len(sys.argv) != 3:
-	print "build source :	kleefl_cov make source_dir/"
-	print "analyze cov  :	kleefl_cov cov_build/binary path_to_afl_sync_dir/ "
+	print "build source :	kleefl_cov_inspector make source_dir/"
+	print "analyze cov  :	kleefl_cov_inspector cov_build/binary path_to_afl_sync_dir/ "
 	sys.exit(0)
 
 #print 'Argument List:', str(sys.argv)

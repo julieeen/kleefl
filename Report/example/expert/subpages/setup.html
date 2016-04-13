@@ -1,0 +1,15 @@
+<html><head>
+<style>
+table { width:100%; text-align: center;}
+table, th, td { border: 1px solid black; border-collapse: collapse;}
+th, td { padding: 5px; text-align: center;}
+table#t01 tr:nth-child(even) { background-color: #eee;}
+table#t01 tr:nth-child(odd) { background-color:#fff;}
+table#t01 th { background-color: white; color: black; }
+</style>
+</head><body><h3>Fuzzing configuration</h3><table border="0" id="t01"><th>fuzzer ID</th><th>commandline</th><th>runtime</th><th>cycles</th><th>exec</th><th>exec per sec</th><th>paths total</th><th>afl crashes</th><tr><td>fuzzer44</td><td style="text-align:left">./app -f @@</td><td>0:13:40</td><td>10</td><td>1784387</td><td>1973.72</td><td>37</td><td>6</td><tr><td>fuzzer0</td><td style="text-align:left">./app -f @@</td><td>0:13:36</td><td>8</td><td>1751074</td><td>1582.22</td><td>41</td><td>5</td></tr></table></br><h3>Input Files</h3><table border="0" id="t01"><tr><th>filename</th><th>data</th></tr><tr><td>testfile</td><td><textarea rows="5" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 7661 6c75 6535 3030 0a73 7461 636b 7661  value500.stackva
+0000010: 6c75 6531 310a 7374 6163 6b32 3030 0a76  lue11.stack200.v
+0000020: 616c 7565 2e2e 2e2e 2e0a 7374 6163 6b31  alue......stack1
+0000030: 3131 3131 3131 0a62 7566 6665 7231 3233  111111.buffer123
+0000040: 3134 0a                                  14.
+</textarea></td></tr></table>
