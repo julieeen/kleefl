@@ -1,0 +1,67 @@
+<html><head>
+<style>
+table { width:100%; text-align: center;}
+table, th, td { border: 1px solid black; border-collapse: collapse;}
+th, td { padding: 5px; text-align: center;}
+table#t01 tr:nth-child(even) { background-color: #eee;}
+table#t01 tr:nth-child(odd) { background-color:#fff;}
+table#t01 th { background-color: white; color: black; }
+</style>
+</head><body><h3>Report for e3f059b9c516bec9e71b3b8550bbf262.03b51bc22579b135abe10dee4644127e</h3><table border="0" id="t01" style="width:80%;"><th>Description</th><th>Data</th><tr><td> CMD </td><td style="text-align:left">app -f @@</br></td></tr><tr><td> Found after </td><td style="text-align:left">0:00:01.271483</td></td></tr><tr><td> Description </td><td style="text-align:left">Possible stack corruption</td></td></tr><tr><td> Signal </td><td style="text-align:left">Program terminated with signal SIGABRT, Aborted.</td></td></tr><tr><td> Classification </td><td style="text-align:left">EXPLOITABLE</td></td></tr><tr><td> Occurence </td><td style="text-align:left">2016-04-15 11:59:53.271483</td></td></tr><tr><td> Files </td><td style="text-align:left">fuzz/out/fuzzer44/crashes/id:000000,sig:06,src:000000,op:havoc,rep:128</br><textarea rows="57" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 7661 6c75 0a73 7461 2e0a 7374 3131 0d62  valu.sta..st11.b
+0000010: 7566 6631 6532 3030 0a31 0a76 612e 2e2e  uff1e200.1.va...
+0000020: 2e2e 0a80 7431 310a 6275 6666 3131 0a68  ....t11.buff11.h
+0000030: 612e 2e2e 0a73 7461 4a0a 6252 6666 3131  a....staJ.bRff11
+0000040: 0a31 3131 3131 310a 6275 6666 3131 0a76  .111111.buff11.v
+0000050: 0080 3074 7331 3131 3110 0000 0066 3131  ..0ts1111....f11
+0000060: 0a74 6163 6b76 6131 0a73 7c7c 7c7c 7c7c  .tackva1.s||||||
+0000070: 7c7c 7c7c 7c75 652e 0a73 7461 6365 5431  |||||ue..staceT1
+0000080: 1573 740a 6275 6630 300a 7661 6c00 7f01  .st.buf00.val...
+0000090: 2e2e 2e2e 0a73 7461 630a 6c75 7461 310a  .....stac.luta1.
+00000a0: 7374 610a 7661 6c75 6535 3030 0a73 7461  sta.value500.sta
+00000b0: 636b 6531 312e 2e0a 735e 6163 6b25 3131  cke11...s^ack%11
+00000c0: 0a62 7566 6631 310a 7661 2e2e 2e37 1421  .buff11.va...7.!
+00000d0: 1414 1414 1414 142e 2e0a 5374 3131 0a62  ..........St11.b
+00000e0: 7566 6631 616c 7565 3561 636b 6531 310a  uff1alue5acke11.
+00000f0: 7374 6163 6b32 3030 0876 616c 7f65 2e73  stack200.val.e.s
+0000100: 7440 63c1 c1c1 c1c1 c1c1 c1c1 c1c1 c1c1  t@c.............
+0000110: c1c1 c1c1 c1c1 c1c1 c1c1 ffc1 c1c1 7461  ..............ta
+0000120: 636b 3131 310a 6275 6666 3131 0a76 616c  ck111.buff11.val
+0000130: 7565 3230 300a 7365 3154 0a73 8461 636b  ue200.se1T.s.ack
+0000140: 3230 3025 7642 6c75 654e 2e2e 2e2e 0a73  200%vBlueN.....s
+0000150: 6060 6070 6060 6060 6060 6060 6060 6060  ```p````````````
+0000160: 6060 6060 606b 2531 130a 7d08 0808 7565  `````k%1..}...ue
+0000170: 2e2e 2e2e 0810 080a 7661 6c01 6535 3030  ........val.e500
+0000180: 0a73 6531 390a 7374 6163 6b32 3030 0200  .se19.stack200..
+0000190: 0000 2073 2e73 7461 636b 32ff ff75 572e  .. s.stack2..uW.
+00001a0: 0a73 7431 310a 6275 6666 3131 0a76 616c  .st11.buff11.val
+00001b0: 7565 3552 300a 7374 6163 6b65 3131 0a73  ue5R0.stacke11.s
+00001c0: 9161 636b 3230 300a 7661 6c73 7461 6b7e  .ack200.valstak~
+00001d0: 6161 310a 7374 6163 6b32 3030 0a76 616c  aa1.stack200.val
+00001e0: 7565 2e0a 7374 6163 6b31 3a31 0a62 7566  ue..stack1:1.buf
+00001f0: 6631 310a 7661 6c75 cf35 3030 0a73 6531  f11.valu.500.se1
+0000200: 310a 7374 611b 6232 3030 0a76 616c 7565  1.sta.b200.value
+0000210: 2e2e 2e2e 2e0a 3131 0a62 7566 6631 310a  ......11.buff11.
+0000220: 7661 310a 7374 6163 6b32 3030 0876 616c  va1.stack200.val
+0000230: 7f65 2e73 7473 7461 636b 6531 310a 7374  .e.ststacke11.st
+0000240: 6163 6b32 3030 0a76 616c 7565 4d2e 2e0a  ack200.valueM...
+0000250: 6275 7374 6163 0a62 7566 6631 616c 7565  bustac.buff1alue
+0000260: 3530 30f3 7374 6163 310a 7374 6163 eb32  500.stac1.stac.2
+0000270: 3030 0a76 616c 7565 2e2e 2e40 200a 3131  00.value...@ .11
+0000280: b831 0a62 3131 3131 3131 0a62 7550 6631  .1.b111111.buPf1
+0000290: 310a 6100 8030 7566 6631 310a 7661 6c0a  1.a..0uff11.val.
+00002a0: 7374 766e 7b76 6173 7565 2e2e 2e2e 2e0a  stvn{vasue......
+00002b0: 7374 6163 0a62 6e66 6631 310a 7600 0000  stac.bnff11.v...
+00002c0: 0431 0a74 6163 6b76 6131 0a73 7461 636b  .1.tackva1.stack
+00002d0: 3232 300a 7663 6c75 6500 011f 0035 3030  220.vclue....500
+00002e0: 4000 0000 4762 654d 2e2e 0a62 7573 7461  @...GbeM...busta
+00002f0: 630a 6275 6666 3161 7566 6631 310a 7661  c.buff1auff11.va
+0000300: 6c75 656b 7661 310a 7374 6b63 6b32 3030  luekva1.stkck200
+0000310: 0a76 616c 7565 2e08 7374 6146 6b31 3131  .value..staFk111
+0000320: 0a62 7566 6631 310a 7661 6c75 6535 3030  .buff11.value500
+0000330: 0a73 7f75 6531 2d0a 7374 6163 6b32 306b  .s.ue1-.stack20k
+0000340: 636b 3230 300a 7661 6c75 652e 0873 7461  ck200.value..sta
+0000350: 466b 3131 310a 6230 0af2 616c 754f 2e0a  Fk111.b0..aluO..
+0000360: 7374 3131 0a62 654d 2e2e 0a62 7573 7461  st11.beM...busta
+0000370: 630a 6235 3030 1a73 7461 636b 6563 0a62  c.b500.stackec.b
+0000380: 7566 6631 310a                           uff11.
+</textarea></br></td></tr><tr><td> GDB exploitable: </td><td style="text-align:left">Core was generated by `./fuzz/app -f fuzz/out/fuzzer44/crashes/id:000000,sig:06,src:000000,op:havoc,re'.</br>Program terminated with signal SIGABRT, Aborted.</br>#0  0x00002b6b69bc3cc9 in __GI_raise (sig=sig@entry=6) at ../nptl/sysdeps/unix/sysv/linux/raise.c:56</br>(gdb) Description: Possible stack corruption</br>Short description: PossibleStackCorruption (7/22)</br>Hash: e3f059b9c516bec9e71b3b8550bbf262.03b51bc22579b135abe10dee4644127e</br>Exploitability Classification: EXPLOITABLE</br>Explanation: GDB generated an error while unwinding the stack and/or the stack contained return addresses that were not mapped in the inferior's process address space and/or the stack pointer is pointing to a location outside the default stack region. These conditions likely indicate stack corruption, which is generally considered exploitable.</br>Other tags: AbortSignal (20/22)</br>(gdb)</br></td></tr></table></body></html>

@@ -7,9 +7,46 @@ table#t01 tr:nth-child(even) { background-color: #eee;}
 table#t01 tr:nth-child(odd) { background-color:#fff;}
 table#t01 th { background-color: white; color: black; }
 </style>
-</head><body><h3>Fuzzing configuration</h3><table border="0" id="t01"><th>fuzzer ID</th><th>commandline</th><th>runtime</th><th>cycles</th><th>exec</th><th>exec per sec</th><th>paths total</th><th>afl crashes</th><tr><td>fuzzer44</td><td style="text-align:left">./app -f @@</td><td>0:13:40</td><td>10</td><td>1784387</td><td>1973.72</td><td>37</td><td>6</td><tr><td>fuzzer0</td><td style="text-align:left">./app -f @@</td><td>0:13:36</td><td>8</td><td>1751074</td><td>1582.22</td><td>41</td><td>5</td></tr></table></br><h3>Input Files</h3><table border="0" id="t01"><tr><th>filename</th><th>data</th></tr><tr><td>testfile</td><td><textarea rows="5" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 7661 6c75 6535 3030 0a73 7461 636b 7661  value500.stackva
+</head><body><h3>Fuzzing configuration</h3><table border="0" id="t01"><th>fuzzer ID</th><th>commandline</th><th>runtime</th><th>cycles</th><th>exec</th><th>exec per sec</th><th>paths total</th><th>afl crashes</th><tr><td>fuzzer44</td><td style="text-align:left">./app -f @@</td><td>0:10:12</td><td>11</td><td>1324137</td><td>2221.60</td><td>30</td><td>5</td><tr><td>fuzzer0</td><td style="text-align:left">./app -f @@</td><td>0:10:08</td><td>3</td><td>1280049</td><td>2153.27</td><td>34</td><td>7</td></tr></table></br><h3>Input Files</h3><table border="0" id="t01"><tr><th>filename</th><th>data</th></tr><tr><td>testfile</td><td><textarea rows="42" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 7661 6c75 6535 3030 0a73 7461 636b 7661  value500.stackva
 0000010: 6c75 6531 310a 7374 6163 6b32 3030 0a76  lue11.stack200.v
 0000020: 616c 7565 2e2e 2e2e 2e0a 7374 6163 6b31  alue......stack1
-0000030: 3131 3131 3131 0a62 7566 6665 7231 3233  111111.buffer123
-0000040: 3134 0a                                  14.
+0000030: 3131 3131 3131 0a76 616c 7565 3530 3031  111111.value5001
+0000040: 0a76 616c 7565 3131 0a76 616c 7565 3134  .value11.value14
+0000050: 3134 310a 7661 6c75 6535 3030 0a73 7461  141.value500.sta
+0000060: 636b 7661 6c75 6531 310a 7374 6163 6b32  ckvalue11.stack2
+0000070: 3030 0a76 616c 7565 2e2e 2e2e 2e0a 7374  00.value......st
+0000080: 6163 6b31 3131 3131 3131 0a76 616c 7565  ack1111111.value
+0000090: 3530 3031 0a76 616c 7565 3131 0a76 616c  5001.value11.val
+00000a0: 7565 3134 3134 310a 7661 6c75 6535 3030  ue14141.value500
+00000b0: 0a73 7461 636b 7661 6c75 6531 310a 7374  .stackvalue11.st
+00000c0: 6163 6b32 3030 0a76 616c 7565 2e2e 2e2e  ack200.value....
+00000d0: 2e0a 7374 6163 6b31 3131 3131 3131 0a76  ..stack1111111.v
+00000e0: 616c 7565 3530 3031 0a76 616c 7565 3131  alue5001.value11
+00000f0: 0a76 616c 7565 3134 3134 310a 7661 6c75  .value14141.valu
+0000100: 6535 3030 0a73 7461 636b 7661 6c75 6531  e500.stackvalue1
+0000110: 310a 7374 6163 6b32 3030 0a76 616c 7565  1.stack200.value
+0000120: 2e2e 2e2e 2e0a 7374 6163 6b31 3131 3131  ......stack11111
+0000130: 3131 0a76 616c 7565 3530 3031 0a76 616c  11.value5001.val
+0000140: 7565 3131 0a76 616c 7565 3134 3134 310a  ue11.value14141.
+0000150: 7661 6c75 6535 3030 0a73 7461 636b 7661  value500.stackva
+0000160: 6c75 6531 310a 7374 6163 6b32 3030 0a76  lue11.stack200.v
+0000170: 616c 7565 2e2e 2e2e 2e0a 7374 6163 6b31  alue......stack1
+0000180: 3131 3131 3131 0a76 616c 7565 3530 3031  111111.value5001
+0000190: 0a76 616c 7565 3131 0a76 616c 7565 3134  .value11.value14
+00001a0: 3134 310a 7661 6c75 6535 3030 0a73 7461  141.value500.sta
+00001b0: 636b 7661 6c75 6531 310a 7374 6163 6b32  ckvalue11.stack2
+00001c0: 3030 0a76 616c 7565 2e2e 2e2e 2e0a 7374  00.value......st
+00001d0: 6163 6b31 3131 3131 3131 0a76 616c 7565  ack1111111.value
+00001e0: 3530 3031 0a76 616c 7565 3131 0a76 616c  5001.value11.val
+00001f0: 7565 3134 3134 310a 7661 6c75 6535 3030  ue14141.value500
+0000200: 0a73 7461 636b 7661 6c75 6531 310a 7374  .stackvalue11.st
+0000210: 6163 6b32 3030 0a76 616c 7565 2e2e 2e2e  ack200.value....
+0000220: 2e0a 7374 6163 6b31 3131 3131 3131 0a76  ..stack1111111.v
+0000230: 616c 7565 3530 3031 0a76 616c 7565 3131  alue5001.value11
+0000240: 0a76 616c 7565 3134 3134 310a 7661 6c75  .value14141.valu
+0000250: 6535 3030 0a73 7461 636b 7661 6c75 6531  e500.stackvalue1
+0000260: 310a 7374 6163 6b32 3030 0a76 616c 7565  1.stack200.value
+0000270: 2e2e 2e2e 2e0a 7374 6163 6b31 3131 3131  ......stack11111
+0000280: 3131 0a76 616c 7565 3530 3031 0a76 616c  11.value5001.val
+0000290: 7565 3131 0a76 616c 7565 3134 3134 310a  ue11.value14141.
 </textarea></td></tr></table>

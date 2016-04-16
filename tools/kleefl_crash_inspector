@@ -221,10 +221,10 @@ shutil.rmtree(core_dump_dir)
 
 
 # Print crash overview per fuzzer ...
-# for fuzzer in fuzzer_coll:
-# 	print ""
-# 	print fuzzer.id+" exec: "+fuzzer.cmd
-# 	print fuzzer.crash_info()
+for fuzzer in fuzzer_coll:
+	print ""
+	print fuzzer.id+" exec: "+fuzzer.cmd
+	print fuzzer.crash_info()
 
 
 print "+"*120

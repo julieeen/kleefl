@@ -282,8 +282,6 @@ def main(args):
 		input_count = 0
 
 		for i,(name,data) in enumerate(b.objects):
-			# parsing data to afl-inputs
-			#print name
 
 			# filter version number and other garbage
 			if name in ["model_version", "stdin" ]:
@@ -308,9 +306,15 @@ def main(args):
 				if(data == "-"):
 					continue
 
-				# support crappy file arg name of klee
+				# remove crappy file arg name of klee
 				if(data in ["A","B","C","D","E","F"]):
 					continue
+		
+				# detect appended filename like 
+				# -fA (while A is default filename for Klee)
+				if(len(data) > 2):
+					if(data[-1] == "A"):
+						data = data[:-1]
 
 				cmd.args.append(data)	
 				continue
@@ -344,10 +348,14 @@ def main(args):
 
 				continue
 
-			# if you come here, we have an unhandled case
+			# if you come here, we have an unhandled case somewhere ...
 			print "unhandled case detected for: "+name
 
 		#print cmd
+		if len(cmd.files) == 0:
+			print "no files for call! --> ignore call"
+			continue
+
 		cmd_list.append(cmd)
 
 	# ++++++++++++++ HANDLE CRASHES ALREADY DISCOVERED BY KLEE ++++++++++++++++++++++

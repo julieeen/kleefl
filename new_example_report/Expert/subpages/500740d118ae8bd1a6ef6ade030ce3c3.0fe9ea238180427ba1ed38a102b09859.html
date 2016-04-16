@@ -1,0 +1,72 @@
+<html><head>
+<style>
+table { width:100%; text-align: center;}
+table, th, td { border: 1px solid black; border-collapse: collapse;}
+th, td { padding: 5px; text-align: center;}
+table#t01 tr:nth-child(even) { background-color: #eee;}
+table#t01 tr:nth-child(odd) { background-color:#fff;}
+table#t01 th { background-color: white; color: black; }
+</style>
+</head><body><h3>Report for 500740d118ae8bd1a6ef6ade030ce3c3.0fe9ea238180427ba1ed38a102b09859</h3><table border="0" id="t01" style="width:80%;"><th>Description</th><th>Data</th><tr><td> CMD </td><td style="text-align:left">app -f @@</br></td></tr><tr><td> Found after </td><td style="text-align:left">0:00:01.483495</td></td></tr><tr><td> Description </td><td style="text-align:left">Possible stack corruption</td></td></tr><tr><td> Signal </td><td style="text-align:left">Program terminated with signal SIGSEGV, Segmentation fault.</td></td></tr><tr><td> Classification </td><td style="text-align:left">EXPLOITABLE</td></td></tr><tr><td> Occurence </td><td style="text-align:left">2016-04-15 11:59:53.483495</td></td></tr><tr><td> Files </td><td style="text-align:left">fuzz/out/fuzzer44/crashes/id:000001,sig:11,src:000000,op:havoc,rep:32</br><textarea rows="62" cols="68" style="font-family: monospace; font-size: 14px;">0000000: 7661 6c75 0a73 7461 2e0a 7374 3131 0a62  valu.sta..st11.b
+0000010: 7566 6631 312e 0a73 7461 630a 6275 6666  uff11..stac.buff
+0000020: 3131 0a31 3131 3131 310a 6275 6666 3131  11.111111.buff11
+0000030: 0a76 6130 300a 7331 3166 3131 0a76 616c  .va00.s11f11.val
+0000040: 7565 3530 300a 7374 6163 6b31 310a 6275  ue500.stack11.bu
+0000050: 6666 3131 0a65 3530 300a 7374 6131 310a  ff11.e500.sta11.
+0000060: 6275 6666 3131 0a76 6130 300a 7374 6163  buff11.va00.stac
+0000070: 6b65 3135 0a73 7461 636b 3230 300a 7661  ke15.stack200.va
+0000080: 6c75 652e 2e2e ff2e 0a73 7461 630a 6275  lue......stac.bu
+0000090: 6666 3131 0a76 616c 7565 3530 3006 7374  ff11.value500.st
+00000a0: 6163 6b76 6131 0a73 742e 2e2e 2e2e 0a73  ackva1.st......s
+00000b0: 7461 636b 3131 310a 6275 6666 3130 0a76  tack111.buff10.v
+00000c0: 612e 2e2e 2e2e 0a73 7431 3171 6275 6666  a......st11qbuff
+00000d0: 3131 0a76 616c 7565 3530 300a 7374 6163  11.value500.stac
+00000e0: 6b65 3131 0a73 7461 636b 3230 300a 7661  ke11.stack200.va
+00000f0: 6c75 652e 2e2e 2e2e 0a73 7461 630a 6275  lue......stac.bu
+0000100: 6666 3131 0a76 616c 7565 3530 300a 7374  ff11.value500.st
+0000110: 6163 6b76 6131 0a73 7461 636b 3230 300a  ackva1.stack200.
+0000120: 7661 6c75 652e 0a73 7461 636b 6531 310a  value..stacke11.
+0000130: 7374 6163 6b32 8f8f 8f8f 8f8f 8f30 300a  stack2.......00.
+0000140: 7365 3131 0a73 7461 636b 3230 300a 7661  se11.stack200.va
+0000150: 6c75 652e 2e2e 2e2e 0a31 3131 3138 310a  lue......111181.
+0000160: 6275 6666 3131 0a76 616c 7565 3530 300a  buff11.value500.
+0000170: 7374 6163 6b65 3131 0a73 7461 636b 3230  stacke11.stack20
+0000180: 300a 7661 6c75 652e 2e2e 2e2e 0a31 3131  0.value......111
+0000190: 3131 310a 6275 6666 3131 0a76 616c 7565  111.buff11.value
+00001a0: 3530 300a 7365 3131 0a73 7466 636b 3230  500.se11.stfck20
+00001b0: 300a 7661 6c75 652e 2e2e 2e2e 0a31 3131  0.value......111
+00001c0: 310a 6275 6666 3131 0a76 616c 7565 3530  1.buff11.value50
+00001d0: 300a 7374 6131 0a73 7461 636b 3230 300a  0.sta1.stack200.
+00001e0: 7661 6c75 652e 0a73 7431 310a 6275 6666  value..st11.buff
+00001f0: 3131 0a20 006c 7565 1430 300a 7374 6163  11. .lue.00.stac
+0000200: 6b65 3131 0a73 7461 6369 3230 300a 7661  ke11.staci200.va
+0000210: 6c75 652e 2e2e 2e2e 0a73 7461 630a 6275  lue......stac.bu
+0000220: 6666 3131 0a76 616c 7565 3530 300a 7374  ff11.value500.st
+0000230: 6163 6b76 6131 0a73 7461 636b 3230 300a  ackva1.stack200.
+0000240: 7661 6c75 652e 0a73 7461 636b 3131 0a73  value..stack11.s
+0000250: 6531 310a 7374 6163 6b32 3030 0a76 616c  e11.stack200.val
+0000260: 1565 2e2e 2e2e 2e0a 3131 3131 0a62 0001  .e......1111.b..
+0000270: 0000 310a 7661 6c75 6535 3030 0a73 7461  ..1.value500.sta
+0000280: 310a 7374 6163 6b32 3030 0a76 616c 7565  1.stack200.value
+0000290: 2e0a 7374 3131 0a62 7566 6631 310a 7661  ..st11.buff11.va
+00002a0: 6c75 6564 0000 0073 7461 636b 6531 310a  lued...stacke11.
+00002b0: 7374 6163 6b32 3030 0a76 616c 7565 2e2e  stack200.value..
+00002c0: 2e2e 2e0a 7374 6163 0a62 7566 6631 310a  ....stac.buff11.
+00002d0: 6c75 6535 3030 0a73 6531 310a 7374 6163  lue500.se11.stac
+00002e0: 6b32 3030 0a76 616c 7565 2e2e 2e2e 2e0a  k200.value......
+00002f0: 3131 3131 0a62 7566 6631 310a 7661 6c75  1111.buff11.valu
+0000300: 3030 300a 7300 0000 8065 3131 0a73 7461  000.s....e11.sta
+0000310: 636b 3230 300a 7661 6c75 652e 0a73 7461  ck200.value..sta
+0000320: 636b 6531 310a 7374 b2b2 b2b2 b2b2 b2b2  cke11.st........
+0000330: b2b2 b2b2 b2b2 b2b2 b2bc b2b2 b2b2 b2b2  ................
+0000340: b2b2 b2b2 0a76 6130 300a 7374 6163 6b65  .....va00.stacke
+0000350: 3135 0a6b 7661 310a 7374 6163 6b32 3030  15.kva1.stack200
+0000360: 0a76 616c 7565 2e0a 7374 6163 6b31 3131  .value..stack111
+0000370: 3131 31ea 6175 6666 3131 0a76 616c 7565  111.auff11.value
+0000380: 0a73 6c75 6531 310a 7374 6163 6b32 3030  .slue11.stack200
+0000390: 0a76 686c 7565 2e0a 7374 3131 0a62 7566  .vhlue..st11.buf
+00003a0: 7fff 310a 7661 6c75 5535 3030 0a73 7461  ..1.valuU500.sta
+00003b0: 636b 6531 310a 7374 6163 6b32 3030 0a76  cke11.stack200.v
+00003c0: 616c 7565 2e2e 2e2e 2e0a 7374 6163 0a62  alue......stac.b
+00003d0: 7566 6631 310a                           uff11.
+</textarea></br></td></tr><tr><td> GDB exploitable: </td><td style="text-align:left">Core was generated by `./fuzz/app -f fuzz/out/fuzzer44/crashes/id:000001,sig:11,src:000000,op:havoc,re'.</br>Program terminated with signal SIGSEGV, Segmentation fault.</br>#0  __memcpy_sse2 () at ../sysdeps/x86_64/multiarch/../memcpy.S:84</br>(gdb) Description: Possible stack corruption</br>Short description: PossibleStackCorruption (7/22)</br>Hash: 500740d118ae8bd1a6ef6ade030ce3c3.0fe9ea238180427ba1ed38a102b09859</br>Exploitability Classification: EXPLOITABLE</br>Explanation: GDB generated an error while unwinding the stack and/or the stack contained return addresses that were not mapped in the inferior's process address space and/or the stack pointer is pointing to a location outside the default stack region. These conditions likely indicate stack corruption, which is generally considered exploitable.</br>Other tags: DestAv (8/22), AccessViolation (21/22)</br>(gdb)</br></td></tr></table></body></html>
