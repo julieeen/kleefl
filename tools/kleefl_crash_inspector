@@ -375,7 +375,7 @@ def create_sub_page(crash_sig, info):
 		xxd_out = []
 		for line in iter(proc.stdout.readline,''):
 			xxd_out.append(line)	
-		subpage += '<textarea rows="'+str(len(xxd_out))+'" cols="68" style="font-family: monospace; font-size: 14px;">'		
+		subpage += '<textarea rows="'+str(len(xxd_out))+'" cols="80" style="font-family: monospace; font-size: 14px;">'		
 		for line in xxd_out:
 			subpage += line
 		subpage += "</textarea>"
