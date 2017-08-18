@@ -3,7 +3,7 @@
 
 ### HowTo ...
 
-### Prepare dependencies or simply grab the vagrant box
+#### Prepare dependencies or simply grab the vagrant box
 
     http://bit.ly/download_kleefl_box
 
