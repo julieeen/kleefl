@@ -4,7 +4,7 @@
 
 ### HowTo ...
 
-### Prepare dependencies or grab the vagrant box
+### Prepare dependencies or simply grab the vagrant box
 
     https://owncloud.sec.t-labs.tu-berlin.de/owncloud/public.php?service=files&t=2c28a437ebb75a33ee127dd4ea827726
 
@@ -24,7 +24,7 @@
     cd source
     python /vagrant/tools/kleefl_build make
 
-### Run klee symbolic execution, using our default setup
+### Run klee symbolic execution, using the default setup
     
     ./klee/run_klee
 
