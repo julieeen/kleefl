@@ -1,4 +1,4 @@
-Kleefl 
+kleefl 
 ======
 ### Seeding fuzzers with symbolic execution
 
@@ -26,9 +26,9 @@ Kleefl
     cd source
     python /vagrant/tools/kleefl_build make
 
-### Run klee symbolic execution
+### Run klee symbolic execution, using our default setup
     
-    ./klee/run_klee		// using default setup (feel free to change)
+    ./klee/run_klee
 
 ### Prepare klee's findings for afl-fuzz
     
