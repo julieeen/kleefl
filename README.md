@@ -3,11 +3,11 @@
 
 ### HowTo ...
 
-#### Prepare dependencies or simply grab the vagrant box
+#### Prepare dependencies or simply grab the provisioned vagrant box
 
     http://bit.ly/download_kleefl_box
 
-#### Setup project structure
+#### Setup a project structure like this:
 
     mkdir project_xyz
     cd project_xyz
@@ -31,7 +31,7 @@
     
     python /vagrant/tools/kleefl_prepare_fuzzing
 
-#### Finally: Fuzz!
+#### Finally: Fuzz, fuzz, fuzz!
     
     ./fuzz/run_afl.sh
 
@@ -47,4 +47,4 @@
     zcov genhtml coverage.zcov cov_report
 
 
-#### Further details can found in the project report
+#### Further details can found in the project report or review our beautiful USENIX poster
