@@ -1,6 +1,5 @@
 ## KleeFL - Seeding Fuzzers With Symbolic Execution
 
----
 
 ### HowTo ...
 
