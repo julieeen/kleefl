@@ -1,6 +1,4 @@
-KleeFL 
-======
-### Seeding fuzzers with symbolic execution
+KleeFL - Seeding Fuzzers With Symbolic Execution
 
 ---
 
