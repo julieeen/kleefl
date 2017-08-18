@@ -40,10 +40,9 @@
     ./kleefl_crash_inspector fuzz/out
     (fuzz/out is the afl sync dir, report saved by default in vagrant shared dir /vagrant/crash_report/)
 
-#### Analyze coverage
+#### Analyze coverage & generate report
 
     python kleefl_cov_inspector {make, binary fuzz/sync_dir}
-    // and generate a report using ...
     zcov genhtml coverage.zcov cov_report
 
 
