@@ -5,7 +5,7 @@
 
 ### Prepare dependencies or simply grab the vagrant box
 
-    http://bit.ly/kleefl_box
+    http://bit.ly/download_kleefl_box
 
 ### Setup project structure
 
