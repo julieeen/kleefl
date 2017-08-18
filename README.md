@@ -1,8 +1,8 @@
-# KleeFL - Seeding Fuzzers With Symbolic Execution
+## KleeFL - Seeding Fuzzers With Symbolic Execution
 
 ---
 
-## Example of usage:
+### HowTo ...
 
 ### Prepare dependencies or grab the vagrant box
 
