@@ -46,4 +46,4 @@
     zcov genhtml coverage.zcov cov_report
 
 
-#### Further details can found in the [project report](https://github.com/julieeen/kleefl/blob/master/ResearchReport.pdf) or [review this beautiful USENIX poster](https://github.com/julieeen/kleefl/blob/master/USENIX2017poster.pdf)
+#### Further details can found in the [project report](https://github.com/julieeen/kleefl/blob/master/ResearchReport.pdf) or [check out this beautiful USENIX poster](https://github.com/julieeen/kleefl/blob/master/USENIX2017poster.pdf)
