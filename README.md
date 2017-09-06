@@ -21,7 +21,9 @@
 #### Build source using wllvm & afl-clang
 
     cd source
-    python /vagrant/tools/kleefl_build make
+    /vagrant/tools/kleefl_build_cmake make all
+    or
+    /vagrant/tools/kleefl_build_make make all
 
 #### Run klee symbolic execution, using the default setup
     
