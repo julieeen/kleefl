@@ -28,7 +28,7 @@
 
 #### Prepare klee's findings for afl-fuzz
     
-    python /vagrant/tools/kleefl_prepare_fuzzing
+    python /vagrant/tools/kleefl_prepare_afl
 
 #### Finally: Fuzz, fuzz, fuzz!
     
