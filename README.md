@@ -21,9 +21,9 @@
 #### Build source using wllvm & afl-clang
 
     cd source
-    /vagrant/tools/kleefl_build_cmake make all
+    /vagrant/tools/kleefl_build_cmake make 
     or
-    /vagrant/tools/kleefl_build_make make all
+    /vagrant/tools/kleefl_build_make make 
 
 #### Run klee symbolic execution, using the default setup
     
@@ -31,7 +31,7 @@
 
 #### Prepare klee's findings for afl-fuzz
     
-    python /vagrant/tools/kleefl_prepare_fuzzing
+    python /vagrant/tools/kleefl_prepare_afl
 
 #### Finally: Fuzz, fuzz, fuzz!
     
