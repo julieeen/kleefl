@@ -7,6 +7,19 @@
 
     http://bit.ly/download_kleefl_box
 
+#### Vagrant box
+1. Download the package.box file.
+2. Install vagrant (if not already installed)
+`sudo apt-get install vagrant`
+3. Add the package.box file to vagrant 
+`vagrant box add kleefl package.box`
+4. Initialize the vagrant box (kleefl) 
+`vagrant init kleefl`
+5. Bring the box up 
+`vagrant up`
+6. SSH to the box 
+`vagrant ssh`
+
 #### Setup a project structure like this:
 
     mkdir project_xyz
