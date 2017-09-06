@@ -11,8 +11,7 @@
 
     mkdir project_xyz
     cd project_xyz
-    python /vagrant/tools/kleefl_init
-
+    python /vagrant/tools/kleefl_init -- sets up two directories klee and fuzz in your root project directory
 
 #### Select your source code, e.g.:
 
@@ -21,11 +20,11 @@
 #### Build source using wllvm & afl-clang
 
     cd source
-    python /vagrant/tools/kleefl_build make
+    /vagrant/tools/kleefl_build_make make
 
 #### Run klee symbolic execution, using the default setup
     
-    ./klee/run_klee
+    ../klee/run_klee
 
 #### Prepare klee's findings for afl-fuzz
     
@@ -33,7 +32,7 @@
 
 #### Finally: Fuzz, fuzz, fuzz!
     
-    ./fuzz/run_afl.sh
+    ../fuzz/run_afl.sh
 
 #### Analyze findings
 
