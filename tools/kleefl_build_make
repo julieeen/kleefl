@@ -6,23 +6,32 @@
 AFL_DIR="afl_build"
 KLEE_DIR="klee_build"
 COV_DIR="cov_build"
+AFL_ASAN="afl_asan_build"
 
-
+# Build GCOV
 function make_cov {
-	echo "make gcov"
+	echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Step 1: Building GCOV with Clang."
+	#CC=clang CXX=clang++ CFLAGS='-g -fprofile-arcs -ftest-coverage' LDFLAGS="-fprofile-arcs"  ./configure
 	CC=gcc CXX=g++ CFLAGS='-g -fprofile-arcs -ftest-coverage' LDFLAGS="-fprofile-arcs"  ./configure	
 	make
 }
+function clean_cov {
+	make clean
+}
 
-
-# Build with afl-gcc (afl)
+# Build with afl-clang (afl)
 function make_afl {
-	echo "make afl"
+	echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Step 2: Creating executable with AFL compiler afl-clang and afl-clang++"
 	mkdir $AFL_DIR
+	echo $AFL_DIR
 	cd $AFL_DIR
+	#CC=afl-gcc CXX=afl-g++ ../configure
 	CC=afl-clang CXX=afl-clang++ ../configure
 	make
 	cd ..
+	echo $(pwd)
 }
 function clean_afl {
 	echo "rm -r $AFL_DIR"
@@ -30,24 +39,44 @@ function clean_afl {
 }
 
 
+# Build with afl-clang and ASAN
+function make_afl_asan {
+	echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Building binary with optional Asan"
+	mkdir $AFL_ASAN
+	cd $AFL_ASAN
+	AFL_USE_ASAN=1 CC=afl-clang CXX=afl-clang++ ../configure
+	make
+	cd ..
+}
+
+function clean_afl_asan {
+	echo "rm -r $AFL_ASAN"
+	rm -rf $AFL_ASAN
+}
+
+
 # Build with wllvm (klee)
 function make_klee {
-	echo "make klee"	
+	echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Step 3: Building wllvm"
 	mkdir $KLEE_DIR
 	cd $KLEE_DIR
-	export LLVM_COMPILER=clang	# Export clang as compiler for wllvm
+	#export LLVM_COMPILER=clang	# Export clang as compiler for wllvm
+	export LLVM_COMPILER="clang"
 	# -g : Generate source level debug information
 	CC=wllvm CXX=wllvm++ CFLAGS=-g ../configure
 	make
-	
 	FILES=$PWD"/*"
 	for file in $(find);
 	do
-		# create bytecode from all executeable file found
+		# create LLVM IR bitcode from all executible files found
 		if [[ -x "$file" ]] 
 		then
-    		echo "try create bytecode from '$file' (because executable)"
+    		echo "trying to create bitcode from '$file' (because its an executable)"
     		extract-bc $file
+		#This will run Klee to generate the IR bitcode
+		#klee --max-instruction-time=30. --simplify-sym-indices --max-memory=2000 --max-sym-array-size=4096 --ignore-solver-failures --only-output-states-covering-new --libc=uclibc --posix-runtime ./.$file.o.bc --sym-arfs 1 3 12 --sym-files 1 128 > /dev/null
     	fi;
 	done
 	cd ..
@@ -61,24 +90,38 @@ function clean_all {
 	clean_afl
 	clean_klee
 	clean_cov
+	clean_afl_asan
  	make clean
+	make distclean
  	exit
 }
 
 if [[ $# == 1 ]]; then
-	echo "try: make, make afl, make klee"
-	echo "or:  clean, clean afl, clean klee"
+	echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Usage: kleefl_build_make [OPTION]"
+	echo ""
+	echo "Option 			Meaning"
+	echo "make 			will make afl and klee options"
+	echo "make asan 		will make afl-asan and klee options"
+	echo "make afl 		will make afl instrumented binary"
+	echo "make cov		will make gcov of binary"
+	echo "make afl-asan		will make optional afl Asan instrumented binary"
+	echo "clean			will clean all builds"
+	echo "clean afl 		will clean afl build"
+	echo "clean cov 		will clean gcov build of binary"
+	echo "clean afl-asan		will clean afl Asan binary"
+	echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi;
 
 if [[ $# == 1 ]]; then
 	if [[ $1 == "make" ]]; then
-		echo "make all"
+		#make_cov
 		make_afl
+		#make_afl_asan
 		make_klee
 		exit
 	fi;
 	if [[ $1 == "clean" ]]; then
-		echo "clean all"
 		clean_all
 		exit
 	fi
@@ -95,6 +138,13 @@ if [[ $# == 2 ]]; then
 		if [[ $2 == "cov" ]]; then
 			make_cov
 		fi;
+		if [[ $2 == "afl-asan" ]]; then
+			make_afl_asan
+		fi;
+		if [[ $2 == "asan" ]]; then
+			make_afl_asan
+			make_klee
+		fi;
 		exit
 	fi;
 
@@ -110,6 +160,10 @@ if [[ $# == 2 ]]; then
 		if [[ $2 == "cov" ]]; then
 			printf "clean cov: "
 			clean_cov
+		fi;
+		if [[ $2 == "afl-asan" ]]; then
+			printf "clean afl-asan: "
+			clean_afl_asan
 		fi;
 		exit
 	fi;
