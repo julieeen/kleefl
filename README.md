@@ -38,7 +38,7 @@
     or
     /vagrant/tools/kleefl_build_make make
     
-#### Setup a target binary for evaluation
+#### Choose & set up a target binary for evaluation
     
     ./kleefl_pick target_binary_name
 
