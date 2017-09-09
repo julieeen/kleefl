@@ -40,7 +40,7 @@
     
 #### Setup a target binary for evaluation
     
-    ./klee/kleefl_pick target_binary_name
+    ./kleefl_pick target_binary_name
 
 #### Run klee symbolic execution, using the default setup
     
