@@ -36,7 +36,11 @@
     cd source
     /vagrant/tools/kleefl_build_cmake make 
     or
-    /vagrant/tools/kleefl_build_make make 
+    /vagrant/tools/kleefl_build_make make
+    
+#### Setup a target binary for evaluation
+    
+    ./klee/kleefl_pick target_binary_name
 
 #### Run klee symbolic execution, using the default setup
     
