@@ -11,7 +11,7 @@
 
     mkdir project_xyz
     cd project_xyz
-    python /vagrant/tools/kleefl_init -- sets up two directories klee and fuzz in your root project directory
+    python /vagrant/tools/kleefl_init -- sets up two directories called 'klee' and 'fuzz' in your root project directory
 
 #### Select your source code, e.g.:
 
@@ -22,9 +22,17 @@
     cd source
     /vagrant/tools/kleefl_build_make make
 
-#### Run klee symbolic execution, using the default setup
+#### Pick the target binary for KLEE
     
-    ../klee/run_klee
+    Copy the binary recently built in the klee_build directory into the root project folder.
+    Run the following script: 
+    /vagrant/tools/klee_picker <binary>
+
+#### Generate the test cases for AFL (KLEE symbolic execution)
+    
+    The previous script will add a file called app.bc within the klee directory.
+    Change into the klee folder and run:
+    ./run_klee.sh
 
 #### Prepare klee's findings for afl-fuzz
     
