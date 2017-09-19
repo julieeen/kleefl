@@ -62,119 +62,19 @@ function make_klee {
 	echo "Step 3: Building wllvm"
 	mkdir $KLEE_DIR
 	cd $KLEE_DIR
-	export LLVM_COMPILER=clang	# Export clang as compiler for wllvm
-					# -g : Generate source level debug information
-	CC=wllvm CXX=wllvm++ CFLAGS=-g ../configure
-	make
-	FILES=$PWD"/*"
-	for file in $(find);
-	do
-		# create bytecode from all executeable file found
-		if [[ -x "$file" ]] 
-		then
-    		echo "trying to create bytecode from '$file' (because executable)"
-    		extract-bc $file
-		#This will run Klee to generate the bytecode
-		#klee --max-instruction-time=30. --simplify-sym-indices --max-memory=2000 --max-sym-array-size=4096 --ignore-solver-failures --only-output-states-covering-new --libc=uclibc --posix-runtime ./.$file.o.bc --sym-arfs 1 3 12 --sym-files 1 128 > /dev/null
-    	fi;
-	done
-	cd ..
-}
-function clean_klee {
-	echo "rm -r $KLEE_DIR"
-	rm -r $KLEE_DIR
-}
-
-function clean_all {
-	clean_afl
-	clean_klee
-	clean_cov
-	clean_afl_asan
- 	make clean
-	make distclean
- 	exit
-}
-
-if [[ $# == 1 ]]; then
-	echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	echo "Usage: kleefl#!/bin/bash
-
-# options: make, make afl, make klee
-# clean options: clean, clean afl, clean klee
-
-AFL_DIR="afl_build"
-KLEE_DIR="klee_build"
-COV_DIR="cov_build"
-AFL_ASAN="afl_asan_build"
-
-# Build GOV
-function make_cov {
-	echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	echo "Step 1: Building GCOV with Clang."
-	#CC=clang CXX=clang++ CFLAGS='-g -fprofile-arcs -ftest-coverage' LDFLAGS="-fprofile-arcs"  ./configure
-	CC=gcc CXX=g++ CFLAGS='-g -fprofile-arcs -ftest-coverage' LDFLAGS="-fprofile-arcs"  ./configure	
-	make
-}
-function clean_cov {
-	make clean
-}
-
-# Build with afl-clang (afl)
-function make_afl {
-	echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	echo "Step 2: Creating executable with AFL compiler afl-clang and afl-clang++"
-	mkdir $AFL_DIR
-	echo $AFL_DIR
-	cd $AFL_DIR
-	#CC=afl-gcc CXX=afl-g++ ../configure
-	CC=afl-clang CXX=afl-clang++ ../configure
-	make
-	cd ..
-	echo $(pwd)
-}
-function clean_afl {
-	echo "rm -r $AFL_DIR"
-	rm -r $AFL_DIR
-}
-
-
-# Build with afl-clang and ASAN
-function make_afl_asan {
-	echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	echo "Building binary with optional Asan"
-	mkdir $AFL_ASAN
-	cd $AFL_ASAN
-	AFL_USE_ASAN=1 CC=afl-clang CXX=afl-clang++ ../configure
-	make
-	cd ..
-}
-
-function clean_afl_asan {
-	echo "rm -r $AFL_ASAN"
-	rm -rf $AFL_ASAN
-}
-
-
-# Build with wllvm (klee)
-function make_klee {
-	echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	echo "Step 3: Building with wllvm"
-	mkdir $KLEE_DIR
-	cd $KLEE_DIR
-	#export LLVM_COMPILER=clang	# Export clang as compiler for wllvm
-	export LLVM_COMPILER="clang"
+	export LLVM_COMPILER="clang" # Export clang as compiler for wllvm
 	# -g : Generate source level debug information
 	CC=wllvm CXX=wllvm++ CFLAGS=-g ../configure
 	make
 	FILES=$PWD"/*"
 	for file in $(find);
 	do
-		# create bytecode from all executeable file found
+		# create LLVM bitcode from all executable files found
 		if [[ -x "$file" ]] 
 		then
-    		echo "trying to create bytecode from '$file' (because executable)"
+    		echo "trying to create bitcode from '$file' (because its executable)"
     		extract-bc $file
-		#This will run Klee to generate the bytecode
+		#This will generate the IR bitcode required by Klee
 		#klee --max-instruction-time=30. --simplify-sym-indices --max-memory=2000 --max-sym-array-size=4096 --ignore-solver-failures --only-output-states-covering-new --libc=uclibc --posix-runtime ./.$file.o.bc --sym-arfs 1 3 12 --sym-files 1 128 > /dev/null
     	fi;
 	done
